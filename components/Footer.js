@@ -41,12 +41,23 @@ export default function Footer() {
             </p>
             
             <div className="flex items-center gap-6 mt-8">
-              {/* Social Icons */}
-              {[Facebook, Instagram, Twitter, Linkedin].map((Icon, idx) => (
-                <button key={idx} className="group relative w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-green-400/10 transition-all border border-white/5 hover:border-green-400/30 overflow-hidden shadow-2xl">
+              {/* Social Icons from Config */}
+              {[
+                { Icon: Facebook, link: config?.socialLinks?.facebook },
+                { Icon: Instagram, link: config?.socialLinks?.instagram },
+                { Icon: Twitter, link: config?.socialLinks?.twitter },
+                { Icon: Linkedin, link: config?.socialLinks?.linkedin }
+              ].map(({ Icon, link }, idx) => (
+                <a 
+                  key={idx} 
+                  href={link || '#'} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={`group relative w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-green-400/10 transition-all border border-white/5 hover:border-green-400/30 overflow-hidden shadow-2xl ${!link && 'opacity-30 cursor-not-allowed'}`}
+                >
                    <div className="absolute inset-0 bg-green-400/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                    <Icon size={20} className="text-white/70 group-hover:text-green-400 transition-colors" />
-                </button>
+                </a>
               ))}
             </div>
           </div>

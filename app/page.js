@@ -7,9 +7,9 @@ import Hero from '@/components/Hero';
 import Services from '@/components/Services';
 import SectionRenderer from '@/components/SectionRenderer';
 import Link from 'next/link';
-import { CheckCircle, Zap, Users, Globe } from 'lucide-react';
+import { CheckCircle, Zap, Users, Globe, ArrowRight } from 'lucide-react';
 
-// Hardcoded fallback — always visible even if DB is empty
+// Premium Fallback — Visible if DB is empty
 function FallbackHome() {
   return (
     <>
@@ -17,6 +17,7 @@ function FallbackHome() {
 
       {/* Stats Banner */}
       <section className="py-24 px-6 border-y border-white/5 relative bg-[#020617]/50 backdrop-blur-3xl overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 to-purple-600/5 opacity-50"></div>
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
           {[
             { label: 'Tasks Completed', value: '10k+', icon: CheckCircle, color: 'from-blue-500 to-cyan-400' },
@@ -26,12 +27,12 @@ function FallbackHome() {
           ].map((stat, i) => (
             <div key={i} className="group text-center">
               <div className="relative mb-6 inline-block">
-                <div className={`relative inline-flex p-4 rounded-2xl bg-gradient-to-br ${stat.color} text-white shadow-2xl`}>
+                <div className={`relative inline-flex p-4 rounded-2xl bg-gradient-to-br ${stat.color} text-white shadow-2xl group-hover:scale-110 transition-transform duration-500`}>
                   <stat.icon size={28} />
                 </div>
               </div>
-              <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 text-white">{stat.value}</h3>
-              <p className="text-slate-400 text-[10px] uppercase tracking-[0.2em] font-medium opacity-70">{stat.label}</p>
+              <h3 className="text-3xl sm:text-4xl md:text-5xl font-black mb-2 text-white italic tracking-tighter">{stat.value}</h3>
+              <p className="text-slate-400 text-[10px] uppercase tracking-[0.4em] font-black opacity-70 italic">{stat.label}</p>
             </div>
           ))}
         </div>
@@ -41,12 +42,21 @@ function FallbackHome() {
 
       {/* CTA Section */}
       <section className="py-32 px-6 relative overflow-hidden bg-[#020617]">
-        <div className="max-w-5xl mx-auto p-12 lg:p-16 rounded-[40px] bg-white/5 border border-white/10 backdrop-blur-md relative text-center shadow-2xl">
-          <h2 className="text-2xl sm:text-4xl md:text-6xl font-black mb-8 italic">Ready to transform your vision into reality?</h2>
-          <p className="text-base sm:text-xl text-slate-400 mb-12 max-w-2xl mx-auto">Join hundreds of successful partners who have trusted AD Sky Solution with their strategic management and growth.</p>
-          <div className="flex flex-col sm:flex-row justify-center gap-6">
-            <Link className="px-10 py-5 rounded-2xl bg-blue-600 text-white font-black text-lg shadow-2xl hover:scale-105 transition-all" href="/register">Partner With Us</Link>
-            <Link className="px-10 py-5 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-lg hover:bg-white/10 transition-all" href="/careers">View Career Portal</Link>
+        <div className="max-w-6xl mx-auto p-12 lg:p-20 rounded-[4rem] bg-white/5 border border-white/10 backdrop-blur-md relative text-center shadow-[0_0_100px_rgba(59,130,246,0.1)] group">
+          <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-600/10 rounded-full blur-[100px] group-hover:bg-blue-600/20 transition-all duration-1000"></div>
+          <h2 className="text-4xl md:text-7xl font-black mb-8 italic tracking-tighter leading-none">
+            Ready to scale with <span className="text-blue-500">Precision?</span>
+          </h2>
+          <p className="text-lg sm:text-2xl text-slate-400 mb-12 max-w-3xl mx-auto font-medium leading-relaxed italic">
+            Join hundreds of successful partners who have trusted AD Sky Solution with their strategic management and growth in the digital era.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-8">
+            <Link className="px-12 py-6 rounded-3xl bg-blue-600 text-white font-black text-xl shadow-2xl hover:bg-blue-500 transition-all flex items-center justify-center gap-3 group/btn" href="/register">
+              Partner With Us <ArrowRight className="group-hover/btn:translate-x-2 transition-transform" />
+            </Link>
+            <Link className="px-12 py-6 rounded-3xl bg-white/5 border border-white/10 text-white font-black text-xl hover:bg-white/10 transition-all" href="/careers">
+              Carrier Portal
+            </Link>
           </div>
         </div>
       </section>
@@ -55,7 +65,7 @@ function FallbackHome() {
 }
 
 export default function Home() {
-  const [sections, setSections] = useState(null); // null = loading, [] = no DB data
+  const [sections, setSections] = useState(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -63,13 +73,16 @@ export default function Home() {
       try {
         const res = await fetch('/api/admin/cms/pages?slug=home');
         const data = await res.json();
-        if (data && data.sections && data.sections.length > 0) {
-          setSections(data.sections);
+        // Check if data is array or object based on route refactor
+        const pageData = Array.isArray(data) ? data.find(p => p.slug === 'home') : data;
+        
+        if (pageData && pageData.sections && pageData.sections.length > 0) {
+          setSections(pageData.sections);
         } else {
-          setSections([]); // empty = use fallback
+          setSections([]);
         }
-      } catch {
-        setSections([]); // on error = use fallback
+      } catch (err) {
+        setSections([]);
       } finally {
         setLoaded(true);
       }
@@ -81,9 +94,10 @@ export default function Home() {
     <main className="min-h-screen flex flex-col bg-[#020617] text-white">
       <Navbar />
       <main className="flex-grow">
-        {/* Always show fallback if DB empty, show DB sections if available */}
         {!loaded || sections === null ? (
-          <FallbackHome />
+          <div className="min-h-screen flex items-center justify-center bg-[#020617]">
+             <div className="w-20 h-20 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+          </div>
         ) : sections.length > 0 ? (
           <SectionRenderer sections={sections} />
         ) : (
