@@ -6,7 +6,21 @@ import Link from 'next/link';
 import { Facebook, Instagram, Twitter, Linkedin, MapPin, Phone, Mail } from 'lucide-react';
 
 export default function Footer() {
+  const [config, setConfig] = React.useState(null);
   const currentYear = new Date().getFullYear();
+
+  React.useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const res = await fetch('/api/admin/cms/config');
+        const data = await res.json();
+        if (data && !data.error) setConfig(data);
+      } catch (err) {
+        console.error('Footer fetch error:', err);
+      }
+    };
+    fetchConfig();
+  }, []);
 
   return (
     <footer className="pt-24 pb-12 px-6 bg-[#020617] border-t border-green-400/10">
@@ -15,15 +29,15 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <Link className="flex items-center group gap-3" href="/">
               <div className="relative flex items-center justify-center rounded-xl overflow-hidden shadow-lg border border-white/10 group-hover:scale-110 transition-transform duration-500 w-12 h-12">
-                <Image alt="AD Sky Solution Logo" fill className="object-cover" src="/logo(2).jpeg" />
+                <Image alt={config?.siteName || "AD Sky Solution Logo"} fill className="object-cover" src={config?.logoRoot || "/logo(2).jpeg"} />
               </div>
               <div className="flex flex-col leading-none">
-                <span className="font-medium tracking-tight italic text-xl text-white">AD SKY</span>
-                <span className="uppercase font-normal tracking-[0.4em] text-[9px] text-white/60">Solution</span>
+                <span className="font-medium tracking-tight italic text-xl text-white">{config?.siteName || 'AD SKY'}</span>
+                <span className="uppercase font-normal tracking-[0.4em] text-[9px] text-white/60">{config?.siteTitle || 'Solution'}</span>
               </div>
             </Link>
             <p className="mt-6 text-slate-400 max-w-sm leading-relaxed">
-              Empowering businesses and individuals through expert consulting, skill development, and strategic management solutions.
+              {config?.siteDescription || 'Empowering businesses and individuals through expert consulting, skill development, and strategic management solutions.'}
             </p>
             
             <div className="flex items-center gap-6 mt-8">
@@ -73,7 +87,7 @@ export default function Footer() {
             </div>
             <div>
               <h5 className="font-bold mb-1 text-green-400/90">Our Location</h5>
-              <p className="text-slate-400 text-sm leading-relaxed">AD Sky Solution, 126 Satyam Enclave Sahibabad, <br/> Ghaziabad UTTAR PRADESH 201003</p>
+              <p className="text-slate-400 text-sm leading-relaxed whitespace-pre-line">{config?.contact?.address || 'AD Sky Solution, 126 Satyam Enclave Sahibabad, \n Ghaziabad UTTAR PRADESH 201003'}</p>
             </div>
           </div>
           <div className="flex items-start gap-4 group">
@@ -82,7 +96,7 @@ export default function Footer() {
             </div>
             <div>
               <h5 className="font-bold mb-1 text-green-400/90">Call Us</h5>
-              <p className="text-slate-400 text-sm leading-relaxed font-medium">+91 80621 82243</p>
+              <p className="text-slate-400 text-sm leading-relaxed font-medium">{config?.contact?.phone || '+91 80621 82243'}</p>
             </div>
           </div>
           <div className="flex items-start gap-4 group">
@@ -91,13 +105,13 @@ export default function Footer() {
             </div>
             <div>
               <h5 className="font-bold mb-1 text-green-400/90">Email Us</h5>
-              <p className="text-slate-400 text-sm leading-relaxed font-medium">support@adskysolution.com</p>
+              <p className="text-slate-400 text-sm leading-relaxed font-medium">{config?.contact?.email || 'support@adskysolution.com'}</p>
             </div>
           </div>
         </div>
 
         <div className="text-center">
-            <p className="text-slate-500 text-sm font-medium">© {currentYear} AD Sky Solution. All Rights Reserved.</p>
+            <p className="text-slate-500 text-sm font-medium">{config?.footer?.copyright || `© ${currentYear} AD Sky Solution. All Rights Reserved.`}</p>
         </div>
       </div>
     </footer>

@@ -8,14 +8,8 @@ import { Menu, X } from 'lucide-react';
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const navLinks = [
+  const [config, setConfig] = useState(null);
+  const [navLinks, setNavLinks] = useState([
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
     { name: 'Services', href: '/services' },
@@ -23,7 +17,37 @@ export default function Navbar() {
     { name: 'Projects', href: '/projects' },
     { name: 'Gallery', href: '/gallery' },
     { name: 'Careers', href: '/careers' },
-  ];
+  ]);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    
+    // Fetch dynamic config and pages
+    const fetchNavItems = async () => {
+      try {
+        const [configRes, pagesRes] = await Promise.all([
+          fetch('/api/admin/cms/config'),
+          fetch('/api/admin/cms/pages')
+        ]);
+        const configData = await configRes.json();
+        const pagesData = await pagesRes.json();
+        
+        if (configData && !configData.error) setConfig(configData);
+        if (Array.isArray(pagesData)) {
+          const dynamicLinks = pagesData
+            .filter(p => p.showInNav && p.isActive)
+            .map(p => ({ name: p.title, href: p.slug === 'home' || p.slug === '/' ? '/' : `/${p.slug}` }));
+          if (dynamicLinks.length > 0) setNavLinks(dynamicLinks);
+        }
+      } catch (err) {
+        console.error('Nav fetch error:', err);
+      }
+    };
+
+    fetchNavItems();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <div className={`fixed top-6 left-0 right-0 z-50 flex justify-center px-6 transition-all duration-500 ${isScrolled ? 'top-2' : 'top-6'}`}>
@@ -34,11 +58,11 @@ export default function Navbar() {
             <div className="flex items-center justify-between">
               <Link className="flex items-center group gap-3" href="/">
                 <div className="relative flex items-center justify-center rounded-xl overflow-hidden shadow-lg border border-white/10 group-hover:scale-110 transition-transform duration-500 w-12 h-12">
-                  <Image alt="AD Sky Solution Logo" fill className="object-cover" src="/logo(2).jpeg" />
+                  <Image alt={config?.siteName || "AD Sky Solution Logo"} fill className="object-cover" src={config?.logoRoot || "/logo(2).jpeg"} />
                 </div>
                 <div className="flex flex-col leading-none">
-                  <span className="font-medium tracking-tight italic text-xl text-white">AD SKY</span>
-                  <span className="uppercase font-normal tracking-[0.4em] text-[9px] text-white/60">Solution</span>
+                  <span className="font-medium tracking-tight italic text-xl text-white">{config?.siteName || 'AD SKY'}</span>
+                  <span className="uppercase font-normal tracking-[0.4em] text-[9px] text-white/60">{config?.siteTitle || 'Solution'}</span>
                 </div>
               </Link>
 

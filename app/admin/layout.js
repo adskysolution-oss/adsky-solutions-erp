@@ -19,6 +19,7 @@ const navItems = [
   { href: '/admin/jobs', icon: Building2, label: 'Job Portal' },
   { href: '/admin/payments', icon: CreditCard, label: 'Payments' },
   { href: '/admin/cms', icon: Globe, label: 'Website CMS' },
+  { href: '/admin/reports/forms', icon: FileText, label: 'Form Reports' },
   { href: '/admin/settings/permissions', icon: ShieldCheck, label: 'Role Permissions' }, // New Enterprise Feature
   { href: '/admin/settings', icon: Settings, label: 'System Settings' },
 ];
