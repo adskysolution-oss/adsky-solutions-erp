@@ -10,7 +10,21 @@ export async function GET(req) {
     const section = searchParams.get('section');
 
     if (section) {
-      const content = await Content.findOne({ section });
+      let content = await Content.findOne({ section });
+      
+      // Auto-seed section if it doesn't exist
+      if (!content) {
+        if (section === 'hero') {
+          content = await Content.create({
+            sectionId: 'hero',
+            sectionType: 'hero',
+            title: 'Precision Management For The Enterprise Era.',
+            description: 'AdSky Solution presents a high-fidelity 3-panel ecosystem for Admins, Employers, and Candidates—engineered for scale and seamless job lifecycle management.',
+            image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop'
+          });
+        }
+      }
+
       return NextResponse.json(content || { section, title: '', subtitle: '', description: '', items: [] });
     }
 
