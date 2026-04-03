@@ -2,24 +2,29 @@ import mongoose from 'mongoose';
 
 const LeadSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  phone: { type: String, required: true },
   email: { type: String },
+  phone: { type: String, required: true },
   source: { 
     type: String, 
-    enum: ['Facebook', 'Website', 'WhatsApp', 'Manual'],
-    default: 'Manual'
+    enum: ['website', 'facebook', 'whatsapp', 'direct', 'other'],
+    default: 'website' 
   },
-  status: {
-    type: String,
-    enum: ['New', 'Contacted', 'Interested', 'Converted', 'Not Interested'],
-    default: 'New'
+  status: { 
+    type: String, 
+    enum: ['new', 'contacted', 'interested', 'converted', 'not_interested'],
+    default: 'new' 
   },
-  assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Sales CRM assignment
-  followUpDate: { type: Date },
-  notes: [{
-    text: String,
-    addedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    createdAt: { type: Date, default: Date.now }
+  assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  notes: { type: String },
+  followUps: [{
+    date: { type: Date },
+    note: { type: String },
+    status: { type: String }
+  }],
+  reminders: [{
+    date: { type: Date },
+    message: { type: String },
+    completed: { type: Boolean, default: false }
   }]
 }, { timestamps: true });
 
