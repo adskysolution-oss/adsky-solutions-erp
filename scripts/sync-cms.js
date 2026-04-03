@@ -1,9 +1,27 @@
 const mongoose = require('mongoose');
 
+const fs = require('fs');
+const path = require('path');
+
+// Manually load .env.local if it exists
+try {
+  const envPath = path.resolve(process.cwd(), '.env.local');
+  if (fs.existsSync(envPath)) {
+    const envFile = fs.readFileSync(envPath, 'utf8');
+    const match = envFile.match(/MONGODB_URI=(.*)/);
+    if (match && match[1]) {
+      process.env.MONGODB_URI = match[1].trim();
+      console.log("Loaded MONGODB_URI from .env.local");
+    }
+  }
+} catch (e) {
+  // Silent skip
+}
+
 const MONGO_URI = process.env.MONGODB_URI;
 
-if (!MONGO_URI) {
-  console.error("Please define MONGODB_URI");
+if (!MONGO_URI || MONGO_URI.includes("aapka_mongodb_link")) {
+  console.error("Error: Please define a valid MONGODB_URI in .env.local");
   process.exit(1);
 }
 
