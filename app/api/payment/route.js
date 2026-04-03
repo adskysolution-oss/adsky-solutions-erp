@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/utils/db';
 import Content from '@/models/Content';
-import { Cashfree } from "cashfree-pg";
+import { Cashfree, CFEnvironment } from "cashfree-pg";
 
 export async function POST(request) {
   try {
@@ -22,8 +22,8 @@ export async function POST(request) {
     Cashfree.XClientId = appId;
     Cashfree.XClientSecret = secretKey;
     Cashfree.XEnvironment = environment === 'production' 
-      ? Cashfree.Environment.PRODUCTION 
-      : Cashfree.Environment.SANDBOX;
+      ? CFEnvironment.PRODUCTION 
+      : CFEnvironment.SANDBOX;
 
     // 3. Create Order Request
     const orderId = `order_${Date.now()}`;

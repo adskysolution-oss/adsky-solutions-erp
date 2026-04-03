@@ -3,12 +3,13 @@ import connectToDatabase from '@/utils/db';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
 
-// GET all employees
+// GET all internal employees
 export async function GET() {
   try {
     await connectToDatabase();
+    // Exclude candidate and employer roles
     const employees = await User.find({ 
-      role: { $in: ['admin', 'manager', 'sales', 'support', 'super-admin'] } 
+      role: { $in: ['admin', 'manager', 'sales', 'support'] } 
     }).sort({ createdAt: -1 });
     
     return NextResponse.json({ success: true, data: employees });
@@ -17,26 +18,38 @@ export async function GET() {
   }
 }
 
-// CREATE new employee
+// POST new employee
 export async function POST(req) {
   try {
     await connectToDatabase();
-    const { name, email, password, phone, role } = await req.json();
+    const body = await req.json();
+    const { name, email, role, phone, password } = body;
 
+    // Check if user exists
     const existing = await User.findOne({ email });
     if (existing) return NextResponse.json({ error: 'User already exists' }, { status: 400 });
 
-    const hashedPassword = await bcrypt.hash(password || '123456', 12);
-    const newUser = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      phone,
-      role,
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const employee = await User.create({
+      name, email, role, phone, password: hashedPassword,
       status: 'active'
     });
 
-    return NextResponse.json({ success: true, data: newUser });
+    return NextResponse.json({ success: true, data: employee });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+// UPDATE employee
+export async function PUT(req) {
+  try {
+    await connectToDatabase();
+    const body = await req.json();
+    const { id, ...updateData } = body;
+
+    const updated = await User.findByIdAndUpdate(id, updateData, { new: true });
+    return NextResponse.json({ success: true, data: updated });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -48,9 +61,9 @@ export async function DELETE(req) {
     await connectToDatabase();
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
-    
+
     await User.findByIdAndDelete(id);
-    return NextResponse.json({ success: true, message: 'Employee deleted' });
+    return NextResponse.json({ success: true, message: 'Deleted successfully' });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

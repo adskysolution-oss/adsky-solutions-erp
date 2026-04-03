@@ -4,16 +4,20 @@ import Application from '@/models/Application';
 import User from '@/models/User';
 import Job from '@/models/Job';
 
-// GET all applicants for this employer
+// GET all applicants for this employer with optional Job Filter
 export async function GET(req) {
   try {
     await connectToDatabase();
     const { searchParams } = new URL(req.url);
     const employerId = searchParams.get('employerId');
+    const jobId = searchParams.get('jobId');
     
-    // Find all applications where the job belongs to this employer
-    // Or simpler, where employerId matches
-    const applications = await Application.find({ employer: employerId })
+    let query = { employer: employerId };
+    if (jobId && jobId !== 'all') {
+      query.job = jobId;
+    }
+
+    const applications = await Application.find(query)
       .populate('candidate', 'name email phone')
       .populate('job', 'title')
       .sort({ createdAt: -1 });
@@ -24,8 +28,9 @@ export async function GET(req) {
       email: app.candidate?.email || 'N/A',
       phone: app.candidate?.phone || 'N/A',
       role: app.job?.title || 'Unknown Position',
-      status: app.status,
-      appliedAt: app.appliedAt
+      jobId: app.job?._id,
+      status: app.status || 'applied',
+      appliedAt: app.createdAt
     }));
       
     return NextResponse.json({ success: true, data: formatted });
@@ -34,7 +39,7 @@ export async function GET(req) {
   }
 }
 
-// UPDATE application status (Shortlist/Reject)
+// UPDATE application status
 export async function PUT(req) {
   try {
     await connectToDatabase();
