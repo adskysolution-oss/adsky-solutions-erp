@@ -23,12 +23,19 @@ const UserSchema = new mongoose.Schema({
   subscriptionPlan: { type: String, default: 'free' },
   
   // -- Candidate Specific Fields --
+  title: { type: String },
+  bio: { type: String },
   resumeUrl: { type: String }, // AWS S3 URL
   multipleResumes: [{ name: String, url: String }],
   skills: [{ type: String }],
   education: { type: String },
   experience: { type: String },
-  location: { type: String }
+  location: { type: String },
+  socials: {
+    linkedin: { type: String },
+    github: { type: String },
+    portfolio: { type: String }
+  }
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);

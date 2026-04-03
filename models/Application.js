@@ -9,6 +9,7 @@ const ApplicationSchema = new mongoose.Schema({
     enum: ['applied', 'shortlisted', 'rejected', 'hired'],
     default: 'applied'
   },
+  resumeUrl: { type: String },
   appliedAt: { type: Date, default: Date.now },
   notes: { type: String },
   history: [{
