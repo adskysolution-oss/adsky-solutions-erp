@@ -13,21 +13,44 @@ export default function AdminJobs() {
   const [activeTab, setActiveTab] = useState('all');
 
   async function loadJobs() {
+    setLoading(true);
     try {
       const res = await fetch('/api/admin/jobs');
       const data = await res.json();
-      setJobs(data.data || []);
+      if (res.ok) setJobs(data.data || []);
+      else throw new Error();
     } catch {
-      // Demo Data
-      setJobs([
-        { _id: '1', title: 'Senior Web Developer', companyName: 'TechSolutions Inc', location: 'Remote', salary: '₹80K - ₹1.2L', jobType: 'Full Time', status: 'pending', createdAt: '2026-04-03' },
-        { _id: '2', title: 'Marketing Manager', companyName: 'BuildFast', location: 'Delhi, India', salary: '₹50K - ₹70K', jobType: 'Full Time', status: 'active', createdAt: '2026-04-02' },
-        { _id: '3', title: 'UX/UI Designer', companyName: 'CreativePixel', location: 'Bangalore', salary: '₹60K - ₹90K', jobType: 'Part Time', status: 'active', createdAt: '2026-04-01' },
-        { _id: '4', title: 'Data Analyst', companyName: 'DataCrunch', location: 'Remote', salary: '₹70K - ₹1L', jobType: 'Contract', status: 'rejected', createdAt: '2026-03-30' },
-      ]);
+      setJobs([]);
     }
     setLoading(false);
   }
+
+  const handleStatusUpdate = async (id, status) => {
+    try {
+      const res = await fetch('/api/admin/jobs', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      });
+      if (res.ok) {
+        setJobs(jobs.map(j => j._id === id ? { ...j, status } : j));
+      }
+    } catch {
+      alert('Error updating status');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this job post?')) return;
+    try {
+      const res = await fetch(`/api/admin/jobs?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setJobs(jobs.filter(j => j._id !== id));
+      }
+    } catch {
+      alert('Error deleting job');
+    }
+  };
 
   useEffect(() => { loadJobs(); }, []);
 
@@ -95,7 +118,11 @@ export default function AdminJobs() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((job) => (
+            {loading ? (
+              <tr><td colSpan="5" style={{ padding: '40px', textAlign: 'center' }}><Loader2 className="animate-spin" size={32} style={{ margin: '0 auto', color: '#3b82f6' }} /></td></tr>
+            ) : filtered.length === 0 ? (
+              <tr><td colSpan="5" style={{ padding: '40px', textAlign: 'center', color: '#475569' }}>No job listings found.</td></tr>
+            ) : filtered.map((job) => (
               <tr key={job._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.01)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                 <td style={{ padding: '20px 24px' }}>
                   <div>
@@ -130,8 +157,16 @@ export default function AdminJobs() {
                 <td style={{ padding: '20px 24px' }}>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button title="View Details" style={{ padding: '8px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: '#94a3b8', cursor: 'pointer' }}><Eye size={18} /></button>
-                    {job.status === 'pending' && <button title="Approve" style={{ padding: '8px', borderRadius: '10px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', color: '#22c55e', cursor: 'pointer' }}><CheckCircle2 size={18} /></button>}
-                    <button title="Delete" style={{ padding: '8px', borderRadius: '10px', background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.1)', color: '#f87171', cursor: 'pointer' }}><Trash2 size={18} /></button>
+                    {job.status === 'pending' && (
+                      <>
+                        <button onClick={() => handleStatusUpdate(job._id, 'active')} title="Approve" style={{ padding: '8px', borderRadius: '10px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', color: '#22c55e', cursor: 'pointer' }}><CheckCircle2 size={18} /></button>
+                        <button onClick={() => handleStatusUpdate(job._id, 'rejected')} title="Reject" style={{ padding: '8px', borderRadius: '10px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', cursor: 'pointer' }}><XCircle size={18} /></button>
+                      </>
+                    )}
+                    {job.status === 'active' && (
+                      <button onClick={() => handleStatusUpdate(job._id, 'expired')} title="Expire" style={{ padding: '8px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: '#6b7280', cursor: 'pointer' }}><AlertCircle size={18} /></button>
+                    )}
+                    <button onClick={() => handleDelete(job._id)} title="Delete" style={{ padding: '8px', borderRadius: '10px', background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.1)', color: '#f87171', cursor: 'pointer' }}><Trash2 size={18} /></button>
                   </div>
                 </td>
               </tr>
