@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Users, Briefcase, Target, Settings,
   ChevronLeft, ChevronRight, Bell, LogOut, Menu, X,
   TrendingUp, FileText, CreditCard, Globe, UserCheck,
-  Building2, Layers, BarChart3
+  Building2, Layers, BarChart3, ShieldCheck
 } from 'lucide-react';
 
 const navItems = [
