@@ -1,90 +1,88 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { Sparkles, Target, Eye, Shield, Award, Users, TrendingUp } from 'lucide-react';
+import React from 'react';
+import { Target, Users, ShieldCheck, Rocket, Globe, Zap, CheckCircle2, Award, Sparkles } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export default function AboutPage() {
-  const [page, setPage] = useState(null);
-
-  useEffect(() => {
-    fetch('/api/admin/cms/pages/about')
-      .then(res => res.json())
-      .then(data => { if (!data.error) setPage(data); });
-  }, []);
-
   return (
-    <div className="min-h-screen flex flex-col bg-[#020617] text-white">
+    <div className="min-h-screen flex flex-col bg-[#020617] text-white overflow-hidden">
       <Navbar />
       
       <main className="flex-grow pt-32">
-        {/* Dynamic Sections from CMS */}
-        {page?.sections && page.sections.length > 0 ? (
-          page.sections.map((section, idx) => (
-            <section key={idx} className="py-24 px-6 relative overflow-hidden">
-               <div className="max-w-7xl mx-auto relative z-10">
-                 {section.type === 'hero' && (
-                    <div className="text-center">
-                      <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest mb-6 animate-pulse">
-                        <Sparkles size={14} /> {section.content.title || 'Our Identity'}
-                      </span>
-                      <h1 className="text-5xl md:text-8xl font-black mb-8 tracking-tighter italic bg-clip-text text-transparent bg-gradient-to-r from-white via-white/80 to-white/40">
-                         {section.content.heading || 'Our Story'}
-                      </h1>
-                      <p className="text-xl text-slate-400 max-w-3xl mx-auto font-medium leading-relaxed italic">
-                        {section.content.description}
-                      </p>
-                    </div>
-                 )}
-
-                 {section.type === 'standard' && (
-                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                      <div className="space-y-10">
-                        <div className="p-1 px-5 bg-white/5 text-blue-400 text-[10px] font-black uppercase tracking-[0.4em] inline-block rounded-full border border-white/10 shadow-2xl">
-                           Evolution
-                        </div>
-                        <h2 className="text-4xl md:text-6xl font-black text-white leading-[1.1] tracking-tighter italic">
-                          {section.content.title}
-                        </h2>
-                        <div className="space-y-8 text-slate-400 text-lg leading-relaxed font-medium">
-                           {section.content.content}
-                        </div>
-                      </div>
-                      <div className="relative aspect-video rounded-[4rem] bg-gradient-to-br from-blue-600/20 to-orange-500/10 border border-white/10 overflow-hidden group shadow-[0_0_100px_rgba(59,130,246,0.1)]">
-                         <div className="absolute inset-0 bg-black/40 z-10"></div>
-                         {section.content.image && (
-                           <img src={section.content.image} alt={section.content.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
-                         )}
-                         <div className="absolute inset-0 flex items-center justify-center z-20">
-                            <p className="italic text-white/20 text-2xl font-black uppercase tracking-[1em] translate-x-[0.5em]">Global Partner</p>
-                         </div>
-                      </div>
-                   </div>
-                 )}
-               </div>
-            </section>
-          ))
-        ) : (
-           /* Fallback Hero if no sections */
-           <section className="py-32 text-center bg-[#020617]">
-             <h1 className="text-7xl font-black italic mb-6">About Us</h1>
-             <p className="text-xl text-slate-400 max-w-2xl mx-auto font-medium">Empowering your digital future with enterprise solutions.</p>
-           </section>
-        )}
-
-        {/* Static Values Section - Always High Fidelity */}
-        <section className="py-32 px-6 bg-[#020617]">
-          <div className="max-w-7xl mx-auto text-center">
-             <h2 className="text-4xl md:text-6xl font-black italic mb-20 tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white to-white/20">
-               Engineering Excellence
-             </h2>
-             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-                <ValueCard icon={Shield} title="Integrity" description="Highest standards of ethics and data protection." />
-                <ValueCard icon={Award} title="Excellence" description="Premium quality in every line of code we ship." />
-                <ValueCard icon={Users} title="Human-Centric" description="Building relationships that drive real growth." />
-                <ValueCard icon={TrendingUp} title="Innovation" description="Always ahead of the technology curve." />
-             </div>
+        {/* --- HERO SECTION --- */}
+        <section className="py-24 px-6 relative">
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+          <div className="max-w-7xl mx-auto relative z-10 text-center">
+            <h1 className="text-6xl md:text-9xl font-black mb-10 tracking-tighter italic bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-500 to-white/40 leading-none">
+              Engineering <br /> The Future.
+            </h1>
+            <p className="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto font-medium italic animate-in fade-in slide-in-from-bottom-8 duration-700">
+              AdSky Solution is a global enterprise power-house specializing in business automation, workforce consulting, and high-fidelity IT architecture.
+            </p>
           </div>
+        </section>
+
+        {/* --- VISION & MISSION --- */}
+        <section className="py-24 px-6">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20">
+            <div className="space-y-12 p-12 rounded-[5rem] bg-white/[0.03] border border-white/10 backdrop-blur-3xl shadow-2xl group hover:bg-blue-600/10 transition-all duration-700">
+              <div className="w-20 h-20 rounded-3xl bg-blue-600/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                <Target size={40} />
+              </div>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tighter italic">Our Mission</h2>
+              <p className="text-xl text-slate-400 font-medium leading-relaxed italic">
+                To simplify the complex job lifecycle management through our proprietary 3-panel ecosystem, ensuring transparency and scale for the modern enterprise.
+              </p>
+            </div>
+
+            <div className="space-y-12 p-12 rounded-[5rem] bg-white/[0.03] border border-white/10 backdrop-blur-3xl shadow-2xl group hover:bg-indigo-600/10 transition-all duration-700">
+              <div className="w-20 h-20 rounded-3xl bg-indigo-600/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
+                <Rocket size={40} />
+              </div>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tighter italic">Our Vision</h2>
+              <p className="text-xl text-slate-400 font-medium leading-relaxed italic">
+                To become the global standard for workforce consulting and business process automation, bridging the gap between talent and high-growth opportunities.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* --- VALUES GRID --- */}
+        <section className="py-32 px-6 bg-blue-600/5 border-y border-white/5 relative">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-24">
+               <h2 className="text-5xl md:text-8xl font-black tracking-tighter italic mb-6">Core Values</h2>
+               <div className="w-40 h-2 bg-blue-500 mx-auto rounded-full"></div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+              <ValueItem 
+                icon={ShieldCheck} 
+                title="Integrity" 
+                desc="ISO 9001:2015 certified processes for unmatched quality and trust across all enterprise verticals." 
+              />
+              <ValueItem 
+                icon={Globe} 
+                title="Global Scale" 
+                desc="Managing operations across 50+ cities with a localized precision that respects regional dynamics." 
+              />
+              <ValueItem 
+                icon={Zap} 
+                title="Innovation" 
+                desc="Constant evolution of our 3-panel ERP system candidate experience and employer metrics." 
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* --- STATS DISPLAY --- */}
+        <section className="py-32 px-6">
+           <div className="max-w-7xl mx-auto rounded-[6rem] bg-white text-black p-20 relative overflow-hidden shadow-[0_0_150px_rgba(255,255,255,0.15)] flex flex-wrap justify-center gap-20">
+              <BigStat value="10k+" label="Success Stories" color="blue" />
+              <BigStat value="500+" label="Partners Globally" color="indigo" />
+              <BigStat value="98%" label="Project ROI" color="emerald" />
+           </div>
         </section>
       </main>
 
@@ -93,14 +91,30 @@ export default function AboutPage() {
   );
 }
 
-function ValueCard({ icon: Icon, title, description }) {
+function ValueItem({ icon: Icon, title, desc }) {
   return (
-    <div className="p-10 rounded-[2.5rem] border border-white/5 bg-white/5 hover:bg-white/10 hover:border-blue-500/40 transition-all duration-500 text-left group">
-       <div className="text-blue-500 mb-8 group-hover:scale-110 transition-transform duration-500 w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-          <Icon size={32} />
-       </div>
-       <h4 className="text-2xl font-black mb-4 italic tracking-tight">{title}</h4>
-       <p className="text-slate-400 leading-relaxed font-medium">{description}</p>
+    <div className="space-y-6 group p-8 rounded-[3rem] hover:bg-white/5 transition-all duration-500">
+      <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-2xl">
+        <Icon size={28} />
+      </div>
+      <h4 className="text-3xl font-black italic tracking-tight">{title}</h4>
+      <p className="text-slate-400 font-medium leading-relaxed">{desc}</p>
+    </div>
+  );
+}
+
+function BigStat({ value, label, color }) {
+  const colors = {
+    blue: 'text-blue-600',
+    indigo: 'text-indigo-600',
+    emerald: 'text-emerald-600'
+  }
+  return (
+    <div className="text-center group">
+      <h5 className={`text-6xl md:text-9xl font-black italic tracking-tighter ${colors[color]} group-hover:scale-110 transition-transform duration-700 leading-none`}>
+        {value}
+      </h5>
+      <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-sm mt-4">{label}</p>
     </div>
   );
 }

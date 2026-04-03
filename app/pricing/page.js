@@ -1,68 +1,89 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { Check, Sparkles, Zap, Shield, Crown, ArrowRight } from 'lucide-react';
+import React from 'react';
+import { CheckCircle2, ShieldCheck, Zap, Rocket, Target, ArrowRight, Sparkles } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
+const plans = [
+  {
+    name: "Standard",
+    price: "₹14,999",
+    tagline: "For Growing Startups",
+    features: [
+      "Access to Candidate Dashboard",
+      "Lead Management CRM",
+      "5 Project Postings/Month",
+      "Standard Workforce Support",
+      "ISO 9001:2015 Compliance"
+    ],
+    color: "blue",
+    icon: Zap
+  },
+  {
+    name: "Enterprise",
+    price: "₹49,999",
+    tagline: "For Scalable Operations",
+    features: [
+      "Full 3-Panel Admin Ecosystem",
+      "Unlimited Project Pipeline",
+      "High-Fidelity CRM Setup",
+      "Priority Consulting Support",
+      "Global PIN Code Coverage",
+      "Custom Automation Logic"
+    ],
+    featured: true,
+    color: "indigo",
+    icon: Rocket
+  },
+  {
+    name: "Custom",
+    price: "Quote",
+    tagline: "For Global Infrastructure",
+    features: [
+      "Bespoke IT Architecture",
+      "Dedicated Project Director",
+      "On-site Talent Management",
+      "Full Security Integration",
+      "Annual Process Audit"
+    ],
+    color: "white",
+    icon: Target
+  }
+];
+
 export default function PricingPage() {
-  const [page, setPage] = useState(null);
-
-  useEffect(() => {
-    fetch('/api/admin/cms/pages/pricing')
-      .then(res => res.json())
-      .then(data => { if (!data.error) setPage(data); });
-  }, []);
-
   return (
     <div className="min-h-screen flex flex-col bg-[#020617] text-white">
       <Navbar />
       
-      <main className="flex-grow pt-32 pb-20">
-        <div className="max-w-7xl mx-auto px-6 text-center mb-24 relative">
-           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] -z-10"></div>
-           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest mb-6">
-              <Sparkles size={14} /> Transparent Value
-           </span>
-           <h1 className="text-5xl md:text-8xl font-black mb-8 italic tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white via-white/80 to-white/40">
-              Premium Solutions.
-           </h1>
-           <p className="text-xl text-slate-400 max-w-2xl mx-auto font-medium italic">Expert consulting and technical implementation managed with enterprise precision.</p>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10">
-           <PricingCard 
-              name="Strategy" 
-              price="Custom" 
-              description="One-on-one strategy session for business growth and tech audit." 
-              features={['Initial Consultation', 'Tech Audit Report', 'Growth Roadmap', 'Digital Blueprint']}
-              icon={Zap}
-           />
-           <PricingCard 
-              name="Implementation" 
-              price="Project Based" 
-              description="End-to-end software development and system integration." 
-              features={['Full-Stack Development', 'CRM/ERP Setup', 'Quality Assurance', 'Deployment Support']}
-              icon={Shield}
-              premium
-           />
-           <PricingCard 
-              name="Enterprise" 
-              price="Consultancy" 
-              description="Long-term retainer for continuous technical advisory and management." 
-              features={['Dedicated Architect', '24/7 Support Advisory', 'Resource Optimization', 'Quarterly Review']}
-              icon={Crown}
-           />
-        </div>
-
-        {/* CMS Dynamic Content (if any) */}
-        {page?.sections?.map((section, idx) => (
-          <div key={idx} className="max-w-7xl mx-auto px-6 mt-32">
-             <h2 className="text-4xl font-black italic mb-10">{section.content.title}</h2>
-             <div className="prose prose-invert max-w-none text-slate-400 text-lg leading-relaxed">
-                {section.content.content}
-             </div>
+      <main className="flex-grow pt-32 pb-24">
+        <section className="py-24 px-6 relative overflow-hidden">
+          <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[150px] pointer-events-none"></div>
+          
+          <div className="max-w-7xl mx-auto relative z-10 text-center mb-24">
+            <h1 className="text-6xl md:text-[9rem] font-black leading-[0.85] tracking-tighter mb-10 italic bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-500 to-white/40">
+               Premium Plans.
+            </h1>
+            <p className="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto font-medium italic">
+               Invest in high-fidelity architecture and precision consulting designed for your enterprise's roadmap.
+            </p>
           </div>
-        ))}
+
+          <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {plans.map((plan, index) => (
+              <PricingCard key={index} {...plan} index={index} />
+            ))}
+          </div>
+        </section>
+
+        {/* --- TRUST BADGE --- */}
+        <section className="py-20 px-6 bg-white/[0.02] border-y border-white/5 relative">
+           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-center gap-10 md:gap-24 opacity-60">
+              <Badge icon={ShieldCheck} text="ISO 9001:2015 Certified" />
+              <Badge icon={Sparkles} text="10k+ Successful Projects" />
+              <Badge icon={Target} text="Real-time Milestone Tracking" />
+           </div>
+        </section>
       </main>
 
       <Footer />
@@ -70,35 +91,51 @@ export default function PricingPage() {
   );
 }
 
-function PricingCard({ name, price, description, features, icon: Icon, premium }) {
+function PricingCard({ name, price, tagline, features, featured, color, icon: Icon, index }) {
   return (
-    <div className={`group relative p-10 rounded-[3rem] border transition-all duration-700 ${premium ? 'bg-white text-slate-900 border-blue-500 shadow-[0_0_100px_rgba(59,130,246,0.3)] scale-105 z-10' : 'bg-white/5 border-white/10 hover:border-blue-500/40 text-white'}`}>
-       {premium && (
-         <div className="absolute -top-5 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full bg-blue-600 text-white text-xs font-black uppercase tracking-widest italic shadow-xl">
-            Recommended
-         </div>
-       )}
-       <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-8 border ${premium ? 'bg-blue-600 text-white border-blue-700' : 'bg-blue-600/10 text-blue-400 border-blue-500/20'}`}>
-          <Icon size={32} />
-       </div>
-       <h3 className="text-3xl font-black mb-2 italic tracking-tight">{name}</h3>
-       <div className="text-4xl font-black mb-6 italic">{price}</div>
-       <p className={`mb-10 font-medium ${premium ? 'text-slate-600' : 'text-slate-400'}`}>{description}</p>
-       
-       <ul className="space-y-4 mb-12">
-          {features.map((f, i) => (
-            <li key={i} className="flex items-center gap-3 font-bold text-sm italic">
-               <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${premium ? 'bg-blue-600 text-white' : 'bg-blue-500/10 text-blue-400'}`}>
-                  <Check size={12} />
-               </div>
-               {f}
-            </li>
-          ))}
-       </ul>
+    <div 
+      className={`p-16 rounded-[4.5rem] bg-white/[0.03] border relative overflow-hidden group transition-all duration-700 shadow-2xl animate-in fade-in slide-in-from-bottom-12 duration-700 ${featured ? 'border-blue-500/40 scale-105 bg-white/[0.05]' : 'border-white/10 hover:border-white/20'}`}
+      style={{ animationDelay: `${index * 150}ms` }}
+    >
+      {featured && (
+        <div className="absolute top-10 right-10 px-6 py-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full italic shadow-2xl animate-pulse">
+           Recommended
+        </div>
+      )}
+      
+      <div className={`w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-700 border border-white/10`}>
+        <Icon size={32} className={featured ? 'text-blue-400' : 'text-white'} />
+      </div>
 
-       <button className={`w-full py-5 rounded-2xl font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 group/btn ${premium ? 'bg-[#020617] text-white hover:bg-blue-600' : 'bg-white/5 border border-white/10 text-white hover:bg-white hover:text-black'}`}>
-          Book Now <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
-       </button>
+      <h3 className="text-3xl font-black text-white italic tracking-tighter uppercase mb-2">{name}</h3>
+      <p className="text-slate-400 font-medium italic mb-10">{tagline}</p>
+      
+      <div className="mb-12">
+        <span className="text-6xl font-black italic tracking-tighter text-white">{price}</span>
+        {price !== 'Quote' && <span className="text-slate-500 font-bold ml-2">/month</span>}
+      </div>
+
+      <div className="space-y-6 mb-16">
+        {features.map((feature, i) => (
+          <div key={i} className="flex items-start gap-4">
+            <CheckCircle2 size={18} className="text-blue-500 shrink-0 mt-1" />
+            <span className="text-slate-300 font-medium leading-tight italic">{feature}</span>
+          </div>
+        ))}
+      </div>
+
+      <button className={`w-full py-8 rounded-full font-black text-lg shadow-2xl flex items-center justify-center gap-4 group uppercase tracking-widest italic transition-all duration-500 ${featured ? 'bg-white text-black hover:bg-blue-400' : 'bg-white/5 text-white border border-white/10 hover:bg-white/10 hover:border-white/20'}`}>
+        Get Started <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+      </button>
+    </div>
+  );
+}
+
+function Badge({ icon: Icon, text }) {
+  return (
+    <div className="flex items-center gap-4 group">
+       <Icon className="text-blue-500 group-hover:animate-spin-slow transition-all" size={24} />
+       <span className="text-xs font-black uppercase tracking-[0.3em] text-white/60">{text}</span>
     </div>
   );
 }
