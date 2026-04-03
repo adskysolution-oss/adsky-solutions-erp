@@ -52,7 +52,7 @@ export default function Navbar() {
   return (
     <div className={`fixed top-6 left-0 right-0 z-50 flex justify-center px-6 transition-all duration-500 ${isScrolled ? 'top-2' : 'top-6'}`}>
       <div className="relative w-full max-w-5xl">
-        <div className="relative p-[1px] rounded-[3rem] overflow-hidden transition-all duration-500">
+        <div className={`relative p-[1px] rounded-[3rem] transition-all duration-500 ${isMobileMenuOpen ? '' : 'overflow-hidden'}`}>
           <div className="absolute inset-[-400%] opacity-100" style={{ background: 'conic-gradient(from 0deg, transparent 0deg, #3B82F6 120deg, #6366F1 240deg, #F97316 360deg)' }}></div>
           <nav className="relative w-full h-full z-10 rounded-[3rem] bg-[#0F172A]/80 backdrop-blur-xl py-3 px-10">
             <div className="flex items-center justify-between">
