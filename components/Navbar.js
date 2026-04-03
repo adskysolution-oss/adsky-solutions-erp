@@ -56,7 +56,7 @@ export default function Navbar() {
           <div className="absolute inset-[-400%] opacity-100" style={{ background: 'conic-gradient(from 0deg, transparent 0deg, #3B82F6 120deg, #6366F1 240deg, #F97316 360deg)' }}></div>
           <nav className="relative w-full h-full z-10 rounded-[3rem] bg-[#0F172A]/80 backdrop-blur-xl py-3 px-10">
             <div className="flex items-center justify-between">
-              <Link className="flex items-center group gap-3" href="/">
+              <Link className="flex items-center group gap-4 mr-8" href="/">
                 <div className="relative flex items-center justify-center rounded-xl overflow-hidden shadow-lg border border-white/10 group-hover:scale-110 transition-transform duration-500 w-12 h-12">
                   <Image alt={config?.siteName || "AD Sky Solution Logo"} fill className="object-cover" src={config?.logoRoot || "/logo(2).jpeg"} />
                 </div>
