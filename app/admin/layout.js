@@ -11,15 +11,16 @@ import {
 
 const navItems = [
   { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/admin/employees', icon: Users, label: 'Employees' },
+  { href: '/admin/monitoring', icon: BarChart3, label: 'Employee Monitor' }, // New Enterprise Feature
+  { href: '/admin/employees', icon: Users, label: 'Manage Team' },
   { href: '/admin/leads', icon: Target, label: 'Lead CRM' },
   { href: '/admin/projects', icon: Briefcase, label: 'Projects' },
   { href: '/admin/services', icon: Layers, label: 'Services' },
   { href: '/admin/jobs', icon: Building2, label: 'Job Portal' },
   { href: '/admin/payments', icon: CreditCard, label: 'Payments' },
-  { href: '/admin/reports', icon: BarChart3, label: 'Reports' },
   { href: '/admin/cms', icon: Globe, label: 'Website CMS' },
-  { href: '/admin/settings', icon: Settings, label: 'Settings' },
+  { href: '/admin/settings/permissions', icon: ShieldCheck, label: 'Role Permissions' }, // New Enterprise Feature
+  { href: '/admin/settings', icon: Settings, label: 'System Settings' },
 ];
 
 export default function AdminLayout({ children }) {

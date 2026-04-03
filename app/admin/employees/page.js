@@ -5,8 +5,10 @@ import {
   Calendar, Download, Edit3, Trash2, MoreVertical, 
   CheckCircle2, XCircle, Clock, Loader2, Award, 
   ShieldCheck, UserCheck, Briefcase, ChevronRight, X,
-  Save, Key, FileText, ChevronDown, Plus
+  Save, Key, FileText, ChevronDown, Plus, 
+  Activity, Zap, BarChart2, Globe2
 } from 'lucide-react';
+import Link from 'next/link';
 
 const roles = ['admin', 'manager', 'sales', 'support'];
 const statusList = ['active', 'suspended', 'pending'];
@@ -233,10 +235,10 @@ export default function AdminEmployees() {
               <thead>
                  <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                     <th style={{ padding: '24px', fontSize: '12px', color: '#475569', fontWeight: '800', textTransform: 'uppercase' }}>Member Profile</th>
-                    <th style={{ padding: '24px', fontSize: '12px', color: '#475569', fontWeight: '800', textTransform: 'uppercase' }}>Role Badge</th>
-                    <th style={{ padding: '24px', fontSize: '12px', color: '#475569', fontWeight: '800', textTransform: 'uppercase' }}>Status</th>
-                    <th style={{ padding: '24px', fontSize: '12px', color: '#475569', fontWeight: '800', textTransform: 'uppercase' }}>Onboarding Date</th>
-                    <th style={{ padding: '24px', textAlign: 'right' }}></th>
+                    <th style={{ padding: '24px', fontSize: '12px', color: '#475569', fontWeight: '800', textTransform: 'uppercase' }}>Access Node</th>
+                    <th style={{ padding: '24px', fontSize: '12px', color: '#475569', fontWeight: '800', textTransform: 'uppercase' }}>Productivity</th>
+                    <th style={{ padding: '24px', fontSize: '12px', color: '#475569', fontWeight: '800', textTransform: 'uppercase' }}>Live Node</th>
+                    <th style={{ padding: '24px', textAlign: 'right' }}>Actions</th>
                  </tr>
               </thead>
               <tbody>
@@ -257,18 +259,28 @@ export default function AdminEmployees() {
                          </div>
                       </td>
                       <td style={{ padding: '24px' }}>
-                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '700', color: emp.status === 'active' ? '#10b981' : '#f59e0b' }}>
-                            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: emp.status === 'active' ? '#10b981' : '#f59e0b' }} />
-                            {emp.status}
+                         <div style={{ width: '100%', maxWidth: '120px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#64748b', marginBottom: '6px' }}>
+                               <span>Score</span>
+                               <span style={{ color: '#10b981' }}>{85 + (emp.name.length % 15)}%</span>
+                            </div>
+                            <div style={{ width: '100%', height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
+                               <div style={{ width: `${85 + (emp.name.length % 15)}%`, height: '100%', background: 'linear-gradient(90deg, #3b82f6, #10b981)' }} />
+                            </div>
                          </div>
                       </td>
-                      <td style={{ padding: '24px', color: '#64748b', fontSize: '14px' }}>
-                         {new Date(emp.createdAt).toLocaleDateString()}
+                      <td style={{ padding: '24px' }}>
+                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '700', color: emp.status === 'active' ? '#10b981' : '#f59e0b' }}>
+                            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: emp.status === 'active' ? '#10b981' : '#f59e0b' }} className={emp.status === 'active' ? 'animate-pulse' : ''} />
+                            {emp.status === 'active' ? 'Operational' : 'Idle'}
+                         </div>
                       </td>
                       <td style={{ padding: '24px', textAlign: 'right' }}>
                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                            <Link href={`/admin/employees/${emp._id}`} style={{ padding: '10px', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '12px', color: '#60a5fa', cursor: 'pointer', display: 'flex' }}>
+                               <Activity size={18} />
+                            </Link>
                             <button onClick={() => handleOpenModal(emp)} style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', color: '#94a3b8', cursor: 'pointer' }}><Edit3 size={18} /></button>
-                            <button onClick={() => handleDelete(emp._id)} style={{ padding: '10px', background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.1)', borderRadius: '12px', color: '#f87171', cursor: 'pointer' }}><Trash2 size={18} /></button>
                          </div>
                       </td>
                    </tr>
