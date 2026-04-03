@@ -24,7 +24,12 @@ export default function AdminLogin() {
       const data = await res.json();
       if (res.ok) {
         localStorage.setItem('adminUser', JSON.stringify(data.user || { name: 'Super Admin', email: 'admin' }));
-        router.push('/admin/dashboard');
+        
+        if (data.user?.mustChangePassword) {
+          router.push(`/auth/change-password?email=${data.user.email}`);
+        } else {
+          router.push('/admin/dashboard');
+        }
       } else {
         setError(data.error || 'Invalid credentials');
       }

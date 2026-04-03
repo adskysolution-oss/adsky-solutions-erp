@@ -52,7 +52,13 @@ export async function POST(req) {
 
     return NextResponse.json({ 
       success: true, 
-      user: { id: user._id, name: user.name, email: user.email, role: user.role } 
+      user: { 
+        id: user._id, 
+        name: user.name, 
+        email: user.email, 
+        role: user.role,
+        mustChangePassword: user.mustChangePassword 
+      } 
     }, { headers });
 
   } catch (error) {

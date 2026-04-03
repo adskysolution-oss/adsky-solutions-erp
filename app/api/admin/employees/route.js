@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectToDatabase from '@/utils/db';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';
+import { sendOnboardingEmail } from '@/utils/email';
 
 // GET all internal employees
 export async function GET() {
@@ -23,7 +24,7 @@ export async function POST(req) {
   try {
     await connectToDatabase();
     const body = await req.json();
-    const { name, email, role, phone, password } = body;
+    const { name, email, role, phone, password, subBranch, category } = body;
 
     // Check if user exists
     const existing = await User.findOne({ email });
@@ -32,8 +33,18 @@ export async function POST(req) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const employee = await User.create({
       name, email, role, phone, password: hashedPassword,
+      subBranch, category,
+      mustChangePassword: true,
       status: 'active'
     });
+
+    // Send onboarding email asynchronously
+    try {
+      await sendOnboardingEmail({ name, email, password, role });
+    } catch (emailError) {
+      console.error('Failed to send onboarding email:', emailError);
+      // We still return success since the user was created
+    }
 
     return NextResponse.json({ success: true, data: employee });
   } catch (error) {

@@ -16,6 +16,9 @@ const UserSchema = new mongoose.Schema({
     enum: ['active', 'suspended', 'pending'],
     default: 'active'
   },
+  subBranch: { type: String }, // Branch location
+  category: { type: String }, // User category/role-type
+  mustChangePassword: { type: Boolean, default: true },
   profileImage: { type: String },
   
   // -- Employer Specific Fields --

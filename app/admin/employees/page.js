@@ -21,7 +21,14 @@ export default function AdminEmployees() {
   const [saving, setSaving] = useState(false);
 
   // Modal form state
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', role: 'support', password: '' });
+  const [formData, setFormData] = useState({ 
+    name: '', email: '', phone: '', role: 'support', 
+    subBranch: '', category: '', password: '' 
+  });
+
+  const [meta, setMeta] = useState({ branches: [], categories: [] });
+  const [showMetaSettings, setShowMetaSettings] = useState(false);
+  const [newMeta, setNewMeta] = useState({ type: 'branches', value: '' });
 
   async function loadEmployees() {
     setLoading(true);
@@ -41,19 +48,53 @@ export default function AdminEmployees() {
     setLoading(false);
   }
 
-  useEffect(() => { loadEmployees(); }, []);
+  async function loadMeta() {
+    try {
+      const res = await fetch('/api/admin/meta');
+      const data = await res.json();
+      if (res.ok) setMeta(data.data);
+    } catch (err) { console.error(err); }
+  }
+
+  useEffect(() => { 
+    loadEmployees(); 
+    loadMeta();
+  }, []);
 
   const handleOpenModal = (emp = null) => {
     if (emp) {
       setCurrentEmp(emp);
-      setFormData({ name: emp.name, email: emp.email, phone: emp.phone, role: emp.role, password: '' });
+      setFormData({ 
+        name: emp.name, 
+        email: emp.email, 
+        phone: emp.phone || '', 
+        role: emp.role, 
+        subBranch: emp.subBranch || '',
+        category: emp.category || '',
+        password: '' 
+      });
     } else {
       setCurrentEmp(null);
-      // Auto-generate password for new employee
       const autoPass = Math.random().toString(36).slice(-8);
-      setFormData({ name: '', email: '', phone: '', role: 'support', password: autoPass });
+      setFormData({ 
+        name: '', email: '', phone: '', role: 'support', 
+        subBranch: meta.branches[0] || '', 
+        category: meta.categories[0] || '', 
+        password: autoPass 
+      });
     }
     setShowModal(true);
+  };
+
+  const handleMetaAction = async (action, type, value) => {
+    try {
+      const res = await fetch('/api/admin/meta' + (action === 'delete' ? `?type=${type}&value=${value}` : ''), {
+        method: action === 'delete' ? 'DELETE' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: action === 'add' ? JSON.stringify({ type, value }) : undefined
+      });
+      if (res.ok) loadMeta();
+    } catch (err) { console.error(err); }
   };
 
   const handleSave = async (e) => {
@@ -138,6 +179,9 @@ export default function AdminEmployees() {
                <option value="All">Status: All</option>
                {statusList.map(s => <option key={s} value={s}>{s.toUpperCase()}</option>)}
             </select>
+            <button onClick={() => setShowMetaSettings(!showMetaSettings)} style={{ padding: '0 20px', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '16px', color: '#60a5fa', fontSize: '13px', fontWeight: '800' }}>
+               Manage Lists
+            </button>
             <select value={filters.dateRange} onChange={e => setFilters({...filters, dateRange: e.target.value})} style={{ padding: '0 20px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '16px', color: '#94a3b8', fontSize: '14px', outline: 'none' }}>
                <option value="All">Today</option>
                <option value="Week">This Week</option>
@@ -145,6 +189,41 @@ export default function AdminEmployees() {
             </select>
          </div>
       </div>
+
+      {showMetaSettings && (
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '24px', marginBottom: '32px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+            {['branches', 'categories'].map(type => (
+              <div key={type}>
+                <h4 style={{ color: 'white', fontSize: '14px', fontWeight: '800', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Manage {type}</h4>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                  <input 
+                    type="text" 
+                    placeholder={`Add new ${type}...`} 
+                    value={newMeta.type === type ? newMeta.value : ''} 
+                    onChange={e => setNewMeta({ type, value: e.target.value })}
+                    style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '10px 14px', color: 'white' }}
+                  />
+                  <button 
+                    onClick={() => { handleMetaAction('add', type, newMeta.value); setNewMeta({ type, value: '' }); }}
+                    style={{ padding: '10px 20px', background: '#3b82f6', border: 'none', borderRadius: '12px', color: 'white', fontWeight: '700' }}
+                  >
+                    Add
+                  </button>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {meta[type].map(val => (
+                    <div key={val} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', padding: '6px 12px', borderRadius: '10px', fontSize: '13px', color: '#94a3b8' }}>
+                      {val}
+                      <button onClick={() => handleMetaAction('delete', type, val)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: 0 }}><X size={14} /></button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}><Loader2 size={40} className="animate-spin text-blue-500" /></div>
@@ -225,15 +304,38 @@ export default function AdminEmployees() {
                           {roles.map(r => <option key={r} value={r}>{r.toUpperCase()}</option>)}
                        </select>
                     </div>
-                    {!currentEmp && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                         <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b' }}>AUTO-PASSWORD</label>
-                         <div style={{ background: 'rgba(59,130,246,0.1)', border: '1px dashed rgba(59,130,246,0.3)', borderRadius: '14px', padding: '14px', color: '#60a5fa', fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Key size={16} /> {formData.password}
-                         </div>
-                      </div>
-                    )}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                       <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b' }}>CONTACT NO</label>
+                       <input required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '14px', color: 'white', fontSize: '14px', outline: 'none' }} />
+                    </div>
                  </div>
+
+                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                       <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b' }}>SUB-BRANCH LOCATION</label>
+                       <select value={formData.subBranch} onChange={e => setFormData({...formData, subBranch: e.target.value})} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '14px', color: 'white', fontSize: '14px', outline: 'none' }}>
+                          <option value="">Select Branch</option>
+                          {meta.branches.map(b => <option key={b} value={b}>{b}</option>)}
+                       </select>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                       <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b' }}>MEMBER CATEGORY</label>
+                       <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '14px', color: 'white', fontSize: '14px', outline: 'none' }}>
+                          <option value="">Select Category</option>
+                          {meta.categories.map(c => <option key={c} value={c}>{c}</option>)}
+                       </select>
+                    </div>
+                 </div>
+
+                 {!currentEmp && (
+                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b' }}>AUTO-GENERATED PASSWORD</label>
+                      <div style={{ background: 'rgba(59,130,246,0.1)', border: '1px dashed rgba(59,130,246,0.3)', borderRadius: '14px', padding: '14px', color: '#60a5fa', fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                         <Key size={16} /> {formData.password}
+                      </div>
+                      <p style={{ fontSize: '11px', color: '#475569', marginTop: '2px' }}>This credencials will be sent to the member's email automatically.</p>
+                   </div>
+                 )}
                  <button type="submit" disabled={saving} style={{ marginTop: '20px', padding: '18px', background: 'linear-gradient(135deg, #3b82f6, #6366f1)', border: 'none', borderRadius: '18px', color: 'white', fontSize: '15px', fontWeight: '900', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
                     {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
                     {saving ? 'Processing...' : currentEmp ? 'Update Permissions' : 'Onboard Member'}
