@@ -6,51 +6,14 @@ import Footer from '@/components/Footer';
 import Hero from '@/components/Hero';
 import Services from '@/components/Services';
 import SectionRenderer from '@/components/SectionRenderer';
-import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, CheckCircle, Zap, Users, Globe } from 'lucide-react';
+import { CheckCircle, Zap, Users, Globe } from 'lucide-react';
 
 // Hardcoded fallback — always visible even if DB is empty
 function FallbackHome() {
   return (
     <>
       <Hero />
-
-      {/* Strategy Section */}
-      <section className="py-32 px-6 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div className="text-slate-900">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-extrabold uppercase tracking-[0.2em] mb-8 border border-blue-100 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-              Strategic Technical Advisory
-            </div>
-            <h2 className="text-3xl sm:text-5xl md:text-7xl font-black leading-[1.1] mb-8 tracking-tighter">
-              Fuel Your <br /><span className="text-blue-600 italic">Future</span> <br />With Expert Strategy.
-            </h2>
-            <p className="text-xl text-slate-600 mb-12 max-w-xl leading-relaxed font-medium">
-              Website & App Strategy Consultation, CRM/HRMS Setup, and Business Process Automation guidance.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-              <Link className="group flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-[#020617] text-white font-bold hover:shadow-2xl hover:shadow-blue-500/20 transition-all transform hover:-translate-y-1" href="/register">
-                Book 1 Hour – ₹999 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link className="px-10 py-5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-bold hover:bg-slate-100 transition-all text-center" href="/services">
-                Our Services
-              </Link>
-            </div>
-          </div>
-          <div className="relative">
-            <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl border-8 border-slate-50">
-              <Image alt="Strategy" fill className="object-cover" src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672&auto=format&fit=crop" />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent"></div>
-              <div className="absolute bottom-10 left-10 right-10 p-8 rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
-                <p className="text-3xl font-black text-white italic mb-1">99% Success Rate</p>
-                <p className="text-white/70 text-sm font-bold uppercase tracking-widest leading-none">Digital Transformation Excellence</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Stats Banner */}
       <section className="py-24 px-6 border-y border-white/5 relative bg-[#020617]/50 backdrop-blur-3xl overflow-hidden">
