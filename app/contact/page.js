@@ -1,20 +1,3 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { MapPin, Phone, Mail, Send } from 'lucide-react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-
-export const metadata = {
-  title: 'AdSky Solution - Contact',
-};
-
-export default function ContactPage() {
-  const [config, setConfig] = useState(null);
-
-  useEffect(() => {
-    fetch('/api/admin/cms/config')
-      .then(res => res.json())
-      .then(data => { if (!data.error) setConfig(data); });
   }, []);
 
   return (
