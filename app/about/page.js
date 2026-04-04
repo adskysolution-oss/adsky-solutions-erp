@@ -14,10 +14,10 @@ export default function AboutPage() {
         <section className="py-24 px-6 relative">
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
           <div className="max-w-7xl mx-auto relative z-10 text-center">
-            <h1 className="text-6xl md:text-9xl font-black mb-10 tracking-tighter italic bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-500 to-white/40 leading-none">
+            <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter italic bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-500 to-white/40 leading-[0.9]">
               Engineering <br /> The Future.
             </h1>
-            <p className="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto font-medium italic animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto font-medium italic animate-in fade-in slide-in-from-bottom-8 duration-700">
               AdSky Solution is a professional consulting firm specializing in IT strategy, software development, and specialized workforce solutions.
             </p>
           </div>
@@ -25,23 +25,23 @@ export default function AboutPage() {
 
         {/* --- VISION & MISSION --- */}
         <section className="py-24 px-6">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20">
-            <div className="space-y-12 p-12 rounded-[5rem] bg-white/[0.03] border border-white/10 backdrop-blur-3xl shadow-2xl group hover:bg-blue-600/10 transition-all duration-700">
-              <div className="w-20 h-20 rounded-3xl bg-blue-600/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16">
+            <div className="flex flex-col items-center text-center space-y-8 p-10 md:p-14 rounded-[3rem] bg-white/[0.03] border border-white/10 backdrop-blur-3xl shadow-2xl group hover:bg-blue-600/10 transition-all duration-700">
+              <div className="w-20 h-20 rounded-3xl bg-blue-600/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform shadow-2xl">
                 <Target size={40} />
               </div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tighter italic">Our Mission</h2>
-              <p className="text-xl text-slate-400 font-medium leading-relaxed italic">
+              <h2 className="text-4xl md:text-5xl font-black tracking-tighter italic text-white">Our Mission</h2>
+              <p className="text-lg md:text-xl text-slate-400 font-medium leading-relaxed italic max-w-lg">
                 To simplify business operations through expert consulting and strategic technical integration, ensuring growth and efficiency for our partners.
               </p>
             </div>
 
-            <div className="space-y-12 p-12 rounded-[5rem] bg-white/[0.03] border border-white/10 backdrop-blur-3xl shadow-2xl group hover:bg-indigo-600/10 transition-all duration-700">
-              <div className="w-20 h-20 rounded-3xl bg-indigo-600/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
+            <div className="flex flex-col items-center text-center space-y-8 p-10 md:p-14 rounded-[3rem] bg-white/[0.03] border border-white/10 backdrop-blur-3xl shadow-2xl group hover:bg-indigo-600/10 transition-all duration-700">
+              <div className="w-20 h-20 rounded-3xl bg-indigo-600/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform shadow-2xl">
                 <Rocket size={40} />
               </div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tighter italic">Our Vision</h2>
-              <p className="text-xl text-slate-400 font-medium leading-relaxed italic">
+              <h2 className="text-4xl md:text-5xl font-black tracking-tighter italic text-white">Our Vision</h2>
+              <p className="text-lg md:text-xl text-slate-400 font-medium leading-relaxed italic max-w-lg">
                 To become the leading standard for workforce consulting and business process advisory, bridging the gap between talent and high-growth opportunities.
               </p>
             </div>
