@@ -58,9 +58,7 @@ export default function Navbar() {
                     {link.name}
                   </Link>
                 ))}
-                <Link href="/login" className="px-6 py-2 rounded-full bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-all">
-                  Portal Login
-                </Link>
+
               </div>
 
               {/* Mobile Toggle */}
@@ -85,9 +83,7 @@ export default function Navbar() {
                     {link.name}
                   </Link>
                 ))}
-                <Link href="/login" className="px-6 py-4 rounded-2xl bg-blue-600 text-white text-center font-black uppercase tracking-widest">
-                  Portal Login
-                </Link>
+
               </div>
             )}
           </nav>
