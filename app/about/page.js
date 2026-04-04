@@ -17,7 +17,7 @@ export default function AboutPage() {
         <section className="py-24 px-6 relative">
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none"></div>
           <div className="max-w-7xl mx-auto relative z-10 text-center">
-            <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter italic bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-500 to-white/40 leading-[0.9]">
+            <h1 className="text-6xl md:text-7xl lg:text-[10rem] font-black mb-8 tracking-tighter italic bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-500 to-white/40 leading-[0.8] drop-shadow-2xl">
               Engineering <br /> The Future.
             </h1>
             <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto font-medium italic animate-in fade-in slide-in-from-bottom-8 duration-700">
