@@ -73,14 +73,14 @@ export default function ServicesPage() {
       
       <main className="flex-grow pt-32">
         <section className="py-24 px-6 relative overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-blue-600/10 rounded-full blur-[150px] pointer-events-none"></div>
+          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[500px] bg-blue-600/5 rounded-full blur-[160px] pointer-events-none"></div>
           
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="text-center mb-24">
-              <h1 className="text-6xl md:text-9xl font-black mb-10 tracking-tighter italic bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-500 to-white/40 leading-none">
+              <h1 className="text-6xl md:text-8xl font-black mb-8 tracking-tighter italic bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-500 to-white/40 leading-[0.9]">
                 Our Services.
               </h1>
-              <p className="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto font-medium italic">
+              <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto font-medium italic">
                 From specialized workforce consulting to global IT strategy, we provide the architecture for high-growth businesses.
               </p>
             </div>

@@ -27,7 +27,7 @@ export default function AboutPage() {
         <section className="py-24 px-6">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20">
             {/* --- RE-DESIGNED MISSION --- */}
-            <div className="relative group overflow-hidden flex flex-col items-center text-center space-y-10 p-12 md:p-16 rounded-[4rem] bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 backdrop-blur-2xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] transition-all duration-1000 hover:border-blue-500/30">
+            <div className="relative group overflow-hidden flex flex-col items-center text-center space-y-8 p-12 md:p-14 rounded-[3.5rem] bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/15 backdrop-blur-2xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] transition-all duration-1000 hover:border-blue-500/40">
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/20 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
               
               <div className="relative">
@@ -46,7 +46,7 @@ export default function AboutPage() {
             </div>
 
             {/* --- RE-DESIGNED VISION --- */}
-            <div className="relative group overflow-hidden flex flex-col items-center text-center space-y-10 p-12 md:p-16 rounded-[4rem] bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 backdrop-blur-2xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] transition-all duration-1000 hover:border-indigo-500/30">
+            <div className="relative group overflow-hidden flex flex-col items-center text-center space-y-8 p-12 md:p-14 rounded-[3.5rem] bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/15 backdrop-blur-2xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] transition-all duration-1000 hover:border-indigo-500/40">
               <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/20 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
               
               <div className="relative">
