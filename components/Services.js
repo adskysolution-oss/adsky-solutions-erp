@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Briefcase, Zap, Users, Globe, ArrowRight } from 'lucide-react';
 
 export default function Services() {
-  const [data, setData] = useState({
+  const [data] = useState({
     title: 'Our Offerings',
     subtitle: 'Cognitive, Desk-based, Tech-centric',
     items: [
@@ -31,25 +31,7 @@ export default function Services() {
   });
 
   useEffect(() => {
-    async function fetchServices() {
-      try {
-        const res = await fetch('/api/admin/cms?section=services');
-        const json = await res.json();
-        if (json && json.items && json.items.length > 0) {
-          setData({
-            title: json.title || 'Our Offerings',
-            subtitle: json.subtitle || 'Cognitive, Desk-based, Tech-centric',
-            items: json.items.map(item => ({
-                ...item,
-                icon: Briefcase // Defaulting icon for now
-            }))
-          });
-        }
-      } catch (err) {
-        console.error('Failed to fetch services:', err);
-      }
-    }
-    fetchServices();
+    // Static version: No fetch required
   }, []);
 
   return (

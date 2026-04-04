@@ -8,44 +8,24 @@ import { Menu, X } from 'lucide-react';
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [config, setConfig] = useState(null);
-  const [navLinks, setNavLinks] = useState([
+  const navLinks = [
     { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
+    { name: 'About Us', href: '/about' },
     { name: 'Services', href: '/services' },
     { name: 'Pricing', href: '/pricing' },
     { name: 'Projects', href: '/projects' },
-    { name: 'Gallery', href: '/gallery' },
-    { name: 'Careers', href: '/careers' },
-  ]);
+    { name: 'Gallery', href: '/gallery' }
+  ];
+
+  const config = {
+    siteName: 'AdSky Solution',
+    siteTitle: 'The 3-Panel Enterprise ERP',
+    logoRoot: '/logo(2).jpeg'
+  };
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
-    
-    // Fetch dynamic config and pages
-    const fetchNavItems = async () => {
-      try {
-        const [configRes, pagesRes] = await Promise.all([
-          fetch('/api/admin/cms/config'),
-          fetch('/api/admin/cms/pages')
-        ]);
-        const configData = await configRes.json();
-        const pagesData = await pagesRes.json();
-        
-        if (configData && !configData.error) setConfig(configData);
-        if (Array.isArray(pagesData)) {
-          const dynamicLinks = pagesData
-            .filter(p => p.showInNav && p.isActive)
-            .map(p => ({ name: p.title, href: p.slug === 'home' || p.slug === '/' ? '/' : `/${p.slug}` }));
-          if (dynamicLinks.length > 0) setNavLinks(dynamicLinks);
-        }
-      } catch (err) {
-        console.error('Nav fetch error:', err);
-      }
-    };
-
-    fetchNavItems();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

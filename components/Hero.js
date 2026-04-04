@@ -5,29 +5,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Hero() {
-  const [data, setData] = useState({
+  const [data] = useState({
     title: 'Integrated IT Solutions & Workforce Consulting',
     description: 'Delivering expert IT consulting, software development, and professional staffing solutions for growing businesses.',
     subtitle: 'Strategic Technical Advisory'
   });
 
   useEffect(() => {
-    async function fetchHero() {
-      try {
-        const res = await fetch('/api/admin/cms?section=hero');
-        const json = await res.json();
-        if (json && json.title) {
-          setData({
-            title: json.title,
-            description: json.description,
-            subtitle: json.subtitle || 'Strategic Technical Advisory'
-          });
-        }
-      } catch (err) {
-        console.error('Failed to fetch hero content:', err);
-      }
-    }
-    fetchHero();
+    // Static version: No fetch required
   }, []);
 
   return (

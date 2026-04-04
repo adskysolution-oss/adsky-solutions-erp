@@ -1,23 +1,27 @@
 const mongoose = require('mongoose');
 
-const uri = "mongodb+srv://adskysolution_db_user:Eg7FMpHSXxVk6dOp@cluster0.vyzf0e9.mongodb.net/adsky?appName=Cluster0";
+const MONGODB_URI = "mongodb://adskysolution_db_user:Eg7FMpHSXxVk6dOp@ac-tgi5uyr-shard-00-00.vyzf0e9.mongodb.net:27017,ac-tgi5uyr-shard-00-01.vyzf0e9.mongodb.net:27017,ac-tgi5uyr-shard-00-02.vyzf0e9.mongodb.net:27017/adsky?replicaSet=atlas-5zgvpl-shard-0&ssl=true&authSource=admin";
 
-console.log("--- MongoDB Connection Test ---");
-console.log("URI:", uri.replace(/:([^@]+)@/, ":****@")); // Mask password
-
-mongoose.connect(uri, {
-  serverSelectionTimeoutMS: 5000,
-})
-.then(() => {
-  console.log("✅ SUCCESS: Connected to MongoDB!");
-  process.exit(0);
-})
-.catch(err => {
-  console.log("❌ FAILURE: Connection failed.");
-  console.log("Error Name:", err.name);
-  console.log("Error Message:", err.message);
-  if (err.reason) {
-    console.log("Error Reason:", JSON.stringify(err.reason, null, 2));
+async function test() {
+  console.log("Connecting to MongoDB...");
+  try {
+    await mongoose.connect(MONGODB_URI, { 
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 10000 
+    });
+    console.log("Connected successfully!");
+    
+    // Check Content collection
+    const Content = mongoose.models.Content || mongoose.model('Content', new mongoose.Schema({ sectionId: String, sectionType: String }));
+    const content = await Content.find({});
+    console.log("Content count:", content.length);
+    console.log("Content samples:", JSON.stringify(content.slice(0, 2), null, 2));
+    
+    process.exit(0);
+  } catch (err) {
+    console.error("Connection failed:", err.message);
+    process.exit(1);
   }
-  process.exit(1);
-});
+}
+
+test();

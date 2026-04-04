@@ -6,21 +6,19 @@ import Link from 'next/link';
 import { Facebook, Instagram, Twitter, Linkedin, MapPin, Phone, Mail } from 'lucide-react';
 
 export default function Footer() {
-  const [config, setConfig] = React.useState(null);
-  const currentYear = new Date().getFullYear();
+  const config = {
+    siteName: 'AdSky Solution',
+    siteTitle: 'The 3-Panel Enterprise ERP',
+    siteDescription: 'Empowering businesses and individuals through expert consulting, skill development, and strategic management solutions.',
+    logoRoot: '/logo(2).jpeg',
+    contact: {
+      address: 'AD Sky Solution, 126 Satyam Enclave Sahibabad, \n Ghaziabad UTTAR PRADESH 201003',
+      phone: '+91 80621 82243',
+      email: 'support@adskysolution.com'
+    }
+  };
 
-  React.useEffect(() => {
-    const fetchConfig = async () => {
-      try {
-        const res = await fetch('/api/admin/cms/config');
-        const data = await res.json();
-        if (data && !data.error) setConfig(data);
-      } catch (err) {
-        console.error('Footer fetch error:', err);
-      }
-    };
-    fetchConfig();
-  }, []);
+  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="pt-24 pb-12 px-6 bg-[#020617] border-t border-green-400/10">
