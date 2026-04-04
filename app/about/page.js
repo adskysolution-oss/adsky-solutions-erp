@@ -111,28 +111,36 @@ export default function AboutPage() {
 
 function ValueItem({ icon: Icon, title, desc }) {
   return (
-    <div className="space-y-6 group p-8 rounded-[3rem] hover:bg-white/5 transition-all duration-500">
-      <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-2xl">
-        <Icon size={28} />
+    <div className="space-y-8 group p-10 rounded-[3rem] bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] hover:border-blue-500/30 transition-all duration-700 shadow-2xl relative overflow-hidden">
+      <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-600/10 rounded-full blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      
+      <div className="relative">
+        <div className="absolute inset-0 bg-blue-600/30 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 flex items-center justify-center text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-xl">
+          <Icon size={28} strokeWidth={2.5} />
+        </div>
       </div>
-      <h4 className="text-3xl font-black italic tracking-tight">{title}</h4>
-      <p className="text-slate-400 font-medium leading-relaxed">{desc}</p>
+      
+      <div className="space-y-4">
+        <h4 className="text-3xl font-black italic tracking-tight text-white">{title}</h4>
+        <p className="text-slate-400 font-semibold leading-relaxed italic">{desc}</p>
+      </div>
     </div>
   );
 }
 
 function BigStat({ value, label, color }) {
-  const colors = {
-    blue: 'text-blue-600',
-    indigo: 'text-indigo-600',
-    emerald: 'text-emerald-600'
+  const gradients = {
+    blue: 'from-blue-400 to-indigo-600',
+    indigo: 'from-indigo-400 to-purple-600',
+    emerald: 'from-emerald-400 to-teal-600'
   }
   return (
-    <div className="text-center group">
-      <h5 className={`text-6xl md:text-9xl font-black italic tracking-tighter ${colors[color]} group-hover:scale-110 transition-transform duration-700 leading-none`}>
+    <div className="text-center group p-8">
+      <h5 className={`text-6xl md:text-9xl font-black italic tracking-tighter bg-clip-text text-transparent bg-gradient-to-br ${gradients[color]} group-hover:scale-110 transition-transform duration-700 leading-none drop-shadow-2xl`}>
         {value}
       </h5>
-      <p className="text-slate-500 font-black uppercase tracking-[0.3em] text-sm mt-4">{label}</p>
+      <p className="text-slate-400 font-black uppercase tracking-[0.4em] text-xs mt-6 opacity-60 group-hover:opacity-100 transition-opacity italic">{label}</p>
     </div>
   );
 }
