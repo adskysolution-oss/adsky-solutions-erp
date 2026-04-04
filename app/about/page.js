@@ -25,25 +25,43 @@ export default function AboutPage() {
 
         {/* --- VISION & MISSION --- */}
         <section className="py-24 px-6">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16">
-            <div className="flex flex-col items-center text-center space-y-8 p-10 md:p-14 rounded-[3rem] bg-white/[0.03] border border-white/10 backdrop-blur-3xl shadow-2xl group hover:bg-blue-600/10 transition-all duration-700">
-              <div className="w-20 h-20 rounded-3xl bg-blue-600/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform shadow-2xl">
-                <Target size={40} />
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20">
+            {/* --- RE-DESIGNED MISSION --- */}
+            <div className="relative group overflow-hidden flex flex-col items-center text-center space-y-10 p-12 md:p-16 rounded-[4rem] bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 backdrop-blur-2xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] transition-all duration-1000 hover:border-blue-500/30">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/20 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              
+              <div className="relative">
+                <div className="absolute inset-0 bg-blue-600/40 rounded-[2rem] blur-2xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                <div className="relative w-24 h-24 rounded-[2rem] bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-2xl transform group-hover:rotate-6 transition-transform duration-500 border-t border-white/30">
+                  <Target size={44} strokeWidth={2.5} />
+                </div>
               </div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tighter italic text-white">Our Mission</h2>
-              <p className="text-lg md:text-xl text-slate-400 font-medium leading-relaxed italic max-w-lg">
-                To simplify business operations through expert consulting and strategic technical integration, ensuring growth and efficiency for our partners.
-              </p>
+
+              <div className="space-y-6">
+                <h2 className="text-4xl md:text-6xl font-black tracking-tighter italic text-white bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 leading-none">Our Mission</h2>
+                <p className="text-lg md:text-xl text-slate-400 font-semibold leading-relaxed italic max-w-lg">
+                  To simplify business operations through expert consulting and strategic technical integration, ensuring growth and efficiency for our partners.
+                </p>
+              </div>
             </div>
 
-            <div className="flex flex-col items-center text-center space-y-8 p-10 md:p-14 rounded-[3rem] bg-white/[0.03] border border-white/10 backdrop-blur-3xl shadow-2xl group hover:bg-indigo-600/10 transition-all duration-700">
-              <div className="w-20 h-20 rounded-3xl bg-indigo-600/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform shadow-2xl">
-                <Rocket size={40} />
+            {/* --- RE-DESIGNED VISION --- */}
+            <div className="relative group overflow-hidden flex flex-col items-center text-center space-y-10 p-12 md:p-16 rounded-[4rem] bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 backdrop-blur-2xl shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] transition-all duration-1000 hover:border-indigo-500/30">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/20 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              
+              <div className="relative">
+                <div className="absolute inset-0 bg-indigo-600/40 rounded-[2rem] blur-2xl opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                <div className="relative w-24 h-24 rounded-[2rem] bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-2xl transform group-hover:-rotate-6 transition-transform duration-500 border-t border-white/30">
+                  <Rocket size={44} strokeWidth={2.5} />
+                </div>
               </div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tighter italic text-white">Our Vision</h2>
-              <p className="text-lg md:text-xl text-slate-400 font-medium leading-relaxed italic max-w-lg">
-                To become the leading standard for workforce consulting and business process advisory, bridging the gap between talent and high-growth opportunities.
-              </p>
+
+              <div className="space-y-6">
+                <h2 className="text-4xl md:text-6xl font-black tracking-tighter italic text-white bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 leading-none">Our Vision</h2>
+                <p className="text-lg md:text-xl text-slate-400 font-semibold leading-relaxed italic max-w-lg">
+                  To become the leading standard for workforce consulting and business process advisory, bridging the gap between talent and high-growth opportunities.
+                </p>
+              </div>
             </div>
           </div>
         </section>
