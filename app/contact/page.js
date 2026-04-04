@@ -18,7 +18,7 @@ export default function ContactPage() {
                Get In Touch.
             </h1>
             <p className="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto font-medium italic">
-               Connect with our lead consultants for high-fidelity enterprise architecture and business process roadmaps.
+               Connect with our expert consultants for professional IT strategy and business process roadmaps.
             </p>
           </div>
 
@@ -62,7 +62,7 @@ export default function ContactPage() {
                     <Field label="Full Identity" placeholder="Aditya Bhardwaj" />
                     <Field label="Direct Email" placeholder="aditya@example.com" />
                   </div>
-                  <Field label="Project Intent" placeholder="High-Fidelity ERP Integration" />
+                  <Field label="Service Interest" placeholder="Software Development / Consulting" />
                   <div className="space-y-4">
                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] italic">Full Brief Description</label>
                      <textarea className="w-full px-8 py-6 rounded-[2.5rem] bg-slate-50 border border-slate-200 text-black font-medium focus:border-blue-500 focus:bg-white outline-none transition-all min-h-[200px]" placeholder="Tell us about your roadmap..."></textarea>

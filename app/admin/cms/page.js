@@ -67,7 +67,7 @@ export default function WebsiteCMS() {
             <span className="px-3 py-1 rounded-full bg-blue-600/10 text-blue-400 text-[10px] font-black uppercase tracking-widest border border-blue-600/20">V2.0 ALPHA</span>
             <h1 className="text-4xl font-black text-white tracking-tighter">Website CMS</h1>
           </div>
-          <p className="text-slate-500 text-sm font-medium tracking-tight">AdSky Enterprise ERP • Content & Identity Management Hub</p>
+          <p className="text-slate-500 text-sm font-medium tracking-tight">AdSky Solution CMS • Content & Identity Management Hub</p>
         </div>
         <div className="flex items-center gap-4">
            <a href="/" target="_blank" className="px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-xs uppercase tracking-widest hover:bg-white/10 transition-all flex items-center gap-3">
