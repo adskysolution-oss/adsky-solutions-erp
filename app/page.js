@@ -256,28 +256,31 @@ export default function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-[#020617] via-[#020617]/80 to-transparent"></div>
               </div>
 
-              <div className="w-full lg:w-1/2 relative z-10 flex flex-col items-center">
-                {/* Circular Logo Animation Wrapper */}
-                <div className="relative mb-14 flex items-center justify-center">
-                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="absolute w-[340px] h-[340px] rounded-full border border-white/5"></motion.div>
-                  <motion.div animate={{ rotate: -360 }} transition={{ duration: 15, repeat: Infinity, ease: "linear" }} className="absolute w-[300px] h-[300px] rounded-full border border-white/8"></motion.div>
-                  <div className="absolute w-[260px] h-[260px] bg-white/10 rounded-full blur-[60px]"></div>
-                  <div className="relative w-[240px] h-[240px] rounded-full bg-white flex items-center justify-center shadow-2xl border-4 border-white/30">
-                    <div className="flex items-center gap-4 text-slate-900">
-                      <Image src="/logo(2).jpeg" width={80} height={80} alt="Logo" className="rounded-xl italic" />
-                      <div className="flex flex-col leading-none">
-                        <span className="font-bold tracking-tight italic text-3xl">AD SKY</span>
-                        <span className="uppercase font-normal tracking-[0.25em] text-xs">Solution</span>
-                      </div>
+              <div className="w-full lg:w-1/2 relative z-10 flex flex-col items-center lg:items-start lg:pr-12">
+                {/* Refined Logo Visual */}
+                <div className="relative mb-14 flex items-center justify-center lg:justify-start w-full">
+                  <div className="absolute w-[280px] h-[280px] bg-blue-600/20 rounded-full blur-[80px]"></div>
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    className="relative px-10 py-6 rounded-full bg-white flex items-center gap-6 shadow-2xl border-4 border-white/10"
+                  >
+                    <div className="relative w-16 h-16 rounded-2xl overflow-hidden shadow-lg">
+                      <Image src="/logo(2).jpeg" fill alt="Logo" className="object-cover" />
                     </div>
-                  </div>
+                    <div className="flex flex-col leading-tight">
+                      <span className="text-2xl font-black text-slate-900 italic tracking-tighter">AD SKY</span>
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">Solution</span>
+                    </div>
+                  </motion.div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4 w-full max-w-[360px]">
-                  <WhyCard icon={Zap} title="Fast Tracking" desc="Accelerated career growth" color="blue" />
-                  <WhyCard icon={Award} title="Certified Skills" desc="Industry recognized" color="green" />
-                  <WhyCard icon={Users} title="Community" desc="5M+ Peers" color="purple" />
-                  <WhyCard icon={Globe} title="Global Opps" desc="Remote worldwide" color="cyan" />
+                {/* Feature Grid */}
+                <div className="grid grid-cols-2 gap-4 w-full max-w-[420px]">
+                  <WhyCard icon={Zap} title="Fast Tracking" desc="Growth Roadmap" color="blue" />
+                  <WhyCard icon={Award} title="Certified" desc="Official Badge" color="green" />
+                  <WhyCard icon={Users} title="Community" desc="Global Network" color="purple" />
+                  <WhyCard icon={Globe} title="Remote" desc="Work Anywhere" color="cyan" />
                 </div>
               </div>
 
