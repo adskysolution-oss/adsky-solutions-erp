@@ -10,7 +10,7 @@ export async function GET(req) {
     const section = searchParams.get('section');
 
     if (section) {
-      let content = await Content.findOne({ section });
+      let content = await Content.findOne({ sectionId: section });
       
       // Auto-seed section if it doesn't exist
       if (!content) {
@@ -45,8 +45,8 @@ export async function POST(req) {
     const { section, ...updateData } = body;
 
     const content = await Content.findOneAndUpdate(
-      { section },
-      { ...updateData, 'metadata.lastUpdatedBy': 'admin' },
+      { sectionId: section },
+      { ...updateData, sectionId: section, 'metadata.lastUpdatedBy': 'admin' },
       { new: true, upsert: true }
     );
 
