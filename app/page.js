@@ -1,125 +1,376 @@
 'use client';
-import React from 'react';
+
+import React, { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Sparkles, 
   ArrowRight, 
-  Target, 
-  Rocket, 
-  Zap, 
+  MapPin, 
+  Phone, 
+  Mail, 
+  Menu, 
+  X, 
   CheckCircle, 
   Users, 
   Globe, 
-  ShieldCheck, 
-  ChartColumnIncreasing,
-  Cpu,
-  BrainCircuit,
-  MessageSquare
+  Zap, 
+  Briefcase, 
+  Search,
+  MessageSquare,
+  ShieldCheck,
+  Rocket,
+  Sparkles,
+  ClipboardCheck,
+  TrendingUp,
+  Award
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export default function HomePage() {
+  const [activeTab, setActiveTab] = useState('white');
+
   return (
     <div className="min-h-screen flex flex-col bg-[#020617] text-white">
       <Navbar />
       
-      <main className="flex-grow">
+      <main className="flex-grow pt-24">
         {/* --- HERO SECTION --- */}
-        <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden">
-          {/* Animated Background Gradients */}
-          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] animate-pulse pointer-events-none"></div>
-          <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[120px] animate-pulse pointer-events-none delay-1000"></div>
+        <section className="relative min-h-[90vh] flex items-center pt-24 pb-12 px-6 overflow-hidden bg-[#020617]">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[100px] pointer-events-none"></div>
           
-          <div className="max-w-7xl mx-auto relative z-10 text-center">
-            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <Sparkles size={14} className="animate-spin-slow" /> THE 3-PANEL ENTERPRISE ERP
-            </span>
-            
-            <h1 className="text-6xl md:text-[7rem] font-black leading-[0.95] tracking-tighter mb-10 italic animate-in fade-in slide-in-from-bottom-8 duration-1000">
-              Integrated IT Solutions <br className="hidden md:block" /> 
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-indigo-400 to-white/40">& Workforce Consulting</span>
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto mb-16 font-medium italic animate-in fade-in slide-in-from-bottom-12 duration-1000">
-              Empowering global enterprises with automated job lifecycle management, high-fidelity CRM systems, and precision-engineered business process solutions.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-8 animate-in fade-in slide-in-from-bottom-16 duration-1000">
-              <button className="px-10 py-6 rounded-[2.5rem] bg-white text-black font-black text-lg hover:bg-blue-400 hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-4 group uppercase tracking-widest italic">
-                Get Started <ArrowRight className="group-hover:translate-x-2 transition-transform" />
-              </button>
-              <button className="px-10 py-6 rounded-[2.5rem] bg-white/5 border border-white/10 text-white font-black text-lg hover:bg-white/10 hover:border-white/20 transition-all flex items-center gap-4 group uppercase tracking-widest italic">
-                View Solutions
-              </button>
+          <div className="max-w-7xl mx-auto relative z-10 w-full">
+            <div className="text-center mb-16">
+              <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="text-4xl sm:text-6xl md:text-8xl font-bold mb-8 text-white leading-[1.1] tracking-tighter italic"
+              >
+                Integrated IT Solutions & <br className="hidden md:block" /> Workforce Consulting
+              </motion.h2>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="text-slate-400 text-base sm:text-lg md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed font-light"
+              >
+                Delivering expert IT consulting, software development, and professional staffing solutions for growing businesses.
+              </motion.p>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6"
+              >
+                <Link href="/pricing" className="px-8 sm:px-12 py-4 sm:py-5 rounded-2xl bg-white text-black font-bold hover:shadow-2xl hover:shadow-white/20 transition-all transform hover:-translate-y-1 text-sm sm:text-base italic">
+                  Book IT Consultation
+                </Link>
+                <Link href="/services" className="px-8 sm:px-12 py-4 sm:py-5 rounded-2xl bg-transparent border border-white/20 text-white font-bold hover:bg-white/5 transition-all text-sm sm:text-base italic">
+                  Explore Our Services
+                </Link>
+              </motion.div>
             </div>
-          </div>
-        </section>
 
-        {/* --- STATS STRIP --- */}
-        <section className="py-10 border-y border-white/5 bg-white/[0.02] backdrop-blur-3xl overflow-hidden relative">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-20">
-              <Stat icon={CheckCircle} value="10k+" label="Tasks Completed" />
-              <Stat icon={Users} value="500+" label="Strong Workforce" />
-              <Stat icon={Globe} value="50+" label="Cities Covered" />
-              <Stat icon={Zap} value="1000+" label="Pin Codes" />
-            </div>
-          </div>
-        </section>
+            {/* Manpower Expert Section Visual */}
+            <div className="relative h-[650px] mt-12 hidden lg:block">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1, delay: 0.6 }}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[520px] z-20"
+              >
+                <div className="relative w-full h-full group">
+                  <div className="absolute inset-x-0 bottom-0 top-1/4 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+                  <Image 
+                    src="/men.png" 
+                    alt="Manpower Expert" 
+                    fill 
+                    className="object-contain relative z-10 drop-shadow-[0_20px_50px_rgba(0,0,0,0.4)] brightness-110 contrast-110" 
+                  />
+                </div>
+              </motion.div>
 
-        {/* --- FEATURE HIGHLIGHT --- */}
-        <section className="py-32 px-6 relative overflow-hidden">
-           <div className="max-w-7xl mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-                 <div className="space-y-12 animate-in fade-in slide-in-from-left-8 duration-1000">
-                    <div className="p-1 px-5 bg-white/5 text-blue-400 text-[10px] font-black uppercase tracking-[0.4em] inline-block rounded-full border border-white/10 shadow-2xl">
-                       Our Ecosystem
-                    </div>
-                    <h2 className="text-5xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter italic">
-                       Enterprise CRM <br /> 
-                       <span className="text-white/40">Meets Scalable Consulting.</span>
-                    </h2>
-                    <p className="text-xl text-slate-400 leading-relaxed font-medium italic">
-                      Automate your entire recruitment funnel with our 3-panel system. From candidate sourcing to employer analytics, we provide the architecture for high-growth enterprises.
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                       <Feature icon={ShieldCheck} title="Verification" desc="ISO 9001:2015 standards for data integrity." />
-                       <Feature icon={ChartColumnIncreasing} title="Transparency" desc="Real-time tracking of every project milestone." />
-                    </div>
-                 </div>
-                 
-                 <div className="relative aspect-video rounded-[4rem] bg-gradient-to-br from-blue-600/20 to-orange-500/10 border border-white/10 overflow-hidden group shadow-[0_0_100px_rgba(59,130,246,0.1)] animate-in fade-in slide-in-from-right-8 duration-1000">
-                    <div className="absolute inset-0 bg-black/40 z-10"></div>
-                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop" alt="Dashboard Preview" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
-                    <div className="absolute inset-0 flex items-center justify-center z-20">
-                       <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center group-hover:scale-125 transition-transform duration-500">
-                          <Rocket className="text-white fill-white" size={32} />
-                       </div>
-                    </div>
-                 </div>
-              </div>
-           </div>
-        </section>
-
-        {/* --- PREMIUM CTA --- */}
-        <section className="py-32 px-6">
-           <div className="max-w-7xl mx-auto rounded-[4rem] p-12 md:p-24 bg-gradient-to-br from-blue-600 to-indigo-900 border border-white/10 relative overflow-hidden shadow-[0_0_150px_rgba(37,99,235,0.4)]">
-              <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-white/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+              {/* Floating Profile Contexts */}
+              <FloatingContext top="5%" left="5%" label="Auditors" color="emerald" image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576" />
+              <FloatingContext top="45%" left="0%" label="Data Annotators" color="purple" image="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670" />
+              <FloatingContext bottom="2%" left="5%" label="Mentors" color="blue" image="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=2574" />
               
-              <div className="relative z-10 max-w-2xl">
-                 <h2 className="text-4xl md:text-7xl font-black text-white mb-10 leading-[0.95] tracking-tighter italic">
-                    Ready For High-Fidelity <br /> Business Transformation?
-                 </h2>
-                 <p className="text-xl text-white/70 mb-12 font-medium italic">
-                    Join 500+ enterprises leveraging AdSky Solution for their consulting and workforce needs. Our experts are ready to guide your roadmap.
-                 </p>
-                 <div className="flex flex-wrap gap-6">
-                   <button className="px-10 py-6 rounded-full bg-white text-black font-black text-lg hover:bg-blue-300 transition-all shadow-2xl flex items-center gap-4 group uppercase tracking-widest italic">
-                     Book Consulting <Target size={20} className="group-hover:rotate-45 transition-transform" />
-                   </button>
-                 </div>
+              <FloatingContext top="5%" right="5%" label="Promoters" color="orange" image="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=2576" />
+              <FloatingContext top="45%" right="0%" label="Telecallers" color="cyan" image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=2670" />
+              <FloatingContext bottom="2%" right="5%" label="Invigilators" color="rose" image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2576" />
+            </div>
+          </div>
+        </section>
+
+        {/* --- STATS SECTION --- */}
+        <section className="py-24 px-6 border-y border-white/5 relative bg-[#020617]/50 backdrop-blur-3xl">
+          <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
+            <StatCard icon={CheckCircle} value="10k+" label="Tasks Completed" color="blue" />
+            <StatCard icon={Users} value="500+" label="Strong Workforce" color="orange" />
+            <StatCard icon={Globe} value="50+" label="Cities Covered" color="purple" />
+            <StatCard icon={Zap} value="1000+" label="Pin Codes" color="emerald" />
+          </div>
+        </section>
+
+        {/* --- OFFERINGS SECTION --- */}
+        <section className="py-32 px-6 bg-[#020617]/50 relative overflow-hidden backdrop-blur-3xl border-b border-white/5">
+          <div className="max-w-7xl mx-auto text-center mb-20 relative z-10">
+            <p className="text-blue-500 text-xs font-bold uppercase tracking-[0.3em] mb-4">Our Offerings</p>
+            <h2 className="text-4xl md:text-5xl font-bold mb-12 text-white italic">Cognitive, Desk-based, Tech-centric</h2>
+            <div className="flex justify-center mb-16">
+              <div className="inline-flex p-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+                {['white', 'grey', 'blue'].map((tab) => (
+                  <button 
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-4 sm:px-8 py-2 rounded-full font-bold transition-all duration-300 text-xs sm:text-sm md:text-base ${activeTab === tab ? 'bg-white text-slate-900 shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'text-white/60 hover:text-white'}`}
+                  >
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)} Collar
+                  </button>
+                ))}
               </div>
-           </div>
+            </div>
+          </div>
+
+          <div className="max-w-7xl mx-auto flex gap-8 overflow-x-auto pb-8 scrollbar-hide">
+             <div className="flex gap-8">
+               <ServiceCard 
+                icon={Briefcase} 
+                title="Egocentric Video Data for Robotics" 
+                desc="High-Quality human POV datasets for imitation learning & embodied AI." 
+                points={["4K first-person video capture at massive scale", "1000+ hours of egocentric video per day", "98%+ robotics-grade annotation accuracy"]} 
+                color="blue"
+               />
+               <ServiceCard 
+                 icon={Zap} 
+                 title="Data Annotation" 
+                 desc="AI/ML-ready data annotation, tech-scaled for accuracy." 
+                 points={["10Mn+ data points labeled monthly", "99%+ accuracy via quality checks", "Supports images, text, speech & videos", "Industry-specific annotation solutions"]} 
+                 color="orange"
+               />
+               <ServiceCard 
+                 icon={Users} 
+                 title="AI-First Tech Capability Centers" 
+                 desc="Build AI-First On-site Teams." 
+                 points={["On-site, time-zone aligned developers", "AI-tracked productivity & oversight", "Secure offices, enterprise-ready compliance", "Go live in ~2 weeks with 5-10 engineers"]} 
+                 color="purple"
+               />
+             </div>
+          </div>
+        </section>
+
+        {/* --- STRATEGY SECTION --- */}
+        <section className="py-32 px-6 bg-white relative overflow-hidden">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-8"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-extrabold uppercase tracking-[0.2em] border border-blue-100 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>Strategic Technical Advisory
+              </div>
+              <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] tracking-tighter italic">
+                Fuel Your <br/><span className="text-blue-600">Future</span> <br/>With Expert Strategy.
+              </h2>
+              <p className="text-xl text-slate-600 leading-relaxed font-medium">
+                Website & App Strategy Consultation, CRM/HRMS Setup, and Business Process Automation guidance.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                <Link href="/pricing" className="group flex items-center justify-center gap-3 px-6 sm:px-10 py-4 sm:py-5 rounded-2xl bg-[#020617] text-white font-bold hover:shadow-2xl hover:shadow-blue-500/20 transition-all transform hover:-translate-y-1 text-sm sm:text-base italic">
+                  Book 1 Hour – ₹999 <ArrowRight className="group-hover:translate-x-1" />
+                </Link>
+                <Link href="/services" className="px-6 sm:px-10 py-4 sm:py-5 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-bold hover:bg-slate-100 transition-all text-sm sm:text-base text-center italic">
+                  Our Services
+                </Link>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl border-8 border-slate-50">
+                <div className="absolute inset-x-0 bottom-0 top-1/4 bg-blue-600/30 rounded-full blur-[120px] pointer-events-none"></div>
+                <Image 
+                  src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672" 
+                  alt="Strategy" 
+                  fill 
+                  className="object-cover" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent"></div>
+                <div className="absolute bottom-10 left-10 right-10 p-8 rounded-3xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
+                  <p className="text-3xl font-black text-white italic mb-1">99% Success Rate</p>
+                  <p className="text-white/70 text-sm font-bold uppercase tracking-widest leading-none">Digital Transformation Excellence</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* --- JOB CATEGORIES SECTION --- */}
+        <section className="py-24 px-6 bg-white overflow-hidden">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-center text-slate-900 mb-12 sm:mb-20 italic">Job Categories</h2>
+            <div className="flex flex-col lg:flex-row items-center lg:items-end gap-12">
+              <div className="hidden lg:block lg:w-[450px] shrink-0">
+                <motion.div 
+                  initial={{ opacity: 0, x: -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  className="relative h-[650px] w-full"
+                >
+                  <Image src="/pointing-person.png" alt="Join Us" fill className="object-contain object-bottom" />
+                </motion.div>
+              </div>
+
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <JobCategory title="Delivery Partner Jobs" tag="Field Work" count="7 Jobs" image="https://images.unsplash.com/photo-1581092160562-40aa08e78837" />
+                <JobCategory title="Exam Invigilator Jobs" tag="Field Work" count="2 Jobs" image="https://images.unsplash.com/photo-1434039319359-ef800d9b8fd2" />
+                <JobCategory title="Digital Gigs Jobs" tag="Work From Home" count="1 Job" image="https://images.unsplash.com/photo-1499750310107-5fef28a66643" />
+                <JobCategory title="Audit Jobs" tag="Field Work" count="Jobs coming soon" image="https://images.unsplash.com/photo-1454165833767-027ffea9e77b" />
+                <JobCategory title="Telecalling Jobs" tag="Work From Home" count="Jobs coming soon" image="https://images.unsplash.com/photo-1549923155-4422ead50223" />
+                <JobCategory title="Recruitment Jobs" tag="Work From Home" count="Jobs coming soon" image="https://images.unsplash.com/photo-1521737711867-e3b97375f902" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* --- WHY WORK WITH US --- */}
+        <section className="py-16 md:py-32 px-6 bg-white overflow-hidden">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <p className="text-blue-600 text-xs font-bold uppercase tracking-[0.3em] mb-4 italic">Partner with Excellence</p>
+              <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-12 tracking-tighter italic">Why work with us?</h2>
+            </div>
+
+            <div className="relative rounded-[4rem] bg-[#020617] overflow-hidden flex flex-col lg:flex-row items-center p-10 lg:p-20 gap-10 lg:gap-0 shadow-[0_40px_100px_-20px_rgba(2,6,23,0.4)]">
+              <div className="absolute top-0 left-0 w-full h-full grayscale opacity-20 pointer-events-none">
+                <Image src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2670" alt="Grow With Us" fill className="object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#020617] via-[#020617]/80 to-transparent"></div>
+              </div>
+
+              <div className="w-full lg:w-1/2 relative z-10 flex flex-col items-center">
+                {/* Circular Logo Animation Wrapper */}
+                <div className="relative mb-14 flex items-center justify-center">
+                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="absolute w-[340px] h-[340px] rounded-full border border-white/5"></motion.div>
+                  <motion.div animate={{ rotate: -360 }} transition={{ duration: 15, repeat: Infinity, ease: "linear" }} className="absolute w-[300px] h-[300px] rounded-full border border-white/8"></motion.div>
+                  <div className="absolute w-[260px] h-[260px] bg-white/10 rounded-full blur-[60px]"></div>
+                  <div className="relative w-[240px] h-[240px] rounded-full bg-white flex items-center justify-center shadow-2xl border-4 border-white/30">
+                    <div className="flex items-center gap-4 text-slate-900">
+                      <Image src="/logo(2).jpeg" width={80} height={80} alt="Logo" className="rounded-xl italic" />
+                      <div className="flex flex-col leading-none">
+                        <span className="font-bold tracking-tight italic text-3xl">AD SKY</span>
+                        <span className="uppercase font-normal tracking-[0.25em] text-xs">Solution</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 w-full max-w-[360px]">
+                  <WhyCard icon={Zap} title="Fast Tracking" desc="Accelerated career growth" color="blue" />
+                  <WhyCard icon={Award} title="Certified Skills" desc="Industry recognized" color="green" />
+                  <WhyCard icon={Users} title="Community" desc="5M+ Peers" color="purple" />
+                  <WhyCard icon={Globe} title="Global Opps" desc="Remote worldwide" color="cyan" />
+                </div>
+              </div>
+
+              <div className="w-full lg:w-1/2 relative z-10 text-center lg:text-left lg:pl-12">
+                <h3 className="text-4xl md:text-7xl font-black text-white mb-8 leading-tight tracking-tighter italic">
+                  Grow <br/><span className="text-blue-400">With Us</span>
+                </h3>
+                <p className="text-white/60 text-xl mb-12 leading-relaxed font-medium max-w-lg italic">
+                  Take your skills to the next level with AdSky Solution's learning resources and top-tier job opportunities.
+                </p>
+                <Link href="/register" className="inline-flex items-center gap-3 px-10 py-6 rounded-2xl bg-white text-black font-black hover:bg-blue-600 hover:text-white transition-all text-lg italic uppercase tracking-widest">
+                  Find Work <ArrowRight />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* --- HOW IT WORKS --- */}
+        <section className="py-24 px-6 bg-black relative">
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 italic">How It Works</h2>
+              <p className="text-white/60 max-w-2xl mx-auto italic">We ensure reliable execution of your core business operations. Here's how we do it:</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              <WorkStep step="1" title="Project Configuration" desc="We'll configure your task on our platform within 24 hours and share your requirements with our trained workforce." />
+              <WorkStep step="2" title="Task Allocation" desc="Our automated system allocates tasks to the workforce in 10 milliseconds and ensures quality through algorithms." />
+              <WorkStep step="3" title="Payment Completion" desc="Our native app offers payment capability, 99.5% of the workforce gets paid every 7 days with ZERO complaints." />
+            </div>
+          </div>
+        </section>
+
+        {/* --- TESTIMONIALS --- */}
+        <section className="py-24 px-6 bg-slate-50">
+          <div className="max-w-7xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-16 italic">What People Say</h2>
+            <div className="relative max-w-4xl mx-auto rounded-[3rem] bg-white p-10 md:p-16 shadow-xl flex flex-col md:flex-row items-center gap-12 text-center md:text-left">
+              <div className="w-48 h-48 rounded-full overflow-hidden shrink-0 border-8 border-slate-50">
+                <Image src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2574" width={200} height={200} alt="User" className="object-cover" />
+              </div>
+              <div>
+                <span className="inline-block px-4 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold mb-4 italic">Gig Partner</span>
+                <p className="text-slate-600 text-lg md:text-xl leading-relaxed italic mb-8">
+                  "I am proud of the person I am today! From my first internship in the Customer Acquisition role to virtually leading a 90-member team, I have recorded 10,000 tasks with AdSky Solution to date. The best part of being a partner is that I get to work without any barriers."
+                </p>
+                <h4 className="text-2xl font-bold text-slate-900 italic">Ashwin Malani</h4>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* --- BLOGS SECTION --- */}
+        <section className="py-24 px-6 bg-white">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-center text-slate-900 mb-16 italic">Blogs</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <BlogCard 
+                title="How to Introduce Yourself Professionally in a Job Interview?" 
+                date="JAN 15, 2025" 
+                image="https://images.unsplash.com/photo-1521791136064-7986c2923216" 
+              />
+              <BlogCard 
+                title="Important Documents Required For Joining A Company" 
+                date="DEC 26, 2024" 
+                image="https://images.unsplash.com/photo-1450101499163-c8848c66ca85" 
+              />
+              <BlogCard 
+                title="How To Answer 'Why Should We Hire You?'" 
+                date="NOV 26, 2024" 
+                image="https://images.unsplash.com/photo-1549923746-c502d488b3ea" 
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* --- FINAL CTA --- */}
+        <section className="py-32 px-6 bg-[#020617] relative">
+          <div className="max-w-5xl mx-auto p-16 rounded-[40px] bg-white/5 border border-white/10 backdrop-blur-xl relative text-center">
+            <h2 className="text-3xl sm:text-4xl md:text-6xl font-black mb-8 italic">Ready to transform your vision into reality?</h2>
+            <p className="text-xl text-white/60 mb-12 max-w-2xl mx-auto italic">
+              Join hundreds of successful partners who have trusted AD Sky Solution with their strategic management and growth.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-6">
+              <Link href="/register" className="px-10 py-5 rounded-2xl bg-blue-600 text-white font-black text-lg shadow-2xl hover:-translate-y-1 transition-all italic uppercase tracking-widest">
+                Partner With Us
+              </Link>
+              <Link href="/careers" className="px-10 py-5 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-lg hover:bg-white/10 transition-all italic uppercase tracking-widest">
+                View Career Portal
+              </Link>
+            </div>
+          </div>
         </section>
       </main>
 
@@ -128,26 +379,152 @@ export default function HomePage() {
   );
 }
 
-function Stat({ icon: Icon, value, label }) {
+// Sub-components
+function FloatingContext({ top, left, right, bottom, label, color, image }) {
+  const bgColors = {
+    emerald: 'from-emerald-500/30 to-emerald-700/30',
+    purple: 'from-purple-500/30 to-purple-700/30',
+    blue: 'from-blue-500/30 to-blue-700/30',
+    orange: 'from-orange-500/30 to-orange-700/30',
+    cyan: 'from-cyan-500/30 to-cyan-700/30',
+    rose: 'from-rose-500/30 to-rose-700/30'
+  };
+
   return (
-    <div className="flex flex-col items-center lg:items-start group">
-      <div className="flex items-center gap-4 mb-2">
-        <Icon className="text-blue-500 group-hover:scale-125 transition-transform duration-500" size={24} />
-        <span className="text-4xl font-black italic tracking-tighter text-white">{value}</span>
+    <motion.div 
+      style={{ top, left, right, bottom }}
+      animate={{ y: [0, -10, 0] }}
+      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      className="absolute text-center group z-30"
+    >
+      <div className={`relative w-32 h-32 p-1 rounded-full bg-gradient-to-br ${bgColors[color]} border border-white/20 overflow-hidden shadow-2xl`}>
+        <div className="relative w-full h-full rounded-full overflow-hidden">
+          <Image src={image} alt={label} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+        </div>
       </div>
-      <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{label}</span>
+      <p className="mt-4 text-white text-[10px] font-bold tracking-[0.2em] uppercase opacity-70 group-hover:opacity-100 transition-opacity italic">{label}</p>
+    </motion.div>
+  );
+}
+
+function StatCard({ icon: Icon, value, label, color }) {
+  const shadowColors = {
+    blue: 'shadow-blue-500/20',
+    orange: 'shadow-orange-500/20',
+    purple: 'shadow-purple-500/20',
+    emerald: 'shadow-emerald-500/20'
+  };
+  const gradientColors = {
+    blue: 'from-blue-500 to-cyan-400',
+    orange: 'from-orange-500 to-amber-400',
+    purple: 'from-purple-500 to-pink-400',
+    emerald: 'from-emerald-500 to-teal-400'
+  };
+
+  return (
+    <div className="group text-center">
+      <div className="relative mb-6 inline-block">
+        <div className={`absolute inset-0 bg-gradient-to-br ${gradientColors[color]} blur-xl opacity-20 group-hover:opacity-40 transition-opacity`}></div>
+        <div className={`relative inline-flex p-4 rounded-2xl bg-gradient-to-br ${gradientColors[color]} text-white transform transition-all duration-500 group-hover:scale-110 group-hover:-rotate-3 shadow-2xl`}>
+          <Icon size={28} className="relative z-10" />
+        </div>
+      </div>
+      <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 italic">{value}</h3>
+      <p className="text-slate-400 text-[10px] md:text-sm uppercase tracking-[0.2em] font-medium opacity-70 italic">{label}</p>
     </div>
   );
 }
 
-function Feature({ icon: Icon, title, desc }) {
+function ServiceCard({ icon: Icon, title, desc, points, color }) {
+  const gradient = color === 'blue' ? 'from-blue-500 to-cyan-400' : color === 'orange' ? 'from-orange-500 to-amber-400' : 'from-purple-500 to-pink-400';
+  
   return (
-    <div className="space-y-4 group">
-       <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-blue-500/10 group-hover:border-blue-500/40 transition-all duration-500">
-          <Icon className="text-white group-hover:text-blue-400 transition-colors" size={24} />
+    <div className="group relative min-w-[280px] sm:min-w-[350px] md:min-w-[400px] flex flex-col p-10 rounded-[3rem] bg-white border border-slate-100 hover:border-blue-500/30 transition-all duration-500 overflow-hidden shadow-xl hover:shadow-2xl">
+      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+      <div className="relative z-10 flex flex-col h-full">
+        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white mb-8 shadow-lg transform group-hover:scale-110 transition-transform`}>
+          <Icon size={28} />
+        </div>
+        <h3 className="text-2xl font-bold mb-4 text-slate-900 italic">{title}</h3>
+        <p className="text-slate-600 leading-relaxed mb-6 font-medium italic">{desc}</p>
+        <ul className="space-y-4 mb-12 grow">
+          {points.map((p, i) => (
+            <li key={i} className="flex items-start gap-3 text-sm text-slate-500 font-medium italic">
+              <span className="text-blue-600 mt-1.5 w-1.5 h-1.5 rounded-full bg-current shrink-0"></span>{p}
+            </li>
+          ))}
+        </ul>
+        <button className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-slate-900 text-white font-bold hover:bg-blue-600 transition-all shadow-lg italic uppercase tracking-widest">
+          Know More <ArrowRight size={18} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function JobCategory({ title, tag, count, image }) {
+  return (
+    <div className="group relative flex flex-col p-8 rounded-[2.5rem] text-white border border-white/5 hover:border-blue-500/30 transition-all duration-500 min-h-[220px] overflow-hidden">
+      <Image src={image} alt={title} fill className="object-cover opacity-20 group-hover:opacity-40 transition-opacity duration-700 group-hover:scale-110" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#020617] via-[#020617]/90 to-blue-900/50"></div>
+      <h3 className="relative z-10 text-xl md:text-2xl font-bold mb-auto italic">{title}</h3>
+      <div className="relative z-10 flex items-center gap-3 mt-6">
+        <span className="px-4 py-1.5 rounded-full bg-[#BEF264] text-slate-900 text-[10px] font-bold uppercase italic">{tag}</span>
+        <span className="px-3 py-1.5 rounded-full bg-white text-slate-900 text-[10px] font-bold italic">{count}</span>
+      </div>
+    </div>
+  );
+}
+
+function WhyCard({ icon: Icon, title, desc, color }) {
+  const borderColors = {
+    blue: 'border-blue-500/20',
+    green: 'border-green-500/20',
+    purple: 'border-purple-500/20',
+    cyan: 'border-cyan-500/20'
+  };
+  const textColors = {
+    blue: 'text-blue-400',
+    green: 'text-green-400',
+    purple: 'text-purple-400',
+    cyan: 'text-cyan-400'
+  };
+
+  return (
+    <div className={`group flex flex-col gap-2 p-5 rounded-2xl border ${borderColors[color]} bg-white/5 backdrop-blur-sm hover:scale-105 transition-all duration-300`}>
+      <Icon className={`${textColors[color]} mb-1`} size={22} />
+      <span className="font-bold text-white text-sm italic">{title}</span>
+      <span className="text-white/40 text-[10px] font-medium leading-tight italic">{desc}</span>
+    </div>
+  );
+}
+
+function WorkStep({ step, title, desc }) {
+  return (
+    <div className="relative z-10 flex flex-col items-center text-center group">
+       <div className="w-20 h-20 rounded-full bg-white text-slate-900 flex items-center justify-center text-2xl font-black mb-8 shadow-2xl border-4 border-slate-900 italic">{step}</div>
+       <div className="relative p-8 rounded-[2.5rem] bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all flex flex-col h-full">
+          <h3 className="text-xl font-bold text-white mb-4 italic">{title}</h3>
+          <p className="text-white/60 leading-relaxed text-sm font-medium italic">{desc}</p>
        </div>
-       <h4 className="text-xl font-black text-white italic tracking-tight">{title}</h4>
-       <p className="text-slate-400 font-medium leading-relaxed">{desc}</p>
+    </div>
+  );
+}
+
+function BlogCard({ title, date, image }) {
+  return (
+    <div className="group flex flex-col bg-slate-50 rounded-[2.5rem] overflow-hidden border border-slate-100 hover:shadow-2xl transition-all">
+      <div className="aspect-[16/10] relative">
+        <Image src={image} alt={title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+        <div className="absolute inset-0 bg-blue-600/10"></div>
+      </div>
+      <div className="p-8 flex flex-col flex-grow">
+        <h3 className="text-xl font-bold text-slate-900 mb-4 flex-grow group-hover:text-blue-600 transition-colors italic">{title}</h3>
+        <div className="flex items-center justify-between pt-6 border-t border-slate-200">
+          <span className="text-[10px] uppercase font-bold text-slate-400 tracking-widest italic">{date}</span>
+          <button className="flex items-center gap-2 text-blue-600 font-bold text-sm italic">Explore <ArrowRight size={14} /></button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -18,7 +18,7 @@ export default function AboutPage() {
               Engineering <br /> The Future.
             </h1>
             <p className="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto font-medium italic animate-in fade-in slide-in-from-bottom-8 duration-700">
-              AdSky Solution is a global enterprise power-house specializing in business automation, workforce consulting, and high-fidelity IT architecture.
+              AdSky Solution is a professional consulting firm specializing in IT strategy, software development, and specialized workforce solutions.
             </p>
           </div>
         </section>
@@ -32,7 +32,7 @@ export default function AboutPage() {
               </div>
               <h2 className="text-4xl md:text-5xl font-black tracking-tighter italic">Our Mission</h2>
               <p className="text-xl text-slate-400 font-medium leading-relaxed italic">
-                To simplify the complex job lifecycle management through our proprietary 3-panel ecosystem, ensuring transparency and scale for the modern enterprise.
+                To simplify business operations through expert consulting and strategic technical integration, ensuring growth and efficiency for our partners.
               </p>
             </div>
 
@@ -42,7 +42,7 @@ export default function AboutPage() {
               </div>
               <h2 className="text-4xl md:text-5xl font-black tracking-tighter italic">Our Vision</h2>
               <p className="text-xl text-slate-400 font-medium leading-relaxed italic">
-                To become the global standard for workforce consulting and business process automation, bridging the gap between talent and high-growth opportunities.
+                To become the leading standard for workforce consulting and business process advisory, bridging the gap between talent and high-growth opportunities.
               </p>
             </div>
           </div>
@@ -70,7 +70,7 @@ export default function AboutPage() {
               <ValueItem 
                 icon={Zap} 
                 title="Innovation" 
-                desc="Constant evolution of our 3-panel ERP system candidate experience and employer metrics." 
+                desc="Constant evolution of our technical frameworks and candidate experience across all specialized service sectors." 
               />
             </div>
           </div>

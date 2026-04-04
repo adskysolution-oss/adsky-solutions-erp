@@ -81,7 +81,7 @@ export default function ServicesPage() {
                 Our Services.
               </h1>
               <p className="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto font-medium italic">
-                From high-fidelity CRM ecosystems to global workforce consulting, we provide the architecture for high-growth enterprises.
+                From specialized workforce consulting to global IT strategy, we provide the architecture for high-growth businesses.
               </p>
             </div>
 
@@ -100,7 +100,7 @@ export default function ServicesPage() {
               <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
                  <div className="max-w-2xl">
                     <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter mb-8 leading-none">
-                       Need A Bespoke <br /> Infrastructure Strategy?
+                       Need A Bespoke <br /> Professional Strategy?
                     </h2>
                     <p className="text-xl text-slate-400 font-medium italic">
                        Contact our lead architects for a personalized consultation regarding your enterprise roadmap.

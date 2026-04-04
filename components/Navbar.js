@@ -10,16 +10,17 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navLinks = [
     { name: 'Home', href: '/' },
-    { name: 'About Us', href: '/about' },
+    { name: 'About', href: '/about' },
     { name: 'Services', href: '/services' },
     { name: 'Pricing', href: '/pricing' },
     { name: 'Projects', href: '/projects' },
-    { name: 'Gallery', href: '/gallery' }
+    { name: 'Gallery', href: '/gallery' },
+    { name: 'Careers', href: '/careers' }
   ];
 
   const config = {
-    siteName: 'AdSky Solution',
-    siteTitle: 'The 3-Panel Enterprise ERP',
+    siteName: 'AD SKY',
+    siteTitle: 'Solution',
     logoRoot: '/logo(2).jpeg'
   };
 

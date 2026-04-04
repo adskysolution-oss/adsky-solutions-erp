@@ -28,7 +28,7 @@ const galleryItems = [
   {
     title: "Tech Infrastructure",
     category: "Datacenter",
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc51?q=80&w=2251&auto=format&fit=crop"
+    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2340&auto=format&fit=crop"
   },
   {
     title: "Client Success",
@@ -51,7 +51,7 @@ export default function GalleryPage() {
               Our Gallery.
             </h1>
             <p className="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto font-medium italic">
-              A visual journey through our enterprise-grade delivery centers and high-fidelity project lifecycles.
+              A visual journey through our professional delivery centers and successful project lifecycles.
             </p>
           </div>
 

@@ -7,9 +7,9 @@ import { Facebook, Instagram, Twitter, Linkedin, MapPin, Phone, Mail } from 'luc
 
 export default function Footer() {
   const config = {
-    siteName: 'AdSky Solution',
-    siteTitle: 'The 3-Panel Enterprise ERP',
-    siteDescription: 'Empowering businesses and individuals through expert consulting, skill development, and strategic management solutions.',
+    siteName: 'AD SKY',
+    siteTitle: 'Solution',
+    siteDescription: 'Delivering expert IT consulting, software development, and professional staffing solutions for growing businesses.',
     logoRoot: '/logo(2).jpeg',
     contact: {
       address: 'AD Sky Solution, 126 Satyam Enclave Sahibabad, \n Ghaziabad UTTAR PRADESH 201003',
