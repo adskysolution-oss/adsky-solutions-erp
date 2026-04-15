@@ -37,67 +37,71 @@ export default function HomePage() {
       
       <main className="flex-grow pt-24">
         {/* --- HERO SECTION --- */}
-        <section className="relative min-h-[90vh] lg:h-[85vh] flex flex-col pt-32 pb-0 px-6 overflow-hidden bg-[#020617] border-b border-white/5">
+        <section className="relative min-h-[90vh] flex items-center pt-24 pb-12 px-6 overflow-hidden bg-[#020617]">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none"></div>
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[100px] pointer-events-none"></div>
           
-          <div className="max-w-7xl mx-auto relative z-10 w-full flex-grow flex flex-col items-center">
-            
-            <div className="flex items-center justify-center gap-10 sm:gap-16 mb-4 sm:mb-12 relative z-40">
-              <div className="flex flex-col items-center gap-2">
-                <span className="text-white text-[10px] sm:text-xs font-bold uppercase tracking-widest">FOR JOBS</span>
-                <Link href="/careers" className="px-6 sm:px-10 py-3 sm:py-4 rounded-full bg-white text-black font-bold hover:shadow-2xl hover:shadow-white/20 transition-all text-sm sm:text-lg min-w-[160px] sm:min-w-[200px] text-center">
-                  Explore Jobs
+          <div className="max-w-7xl mx-auto relative z-10 w-full">
+            <div className="text-center mb-16">
+              <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="text-4xl sm:text-6xl md:text-8xl font-bold mb-8 text-white leading-[1.1] tracking-tighter italic"
+              >
+                Integrated IT Solutions & <br className="hidden md:block" /> Workforce Consulting
+              </motion.h2>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="text-slate-400 text-base sm:text-lg md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed font-light"
+              >
+                Delivering expert IT consulting, software development, and professional staffing solutions for growing businesses.
+              </motion.p>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6"
+              >
+                <Link href="/pricing" className="px-8 sm:px-12 py-4 sm:py-5 rounded-2xl bg-white text-black font-bold hover:shadow-2xl hover:shadow-white/20 transition-all transform hover:-translate-y-1 text-sm sm:text-base italic">
+                  Book IT Consultation
                 </Link>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <span className="text-white/60 text-[10px] sm:text-xs font-bold uppercase tracking-widest">FOR BUSINESS</span>
-                <Link href="/services" className="px-6 sm:px-10 py-3 sm:py-4 rounded-full bg-transparent border border-white/30 text-white font-bold hover:bg-white/10 transition-all text-sm sm:text-lg min-w-[160px] sm:min-w-[200px] text-center">
-                  Explore Solutions
+                <Link href="/services" className="px-8 sm:px-12 py-4 sm:py-5 rounded-2xl bg-transparent border border-white/20 text-white font-bold hover:bg-white/5 transition-all text-sm sm:text-base italic">
+                  Explore Our Services
                 </Link>
-              </div>
+              </motion.div>
             </div>
 
-            {/* Manpower Expert Section Visual - Centered Orbiting Layout */}
-            <div className="relative w-full flex-grow flex items-end justify-center mt-auto min-h-[500px] lg:min-h-[600px] overflow-visible">
-              
-              {/* Awign Style Dotted SVG Paths connecting center to the blobs */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40 hidden lg:block" style={{ zIndex: 10 }}>
-                {/* Left side connections */}
-                <path d="M 50% 100% Q 30% 20% 20% 30%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
-                <path d="M 50% 100% Q 30% 60% 15% 55%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
-                <path d="M 50% 100% Q 35% 85% 25% 80%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
-                
-                {/* Right side connections */}
-                <path d="M 50% 100% Q 70% 20% 80% 30%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
-                <path d="M 50% 100% Q 70% 60% 85% 55%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
-                <path d="M 50% 100% Q 65% 85% 75% 80%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
-              </svg>
-
+            {/* Manpower Expert Section Visual */}
+            <div className="relative min-h-[450px] sm:min-h-[550px] lg:min-h-[700px] mt-12 w-full mx-auto flex items-center justify-center overflow-visible">
               <motion.div 
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ duration: 1, delay: 0.1 }}
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[650px] h-[100%] z-20 pointer-events-none flex justify-center"
+                transition={{ duration: 1, delay: 0.2 }}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-64 sm:w-64 sm:h-96 lg:w-80 lg:h-[500px] z-20"
               >
+                <div className="relative w-full h-full group">
+                  <div className="absolute inset-0 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
                   <img 
                     src="/men.png" 
                     alt="Manpower Expert" 
-                    className="w-full h-full object-contain object-bottom relative z-10 brightness-110 contrast-110" 
+                    className="w-full h-full object-contain relative z-10 drop-shadow-2xl brightness-110 contrast-110 object-bottom" 
                   />
+                </div>
               </motion.div>
 
-              {/* Exact Awign Style Floating Blobs */}
-              <FloatingContext top="10%" left="12%" label="Auditors" color="emerald" blobShape="45% 55% 42% 58% / 54% 43% 57% 46%" image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576" />
-              <FloatingContext top="45%" left="2%" label="Data Annotators" color="purple" blobShape="60% 40% 68% 32% / 54% 63% 37% 46%" image="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670" />
-              <FloatingContext bottom="8%" left="15%" label="Mentors" color="blue" blobShape="52% 48% 33% 67% / 38% 39% 61% 62%" image="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=2574" />
+              {/* Floating Profile Contexts */}
+              <FloatingContext top="5%" left="5%" label="Auditors" color="emerald" image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576" />
+              <FloatingContext top="45%" left="0%" label="Data Annotators" color="purple" image="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670" />
+              <FloatingContext bottom="2%" left="5%" label="Mentors" color="blue" image="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=2574" />
               
-              <FloatingContext top="10%" right="12%" label="Promoters" color="orange" blobShape="65% 35% 30% 70% / 55% 44% 56% 45%" image="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=2576" />
-              <FloatingContext top="45%" right="2%" label="Telecallers" color="cyan" blobShape="37% 63% 51% 49% / 46% 62% 38% 54%" image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=2670" />
-              <FloatingContext bottom="8%" right="15%" label="Invigilators" color="rose" blobShape="43% 57% 40% 60% / 65% 51% 49% 35%" image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2576" />
+              <FloatingContext top="5%" right="5%" label="Promoters" color="orange" image="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=2576" />
+              <FloatingContext top="45%" right="0%" label="Telecallers" color="cyan" image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=2670" />
+              <FloatingContext bottom="2%" right="5%" label="Invigilators" color="rose" image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2576" />
             </div>
-
           </div>
         </section>
 
@@ -377,14 +381,14 @@ export default function HomePage() {
 }
 
 // Sub-components
-function FloatingContext({ top, left, right, bottom, label, color, image, blobShape }) {
+function FloatingContext({ top, left, right, bottom, label, color, image }) {
   const bgColors = {
-    emerald: 'bg-[#4ADE80]',
-    purple: 'bg-[#A855F7]',
-    blue: 'bg-[#3B82F6]',
-    orange: 'bg-[#F59E0B]',
-    cyan: 'bg-[#06B6D4]',
-    rose: 'bg-[#F43F5E]'
+    emerald: 'from-emerald-500/30 to-emerald-700/30',
+    purple: 'from-purple-500/30 to-purple-700/30',
+    blue: 'from-blue-500/30 to-blue-700/30',
+    orange: 'from-orange-500/30 to-orange-700/30',
+    cyan: 'from-cyan-500/30 to-cyan-700/30',
+    rose: 'from-rose-500/30 to-rose-700/30'
   };
 
   return (
@@ -394,13 +398,12 @@ function FloatingContext({ top, left, right, bottom, label, color, image, blobSh
       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       className="absolute text-center group z-30"
     >
-      <div 
-        className={`relative w-20 h-20 sm:w-28 sm:h-28 lg:w-36 lg:h-36 ${bgColors[color]} overflow-hidden mx-auto border-0 shadow-lg`}
-        style={{ borderRadius: blobShape || '50%' }}
-      >
-        <Image src={image} alt={label} fill className="object-cover group-hover:scale-110 transition-transform duration-500 mix-blend-luminosity opacity-90" />
+      <div className={`relative w-14 h-14 sm:w-20 sm:h-20 lg:w-32 lg:h-32 p-1 rounded-full bg-gradient-to-br ${bgColors[color]} border border-white/20 overflow-hidden shadow-2xl mx-auto`}>
+        <div className="relative w-full h-full rounded-full overflow-hidden">
+          <Image src={image} alt={label} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+        </div>
       </div>
-      <p className="mt-4 text-white text-xs sm:text-sm lg:text-lg font-medium">{label}</p>
+      <p className="mt-2 sm:mt-4 text-white text-[6px] sm:text-[8px] lg:text-[10px] font-bold tracking-[0.1em] sm:tracking-[0.2em] uppercase opacity-70 group-hover:opacity-100 transition-opacity italic">{label}</p>
     </motion.div>
   );
 }
