@@ -263,14 +263,14 @@ export default function HomePage() {
                   <motion.div 
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
-                    className="relative px-10 py-6 rounded-full bg-white flex items-center gap-6 shadow-2xl border-4 border-white/10"
+                    className="relative px-6 py-4 md:px-10 md:py-6 rounded-[2rem] md:rounded-full bg-white flex items-center gap-4 md:gap-6 shadow-2xl border-4 border-white/10 w-full sm:w-auto overflow-hidden sm:overflow-visible"
                   >
-                    <div className="relative w-16 h-16 rounded-2xl overflow-hidden shadow-lg">
+                    <div className="relative w-12 h-12 md:w-16 md:h-16 shrink-0 rounded-2xl overflow-hidden shadow-lg">
                       <Image src="/logo(2).jpeg" fill alt="Logo" className="object-cover" />
                     </div>
-                    <div className="flex flex-col leading-tight">
-                      <span className="text-2xl font-black text-slate-900 italic tracking-tighter">AD SKY</span>
-                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">Solution</span>
+                    <div className="flex flex-col leading-tight truncate">
+                      <span className="text-xl md:text-2xl font-black text-slate-900 italic tracking-tighter truncate">AD SKY</span>
+                      <span className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] truncate">Solution</span>
                     </div>
                   </motion.div>
                 </div>
