@@ -75,12 +75,12 @@ export default function HomePage() {
             </div>
 
             {/* Manpower Expert Section Visual */}
-            <div className="relative h-[650px] mt-12 hidden lg:block">
+            <div className="relative h-[300px] sm:h-[500px] lg:h-[650px] mt-12 block w-full mx-auto">
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1, delay: 0.6 }}
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[520px] z-20"
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[160px] sm:w-[280px] lg:w-[350px] h-[240px] sm:h-[420px] lg:h-[520px] z-20"
               >
                 <div className="relative w-full h-full group">
                   <div className="absolute inset-x-0 bottom-0 top-1/4 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
@@ -400,12 +400,12 @@ function FloatingContext({ top, left, right, bottom, label, color, image }) {
       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       className="absolute text-center group z-30"
     >
-      <div className={`relative w-32 h-32 p-1 rounded-full bg-gradient-to-br ${bgColors[color]} border border-white/20 overflow-hidden shadow-2xl`}>
+      <div className={`relative w-14 h-14 sm:w-20 sm:h-20 lg:w-32 lg:h-32 p-1 rounded-full bg-gradient-to-br ${bgColors[color]} border border-white/20 overflow-hidden shadow-2xl mx-auto`}>
         <div className="relative w-full h-full rounded-full overflow-hidden">
           <Image src={image} alt={label} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
         </div>
       </div>
-      <p className="mt-4 text-white text-[10px] font-bold tracking-[0.2em] uppercase opacity-70 group-hover:opacity-100 transition-opacity italic">{label}</p>
+      <p className="mt-2 sm:mt-4 text-white text-[6px] sm:text-[8px] lg:text-[10px] font-bold tracking-[0.1em] sm:tracking-[0.2em] uppercase opacity-70 group-hover:opacity-100 transition-opacity italic">{label}</p>
     </motion.div>
   );
 }
