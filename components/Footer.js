@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Image from 'next/image';
@@ -13,7 +13,7 @@ export default function Footer() {
     logoRoot: '/logo(2).jpeg',
     contact: {
       address: 'AD Sky Solution, 126 Satyam Enclave Sahibabad, \n Ghaziabad UTTAR PRADESH 201003',
-      phone: '+91 80621 82243',
+      phone: '8076611842',
       email: 'support@adskysolution.com'
     }
   };
@@ -105,7 +105,7 @@ export default function Footer() {
             </div>
             <div>
               <h5 className="font-bold mb-1 text-green-400/90">Call Us</h5>
-              <p className="text-slate-400 text-sm leading-relaxed font-medium">{config?.contact?.phone || '+91 80621 82243'}</p>
+              <p className="text-slate-400 text-sm leading-relaxed font-medium">{config?.contact?.phone || '8076611842'}</p>
             </div>
           </div>
           <div className="flex items-start gap-4 group">
