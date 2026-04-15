@@ -31,11 +31,11 @@ export default function Navbar() {
   }, []);
 
   return (
-    <div className={`fixed top-6 left-0 right-0 z-50 flex justify-center px-6 transition-all duration-500 ${isScrolled ? 'top-2' : 'top-6'}`}>
+    <div className={`fixed left-0 right-0 z-50 flex justify-center px-4 md:px-6 transition-all duration-500 ${isScrolled ? 'top-2 pt-0' : 'top-2 md:top-6'}`}>
       <div className="relative w-full max-w-5xl">
-        <div className={`relative p-[1px] rounded-[3rem] transition-all duration-500 ${isMobileMenuOpen ? '' : 'overflow-hidden'}`}>
+        <div className={`relative p-[1px] rounded-[2rem] md:rounded-[3rem] transition-all duration-500 ${isMobileMenuOpen ? '' : 'overflow-hidden'}`}>
           <div className="absolute inset-[-400%] opacity-100" style={{ background: 'conic-gradient(from 0deg, transparent 0deg, #3B82F6 120deg, #6366F1 240deg, #F97316 360deg)' }}></div>
-          <nav className="relative w-full h-full z-10 rounded-[3rem] bg-[#0F172A]/80 backdrop-blur-xl py-3 px-10">
+          <nav className="relative w-full h-full z-10 rounded-[2rem] md:rounded-[3rem] bg-[#0F172A] py-3 px-6 md:px-10">
             <div className="flex items-center justify-between">
               <Link className="flex items-center group gap-4 mr-8" href="/">
                 <div className="relative flex items-center justify-center rounded-xl overflow-hidden shadow-lg border border-white/10 group-hover:scale-110 transition-transform duration-500 w-12 h-12">

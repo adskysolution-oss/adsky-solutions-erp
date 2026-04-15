@@ -135,14 +135,13 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="max-w-7xl mx-auto flex gap-8 overflow-x-auto pb-8 scrollbar-hide">
-             <div className="flex gap-8">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-8">
                <ServiceCard 
-                icon={Briefcase} 
-                title="Egocentric Video Data for Robotics" 
-                desc="High-Quality human POV datasets for imitation learning & embodied AI." 
-                points={["4K first-person video capture at massive scale", "1000+ hours of egocentric video per day", "98%+ robotics-grade annotation accuracy"]} 
-                color="blue"
+                 icon={Briefcase} 
+                 title="Egocentric Video Data for Robotics" 
+                 desc="High-Quality human POV datasets for imitation learning & embodied AI." 
+                 points={["4K first-person video capture at massive scale", "1000+ hours of egocentric video per day", "98%+ robotics-grade annotation accuracy"]} 
+                 color="blue"
                />
                <ServiceCard 
                  icon={Zap} 
@@ -158,7 +157,6 @@ export default function HomePage() {
                  points={["On-site, time-zone aligned developers", "AI-tracked productivity & oversight", "Secure offices, enterprise-ready compliance", "Go live in ~2 weeks with 5-10 engineers"]} 
                  color="purple"
                />
-             </div>
           </div>
         </section>
 
@@ -174,7 +172,7 @@ export default function HomePage() {
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-extrabold uppercase tracking-[0.2em] border border-blue-100 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>Strategic Technical Advisory
               </div>
-              <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] tracking-tighter italic">
+              <h2 className="text-3xl md:text-5xl lg:text-7xl font-black text-slate-900 leading-[1.1] tracking-tighter italic">
                 Fuel Your <br/><span className="text-blue-600">Future</span> <br/>With Expert Strategy.
               </h2>
               <p className="text-xl text-slate-600 leading-relaxed font-medium">
@@ -247,7 +245,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <p className="text-blue-600 text-xs font-bold uppercase tracking-[0.3em] mb-4 italic">Partner with Excellence</p>
-              <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-12 tracking-tighter italic">Why work with us?</h2>
+              <h2 className="text-3xl md:text-6xl font-black text-slate-900 mb-12 tracking-tighter italic">Why work with us?</h2>
             </div>
 
             <div className="relative rounded-[4rem] bg-[#020617] overflow-hidden flex flex-col lg:flex-row items-center p-10 lg:p-20 gap-10 lg:gap-0 shadow-[0_40px_100px_-20px_rgba(2,6,23,0.4)]">
@@ -442,7 +440,7 @@ function ServiceCard({ icon: Icon, title, desc, points, color }) {
   const gradient = color === 'blue' ? 'from-blue-500 to-cyan-400' : color === 'orange' ? 'from-orange-500 to-amber-400' : 'from-purple-500 to-pink-400';
   
   return (
-    <div className="group relative min-w-[280px] sm:min-w-[350px] md:min-w-[400px] flex flex-col p-10 rounded-[3rem] bg-white border border-slate-100 hover:border-blue-500/30 transition-all duration-500 overflow-hidden shadow-xl hover:shadow-2xl">
+    <div className="group relative w-full flex flex-col p-8 sm:p-10 rounded-[2.5rem] md:rounded-[3rem] bg-white border border-slate-100 hover:border-blue-500/30 transition-all duration-500 overflow-hidden shadow-xl hover:shadow-2xl">
       <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
       <div className="relative z-10 flex flex-col h-full">
         <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white mb-8 shadow-lg transform group-hover:scale-110 transition-transform`}>
