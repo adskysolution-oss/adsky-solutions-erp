@@ -41,21 +41,23 @@ export default function HomePage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none"></div>
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[100px] pointer-events-none"></div>
           
-          <div className="max-w-7xl mx-auto relative z-10 w-full">
-            <div className="text-center mb-16">
+          <div className="max-w-7xl mx-auto relative z-10 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            
+            {/* Left Column: Text */}
+            <div className="text-left">
               <motion.h2 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
-                className="text-4xl sm:text-6xl md:text-8xl font-bold mb-8 text-white leading-[1.1] tracking-tighter italic"
+                className="text-4xl sm:text-6xl md:text-7xl lg:text-7xl font-bold mb-6 text-white leading-[1.1] tracking-tighter italic"
               >
                 Integrated IT Solutions & <br className="hidden md:block" /> Workforce Consulting
               </motion.h2>
               <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-slate-400 text-base sm:text-lg md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed font-light"
+                className="text-slate-400 text-base sm:text-lg md:text-xl max-w-xl mb-12 leading-relaxed font-light"
               >
                 Delivering expert IT consulting, software development, and professional staffing solutions for growing businesses.
               </motion.p>
@@ -63,19 +65,19 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6"
+                className="flex flex-col sm:flex-row gap-4"
               >
-                <Link href="/pricing" className="px-8 sm:px-12 py-4 sm:py-5 rounded-2xl bg-white text-black font-bold hover:shadow-2xl hover:shadow-white/20 transition-all transform hover:-translate-y-1 text-sm sm:text-base italic">
+                <Link href="/pricing" className="px-8 py-4 rounded-2xl bg-white text-black font-bold hover:shadow-2xl hover:shadow-white/20 transition-all transform hover:-translate-y-1 text-sm sm:text-base italic text-center">
                   Book IT Consultation
                 </Link>
-                <Link href="/services" className="px-8 sm:px-12 py-4 sm:py-5 rounded-2xl bg-transparent border border-white/20 text-white font-bold hover:bg-white/5 transition-all text-sm sm:text-base italic">
+                <Link href="/services" className="px-8 py-4 rounded-2xl bg-transparent border border-white/20 text-white font-bold hover:bg-white/5 transition-all text-sm sm:text-base italic text-center">
                   Explore Our Services
                 </Link>
               </motion.div>
             </div>
 
-            {/* Manpower Expert Section Visual */}
-            <div className="relative min-h-[450px] sm:min-h-[550px] lg:min-h-[700px] mt-12 w-full mx-auto flex items-center justify-center overflow-visible">
+            {/* Right Column: Visual */}
+            <div className="relative h-[450px] sm:h-[550px] lg:h-[700px] w-full flex items-center justify-center overflow-visible">
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -94,14 +96,15 @@ export default function HomePage() {
               </motion.div>
 
               {/* Floating Profile Contexts */}
-              <FloatingContext top="5%" left="5%" label="Auditors" color="emerald" image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576" />
-              <FloatingContext top="45%" left="0%" label="Data Annotators" color="purple" image="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670" />
-              <FloatingContext bottom="2%" left="5%" label="Mentors" color="blue" image="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=2574" />
+              <FloatingContext top="5%" left="0%" label="Auditors" color="emerald" image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576" />
+              <FloatingContext top="45%" left="-10%" label="Data Annotators" color="purple" image="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670" />
+              <FloatingContext bottom="5%" left="0%" label="Mentors" color="blue" image="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=2574" />
               
-              <FloatingContext top="5%" right="5%" label="Promoters" color="orange" image="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=2576" />
-              <FloatingContext top="45%" right="0%" label="Telecallers" color="cyan" image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=2670" />
-              <FloatingContext bottom="2%" right="5%" label="Invigilators" color="rose" image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2576" />
+              <FloatingContext top="5%" right="0%" label="Promoters" color="orange" image="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=2576" />
+              <FloatingContext top="45%" right="-10%" label="Telecallers" color="cyan" image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=2670" />
+              <FloatingContext bottom="5%" right="0%" label="Invigilators" color="rose" image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2576" />
             </div>
+
           </div>
         </section>
 
