@@ -75,20 +75,20 @@ export default function HomePage() {
             </div>
 
             {/* Manpower Expert Section Visual */}
-            <div className="relative min-h-[450px] sm:min-h-[550px] lg:min-h-[700px] mt-12 w-full mx-auto flex items-center justify-center overflow-visible">
+            <div className="relative h-[650px] mt-12 hidden lg:block">
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, delay: 0.2 }}
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-64 sm:w-64 sm:h-96 lg:w-80 lg:h-[500px] z-20"
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1, delay: 0.6 }}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[520px] z-20"
               >
                 <div className="relative w-full h-full group">
-                  <div className="absolute inset-0 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
-                  <img 
+                  <div className="absolute inset-x-0 bottom-0 top-1/4 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+                  <Image 
                     src="/men.png" 
                     alt="Manpower Expert" 
-                    className="w-full h-full object-contain relative z-10 drop-shadow-2xl brightness-110 contrast-110 object-bottom" 
+                    fill 
+                    className="object-contain relative z-10 drop-shadow-[0_20px_50px_rgba(0,0,0,0.4)] brightness-110 contrast-110" 
                   />
                 </div>
               </motion.div>
@@ -135,13 +135,14 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 pb-8">
+          <div className="max-w-7xl mx-auto flex gap-8 overflow-x-auto pb-8 scrollbar-hide">
+             <div className="flex gap-8">
                <ServiceCard 
-                 icon={Briefcase} 
-                 title="Egocentric Video Data for Robotics" 
-                 desc="High-Quality human POV datasets for imitation learning & embodied AI." 
-                 points={["4K first-person video capture at massive scale", "1000+ hours of egocentric video per day", "98%+ robotics-grade annotation accuracy"]} 
-                 color="blue"
+                icon={Briefcase} 
+                title="Egocentric Video Data for Robotics" 
+                desc="High-Quality human POV datasets for imitation learning & embodied AI." 
+                points={["4K first-person video capture at massive scale", "1000+ hours of egocentric video per day", "98%+ robotics-grade annotation accuracy"]} 
+                color="blue"
                />
                <ServiceCard 
                  icon={Zap} 
@@ -157,6 +158,7 @@ export default function HomePage() {
                  points={["On-site, time-zone aligned developers", "AI-tracked productivity & oversight", "Secure offices, enterprise-ready compliance", "Go live in ~2 weeks with 5-10 engineers"]} 
                  color="purple"
                />
+             </div>
           </div>
         </section>
 
@@ -172,7 +174,7 @@ export default function HomePage() {
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-extrabold uppercase tracking-[0.2em] border border-blue-100 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>Strategic Technical Advisory
               </div>
-              <h2 className="text-3xl md:text-5xl lg:text-7xl font-black text-slate-900 leading-[1.1] tracking-tighter italic">
+              <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-slate-900 leading-[1.1] tracking-tighter italic">
                 Fuel Your <br/><span className="text-blue-600">Future</span> <br/>With Expert Strategy.
               </h2>
               <p className="text-xl text-slate-600 leading-relaxed font-medium">
@@ -245,7 +247,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <p className="text-blue-600 text-xs font-bold uppercase tracking-[0.3em] mb-4 italic">Partner with Excellence</p>
-              <h2 className="text-3xl md:text-6xl font-black text-slate-900 mb-12 tracking-tighter italic">Why work with us?</h2>
+              <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-12 tracking-tighter italic">Why work with us?</h2>
             </div>
 
             <div className="relative rounded-[4rem] bg-[#020617] overflow-hidden flex flex-col lg:flex-row items-center p-10 lg:p-20 gap-10 lg:gap-0 shadow-[0_40px_100px_-20px_rgba(2,6,23,0.4)]">
@@ -398,12 +400,12 @@ function FloatingContext({ top, left, right, bottom, label, color, image }) {
       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       className="absolute text-center group z-30"
     >
-      <div className={`relative w-14 h-14 sm:w-20 sm:h-20 lg:w-32 lg:h-32 p-1 rounded-full bg-gradient-to-br ${bgColors[color]} border border-white/20 overflow-hidden shadow-2xl mx-auto`}>
+      <div className={`relative w-32 h-32 p-1 rounded-full bg-gradient-to-br ${bgColors[color]} border border-white/20 overflow-hidden shadow-2xl`}>
         <div className="relative w-full h-full rounded-full overflow-hidden">
           <Image src={image} alt={label} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
         </div>
       </div>
-      <p className="mt-2 sm:mt-4 text-white text-[6px] sm:text-[8px] lg:text-[10px] font-bold tracking-[0.1em] sm:tracking-[0.2em] uppercase opacity-70 group-hover:opacity-100 transition-opacity italic">{label}</p>
+      <p className="mt-4 text-white text-[10px] font-bold tracking-[0.2em] uppercase opacity-70 group-hover:opacity-100 transition-opacity italic">{label}</p>
     </motion.div>
   );
 }
@@ -440,7 +442,7 @@ function ServiceCard({ icon: Icon, title, desc, points, color }) {
   const gradient = color === 'blue' ? 'from-blue-500 to-cyan-400' : color === 'orange' ? 'from-orange-500 to-amber-400' : 'from-purple-500 to-pink-400';
   
   return (
-    <div className="group relative w-full flex flex-col p-8 sm:p-10 rounded-[2.5rem] md:rounded-[3rem] bg-white border border-slate-100 hover:border-blue-500/30 transition-all duration-500 overflow-hidden shadow-xl hover:shadow-2xl">
+    <div className="group relative min-w-[280px] sm:min-w-[350px] md:min-w-[400px] flex flex-col p-10 rounded-[3rem] bg-white border border-slate-100 hover:border-blue-500/30 transition-all duration-500 overflow-hidden shadow-xl hover:shadow-2xl">
       <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
       <div className="relative z-10 flex flex-col h-full">
         <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white mb-8 shadow-lg transform group-hover:scale-110 transition-transform`}>
