@@ -79,7 +79,7 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1, delay: 0.1 }}
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[350px] sm:w-[500px] lg:w-[650px] h-[450px] sm:h-[600px] lg:h-[750px] z-20 pointer-events-none"
+                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[650px] h-[100%] z-20 pointer-events-none flex justify-center"
               >
                   <img 
                     src="/men.png" 
