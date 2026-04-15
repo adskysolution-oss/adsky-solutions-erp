@@ -41,67 +41,64 @@ export default function HomePage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none"></div>
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[100px] pointer-events-none"></div>
           
-          <div className="max-w-7xl mx-auto relative z-10 w-full">
+          <div className="max-w-7xl mx-auto relative z-10 w-full pt-20">
             
-            <div className="text-center mb-16">
-              <motion.h2 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8 }}
-                className="text-4xl sm:text-6xl md:text-8xl font-bold mb-8 text-white leading-[1.1] tracking-tighter italic"
-              >
-                Integrated IT Solutions & <br className="hidden md:block" /> Workforce Consulting
-              </motion.h2>
-              <motion.p 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-slate-400 text-base sm:text-lg md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed font-light"
-              >
-                Delivering expert IT consulting, software development, and professional staffing solutions for growing businesses.
-              </motion.p>
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6"
-              >
-                <Link href="/pricing" className="px-8 sm:px-12 py-4 sm:py-5 rounded-2xl bg-white text-black font-bold hover:shadow-2xl hover:shadow-white/20 transition-all transform hover:-translate-y-1 text-sm sm:text-base italic text-center">
-                  Book IT Consultation
+            <div className="flex items-center justify-center gap-16 mb-2">
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-white text-xs font-bold uppercase tracking-widest">FOR JOBS</span>
+                <Link href="/careers" className="px-10 py-3 rounded-full bg-white text-black font-bold hover:shadow-2xl hover:shadow-white/20 transition-all text-lg min-w-[200px] text-center">
+                  Explore Jobs
                 </Link>
-                <Link href="/services" className="px-8 sm:px-12 py-4 sm:py-5 rounded-2xl bg-transparent border border-white/20 text-white font-bold hover:bg-white/5 transition-all text-sm sm:text-base italic text-center">
-                  Explore Our Services
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-white/60 text-xs font-bold uppercase tracking-widest">FOR BUSINESS</span>
+                <Link href="/services" className="px-10 py-3 rounded-full bg-transparent border border-white/30 text-white font-bold hover:bg-white/10 transition-all text-lg min-w-[200px] text-center">
+                  Explore Solutions
                 </Link>
-              </motion.div>
+              </div>
             </div>
 
             {/* Manpower Expert Section Visual - Centered Orbiting Layout */}
-            <div className="relative h-[350px] sm:h-[550px] lg:h-[700px] mt-12 w-full mx-auto flex items-center justify-center overflow-visible">
+            <div className="relative h-[450px] sm:h-[650px] lg:h-[800px] mt-8 w-full mx-auto flex items-center justify-center overflow-visible">
+              
+              {/* Awign Style Dotted SVG Paths connecting center to the blobs */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40 hidden lg:block" style={{ zIndex: 10 }}>
+                {/* Left side connections */}
+                <path d="M 50% 50% Q 30% 20% 20% 25%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
+                <path d="M 50% 50% Q 30% 60% 15% 55%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
+                <path d="M 50% 50% Q 35% 85% 25% 80%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
+                
+                {/* Right side connections */}
+                <path d="M 50% 50% Q 70% 20% 75% 25%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
+                <path d="M 50% 50% Q 70% 60% 85% 55%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
+                <path d="M 50% 50% Q 65% 85% 75% 80%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
+              </svg>
+
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1, delay: 0.2 }}
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-64 sm:w-64 sm:h-96 lg:w-80 lg:h-[500px] z-20"
+                className="absolute left-1/2 top-[55%] -translate-x-1/2 -translate-y-1/2 w-56 h-[300px] sm:w-[350px] sm:h-[450px] lg:w-[450px] lg:h-[650px] z-20"
               >
                 <div className="relative w-full h-full group">
-                  <div className="absolute inset-0 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+                  <div className="absolute inset-x-0 top-1/4 bottom-0 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
                   <img 
                     src="/men.png" 
                     alt="Manpower Expert" 
-                    className="w-full h-full object-contain relative z-10 drop-shadow-2xl brightness-110 contrast-110 object-bottom" 
+                    className="w-full h-full object-cover sm:object-contain relative z-10 brightness-110 contrast-110 object-bottom" 
                   />
                 </div>
               </motion.div>
 
-              {/* Floating Profile Contexts */}
-              <FloatingContext top="10%" left="5%" label="Auditors" color="emerald" image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576" />
-              <FloatingContext top="50%" left="0%" label="Data Annotators" color="purple" image="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670" />
-              <FloatingContext bottom="10%" left="5%" label="Mentors" color="blue" image="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=2574" />
+              {/* Exact Awign Style Floating Blobs */}
+              <FloatingContext top="15%" left="15%" label="Auditors" color="emerald" blobShape="45% 55% 42% 58% / 54% 43% 57% 46%" image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576" />
+              <FloatingContext top="50%" left="5%" label="Data Annotators" color="purple" blobShape="60% 40% 68% 32% / 54% 63% 37% 46%" image="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670" />
+              <FloatingContext bottom="15%" left="20%" label="Mentors" color="blue" blobShape="52% 48% 33% 67% / 38% 39% 61% 62%" image="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=2574" />
               
-              <FloatingContext top="10%" right="5%" label="Promoters" color="orange" image="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=2576" />
-              <FloatingContext top="50%" right="0%" label="Telecallers" color="cyan" image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=2670" />
-              <FloatingContext bottom="10%" right="5%" label="Invigilators" color="rose" image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2576" />
+              <FloatingContext top="20%" right="15%" label="Promoters" color="orange" blobShape="65% 35% 30% 70% / 55% 44% 56% 45%" image="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=2576" />
+              <FloatingContext top="45%" right="5%" label="Telecallers" color="cyan" blobShape="37% 63% 51% 49% / 46% 62% 38% 54%" image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=2670" />
+              <FloatingContext bottom="15%" right="20%" label="Invigilators" color="rose" blobShape="43% 57% 40% 60% / 65% 51% 49% 35%" image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2576" />
             </div>
 
           </div>
@@ -383,14 +380,14 @@ export default function HomePage() {
 }
 
 // Sub-components
-function FloatingContext({ top, left, right, bottom, label, color, image }) {
+function FloatingContext({ top, left, right, bottom, label, color, image, blobShape }) {
   const bgColors = {
-    emerald: 'from-emerald-500/30 to-emerald-700/30',
-    purple: 'from-purple-500/30 to-purple-700/30',
-    blue: 'from-blue-500/30 to-blue-700/30',
-    orange: 'from-orange-500/30 to-orange-700/30',
-    cyan: 'from-cyan-500/30 to-cyan-700/30',
-    rose: 'from-rose-500/30 to-rose-700/30'
+    emerald: 'bg-[#4ADE80]',
+    purple: 'bg-[#A855F7]',
+    blue: 'bg-[#3B82F6]',
+    orange: 'bg-[#F59E0B]',
+    cyan: 'bg-[#06B6D4]',
+    rose: 'bg-[#F43F5E]'
   };
 
   return (
@@ -400,12 +397,13 @@ function FloatingContext({ top, left, right, bottom, label, color, image }) {
       transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       className="absolute text-center group z-30"
     >
-      <div className={`relative w-14 h-14 sm:w-20 sm:h-20 lg:w-32 lg:h-32 p-1 rounded-full bg-gradient-to-br ${bgColors[color]} border border-white/20 overflow-hidden shadow-2xl mx-auto`}>
-        <div className="relative w-full h-full rounded-full overflow-hidden">
-          <Image src={image} alt={label} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
-        </div>
+      <div 
+        className={`relative w-20 h-20 sm:w-28 sm:h-28 lg:w-36 lg:h-36 ${bgColors[color]} overflow-hidden mx-auto border-0 shadow-lg`}
+        style={{ borderRadius: blobShape || '50%' }}
+      >
+        <Image src={image} alt={label} fill className="object-cover group-hover:scale-110 transition-transform duration-500 mix-blend-luminosity opacity-90" />
       </div>
-      <p className="mt-2 sm:mt-4 text-white text-[6px] sm:text-[8px] lg:text-[10px] font-bold tracking-[0.1em] sm:tracking-[0.2em] uppercase opacity-70 group-hover:opacity-100 transition-opacity italic">{label}</p>
+      <p className="mt-4 text-white text-xs sm:text-sm lg:text-lg font-medium">{label}</p>
     </motion.div>
   );
 }
