@@ -37,68 +37,65 @@ export default function HomePage() {
       
       <main className="flex-grow pt-24">
         {/* --- HERO SECTION --- */}
-        <section className="relative min-h-[90vh] flex items-center pt-24 pb-12 px-6 overflow-hidden bg-[#020617]">
+        <section className="relative min-h-[90vh] lg:h-[85vh] flex flex-col pt-32 pb-0 px-6 overflow-hidden bg-[#020617] border-b border-white/5">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none"></div>
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[100px] pointer-events-none"></div>
           
-          <div className="max-w-7xl mx-auto relative z-10 w-full pt-20">
+          <div className="max-w-7xl mx-auto relative z-10 w-full flex-grow flex flex-col items-center">
             
-            <div className="flex items-center justify-center gap-16 mb-2">
+            <div className="flex items-center justify-center gap-10 sm:gap-16 mb-4 sm:mb-12 relative z-40">
               <div className="flex flex-col items-center gap-2">
-                <span className="text-white text-xs font-bold uppercase tracking-widest">FOR JOBS</span>
-                <Link href="/careers" className="px-10 py-3 rounded-full bg-white text-black font-bold hover:shadow-2xl hover:shadow-white/20 transition-all text-lg min-w-[200px] text-center">
+                <span className="text-white text-[10px] sm:text-xs font-bold uppercase tracking-widest">FOR JOBS</span>
+                <Link href="/careers" className="px-6 sm:px-10 py-3 sm:py-4 rounded-full bg-white text-black font-bold hover:shadow-2xl hover:shadow-white/20 transition-all text-sm sm:text-lg min-w-[160px] sm:min-w-[200px] text-center">
                   Explore Jobs
                 </Link>
               </div>
               <div className="flex flex-col items-center gap-2">
-                <span className="text-white/60 text-xs font-bold uppercase tracking-widest">FOR BUSINESS</span>
-                <Link href="/services" className="px-10 py-3 rounded-full bg-transparent border border-white/30 text-white font-bold hover:bg-white/10 transition-all text-lg min-w-[200px] text-center">
+                <span className="text-white/60 text-[10px] sm:text-xs font-bold uppercase tracking-widest">FOR BUSINESS</span>
+                <Link href="/services" className="px-6 sm:px-10 py-3 sm:py-4 rounded-full bg-transparent border border-white/30 text-white font-bold hover:bg-white/10 transition-all text-sm sm:text-lg min-w-[160px] sm:min-w-[200px] text-center">
                   Explore Solutions
                 </Link>
               </div>
             </div>
 
             {/* Manpower Expert Section Visual - Centered Orbiting Layout */}
-            <div className="relative h-[450px] sm:h-[650px] lg:h-[800px] mt-8 w-full mx-auto flex items-center justify-center overflow-visible">
+            <div className="relative w-full flex-grow flex items-end justify-center mt-auto min-h-[500px] lg:min-h-[600px] overflow-visible">
               
               {/* Awign Style Dotted SVG Paths connecting center to the blobs */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40 hidden lg:block" style={{ zIndex: 10 }}>
                 {/* Left side connections */}
-                <path d="M 50% 50% Q 30% 20% 20% 25%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
-                <path d="M 50% 50% Q 30% 60% 15% 55%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
-                <path d="M 50% 50% Q 35% 85% 25% 80%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
+                <path d="M 50% 100% Q 30% 20% 20% 30%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
+                <path d="M 50% 100% Q 30% 60% 15% 55%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
+                <path d="M 50% 100% Q 35% 85% 25% 80%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
                 
                 {/* Right side connections */}
-                <path d="M 50% 50% Q 70% 20% 75% 25%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
-                <path d="M 50% 50% Q 70% 60% 85% 55%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
-                <path d="M 50% 50% Q 65% 85% 75% 80%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
+                <path d="M 50% 100% Q 70% 20% 80% 30%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
+                <path d="M 50% 100% Q 70% 60% 85% 55%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
+                <path d="M 50% 100% Q 65% 85% 75% 80%" fill="none" stroke="white" strokeWidth="1.5" strokeDasharray="5 8" strokeLinecap="round" />
               </svg>
 
               <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 1, delay: 0.2 }}
-                className="absolute left-1/2 top-[55%] -translate-x-1/2 -translate-y-1/2 w-56 h-[300px] sm:w-[350px] sm:h-[450px] lg:w-[450px] lg:h-[650px] z-20"
+                transition={{ duration: 1, delay: 0.1 }}
+                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[350px] sm:w-[500px] lg:w-[650px] h-[450px] sm:h-[600px] lg:h-[750px] z-20 pointer-events-none"
               >
-                <div className="relative w-full h-full group">
-                  <div className="absolute inset-x-0 top-1/4 bottom-0 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
                   <img 
                     src="/men.png" 
                     alt="Manpower Expert" 
-                    className="w-full h-full object-cover sm:object-contain relative z-10 brightness-110 contrast-110 object-bottom" 
+                    className="w-full h-full object-contain object-bottom relative z-10 brightness-110 contrast-110" 
                   />
-                </div>
               </motion.div>
 
               {/* Exact Awign Style Floating Blobs */}
-              <FloatingContext top="15%" left="15%" label="Auditors" color="emerald" blobShape="45% 55% 42% 58% / 54% 43% 57% 46%" image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576" />
-              <FloatingContext top="50%" left="5%" label="Data Annotators" color="purple" blobShape="60% 40% 68% 32% / 54% 63% 37% 46%" image="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670" />
-              <FloatingContext bottom="15%" left="20%" label="Mentors" color="blue" blobShape="52% 48% 33% 67% / 38% 39% 61% 62%" image="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=2574" />
+              <FloatingContext top="10%" left="12%" label="Auditors" color="emerald" blobShape="45% 55% 42% 58% / 54% 43% 57% 46%" image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576" />
+              <FloatingContext top="45%" left="2%" label="Data Annotators" color="purple" blobShape="60% 40% 68% 32% / 54% 63% 37% 46%" image="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2670" />
+              <FloatingContext bottom="8%" left="15%" label="Mentors" color="blue" blobShape="52% 48% 33% 67% / 38% 39% 61% 62%" image="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=2574" />
               
-              <FloatingContext top="20%" right="15%" label="Promoters" color="orange" blobShape="65% 35% 30% 70% / 55% 44% 56% 45%" image="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=2576" />
-              <FloatingContext top="45%" right="5%" label="Telecallers" color="cyan" blobShape="37% 63% 51% 49% / 46% 62% 38% 54%" image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=2670" />
-              <FloatingContext bottom="15%" right="20%" label="Invigilators" color="rose" blobShape="43% 57% 40% 60% / 65% 51% 49% 35%" image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2576" />
+              <FloatingContext top="10%" right="12%" label="Promoters" color="orange" blobShape="65% 35% 30% 70% / 55% 44% 56% 45%" image="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=2576" />
+              <FloatingContext top="45%" right="2%" label="Telecallers" color="cyan" blobShape="37% 63% 51% 49% / 46% 62% 38% 54%" image="https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=2670" />
+              <FloatingContext bottom="8%" right="15%" label="Invigilators" color="rose" blobShape="43% 57% 40% 60% / 65% 51% 49% 35%" image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2576" />
             </div>
 
           </div>
