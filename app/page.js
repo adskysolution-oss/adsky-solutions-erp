@@ -75,20 +75,20 @@ export default function HomePage() {
             </div>
 
             {/* Manpower Expert Section Visual */}
-            <div className="relative h-[300px] sm:h-[500px] lg:h-[650px] mt-12 block w-full mx-auto">
+            <div className="relative min-h-[450px] sm:min-h-[550px] lg:min-h-[700px] mt-12 w-full mx-auto flex items-center justify-center overflow-visible">
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1, delay: 0.6 }}
-                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[160px] sm:w-[280px] lg:w-[350px] h-[240px] sm:h-[420px] lg:h-[520px] z-20"
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.2 }}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-64 sm:w-64 sm:h-96 lg:w-80 lg:h-[500px] z-20"
               >
                 <div className="relative w-full h-full group">
-                  <div className="absolute inset-x-0 bottom-0 top-1/4 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
-                  <Image 
+                  <div className="absolute inset-0 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+                  <img 
                     src="/men.png" 
                     alt="Manpower Expert" 
-                    fill 
-                    className="object-contain relative z-10 drop-shadow-[0_20px_50px_rgba(0,0,0,0.4)] brightness-110 contrast-110" 
+                    className="w-full h-full object-contain relative z-10 drop-shadow-2xl brightness-110 contrast-110 object-bottom" 
                   />
                 </div>
               </motion.div>
