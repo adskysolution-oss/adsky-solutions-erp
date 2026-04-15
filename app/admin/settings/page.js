@@ -11,7 +11,7 @@ import {
 export default function AdminSettings() {
   const [activeTab, setActiveTab] = useState('profile');
   const [profile, setProfile] = useState({ name: '', email: '', phone: '', currentPassword: '', newPassword: '' });
-  const [system, setSystem] = useState({ siteName: 'AdSky Solution', supportEmail: 'support@adskysolution.in', contactPhone: '8076611842', logoUrl: '' });
+  const [system, setSystem] = useState({ siteName: 'AdSky Solution', supportEmail: 'info@adskysolution.com', contactPhone: '8076611842', logoUrl: '' });
   const [payments, setPayments] = useState({ cashfreeId: '1210130f87acf8188613ae94b960310121', cashfreeSecret: '••••••••••••••••••••••••••••••••' });
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(true);

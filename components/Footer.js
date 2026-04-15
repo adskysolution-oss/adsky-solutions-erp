@@ -14,7 +14,7 @@ export default function Footer() {
     contact: {
       address: 'AD Sky Solution, 126 Satyam Enclave Sahibabad, \n Ghaziabad UTTAR PRADESH 201003',
       phone: '8076611842',
-      email: 'support@adskysolution.com'
+      email: 'info@adskysolution.com'
     }
   };
 
@@ -114,7 +114,7 @@ export default function Footer() {
             </div>
             <div>
               <h5 className="font-bold mb-1 text-green-400/90">Email Us</h5>
-              <p className="text-slate-400 text-sm leading-relaxed font-medium">{config?.contact?.email || 'support@adskysolution.com'}</p>
+              <p className="text-slate-400 text-sm leading-relaxed font-medium">{config?.contact?.email || 'info@adskysolution.com'}</p>
             </div>
           </div>
         </div>

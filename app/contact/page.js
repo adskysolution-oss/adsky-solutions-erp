@@ -41,7 +41,7 @@ export default function ContactPage() {
                 <ContactItem 
                   icon={Mail} 
                   title="General Inquiries" 
-                  desc="support@adskysolution.com" 
+                  desc="info@adskysolution.com" 
                   color="emerald"
                 />
               </div>

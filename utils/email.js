@@ -1,9 +1,9 @@
-import nodemailer from 'nodemailer';
+﻿import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail', // You can change this to your email provider
   auth: {
-    user: process.env.EMAIL_USER || 'support@adskysolution.com',
+    user: process.env.EMAIL_USER || 'info@adskysolution.com',
     pass: process.env.EMAIL_PASS || 'your-app-password',
   },
 });
@@ -12,7 +12,7 @@ export async function sendOnboardingEmail({ name, email, password, role }) {
   const loginLink = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/${role}/login`;
 
   const mailOptions = {
-    from: `"AdSky Solution ERP" <${process.env.EMAIL_USER || 'support@adskysolution.com'}>`,
+    from: `"AdSky Solution ERP" <${process.env.EMAIL_USER || 'info@adskysolution.com'}>`,
     to: email,
     subject: 'Welcome to AdSky Solution - Your Account Credentials',
     html: `
