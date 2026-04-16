@@ -13,8 +13,6 @@ export default function SignupPage() {
     email: '',
     phone: '',
     password: '',
-    confirmPassword: '',
-    referralCode: ''
   });
 
   const roles = [
@@ -23,9 +21,31 @@ export default function SignupPage() {
     { id: 'agent', title: 'Field Agent', icon: Zap, desc: 'Mobile operations and lead registration.' },
   ];
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    alert(`Registration initiated for ${role} role. Backend logic connecting...`);
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+          role: role
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert(`Account created! Identity ID: ${data.identityId}. Please login.`);
+        window.location.href = '/login';
+      } else {
+        alert(data.error || 'Identity Sync Failed');
+      }
+    } catch (err) {
+      console.error('Signup error:', err);
+    }
   };
 
   return (
@@ -138,6 +158,8 @@ export default function SignupPage() {
                              <input 
                                type="text" 
                                required
+                               value={formData.name}
+                               onChange={(e) => setFormData({...formData, name: e.target.value})}
                                placeholder="Identity Name"
                                className="w-full pl-12 pr-6 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:bg-white text-sm font-bold transition-all"
                              />
@@ -150,6 +172,8 @@ export default function SignupPage() {
                              <input 
                                type="tel" 
                                required
+                               value={formData.phone}
+                               onChange={(e) => setFormData({...formData, phone: e.target.value})}
                                placeholder="91+ 0000 000 000"
                                className="w-full pl-12 pr-6 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:bg-white text-sm font-bold transition-all"
                              />
@@ -164,6 +188,8 @@ export default function SignupPage() {
                           <input 
                             type="email" 
                             required
+                            value={formData.email}
+                            onChange={(e) => setFormData({...formData, email: e.target.value})}
                             placeholder="node@adskysolution.com"
                             className="w-full pl-12 pr-6 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:bg-white text-sm font-bold transition-all"
                           />
@@ -177,6 +203,8 @@ export default function SignupPage() {
                           <input 
                             type="password" 
                             required
+                            value={formData.password}
+                            onChange={(e) => setFormData({...formData, password: e.target.value})}
                             placeholder="••••••••"
                             className="w-full pl-12 pr-6 py-4 bg-slate-50/50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:bg-white text-sm font-bold transition-all"
                           />

@@ -5,11 +5,40 @@ import { Users, Search, Filter, MoreVertical, ShieldCheck, UserMinus, UserX, Tog
 import { motion } from 'framer-motion';
 
 export default function UserControl() {
-  const users = [
-    { id: 'USR-201', name: 'Abhishek Bhardwaj', email: 'admin@adskysolution.com', role: 'admin', status: 'active', joined: '12 Apr 2026' },
-    { id: 'USR-202', name: 'Raj Patel', email: 'partner@adskysolution.com', role: 'partner', status: 'active', joined: '14 Apr 2026' },
-    { id: 'USR-203', name: 'Suresh Kumar', email: 'agent@adskysolution.com', role: 'employee', status: 'blocked', joined: '15 Apr 2026' },
-  ];
+  const [users, setUsers] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [search, setSearch] = React.useState('');
+
+  React.useEffect(() => {
+    fetchUsers();
+  }, [search]);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/admin/users?search=${search}`);
+      const data = await res.json();
+      setUsers(data);
+    } catch (err) {
+      console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleStatus = async (userId, currentStatus) => {
+    const nextStatus = currentStatus === 'active' ? 'blocked' : 'active';
+    try {
+      await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, status: nextStatus })
+      });
+      fetchUsers();
+    } catch (err) {
+      console.error('Update error:', err);
+    }
+  };
 
   const getRoleStyle = (role) => {
     switch(role) {
@@ -42,6 +71,8 @@ export default function UserControl() {
                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors" size={18} />
                <input 
                  type="text" 
+                 value={search}
+                 onChange={(e) => setSearch(e.target.value)}
                  placeholder="Search Name, Email, or Identity ID..." 
                  className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:bg-white text-sm font-bold transition-all"
                />
@@ -97,7 +128,9 @@ export default function UserControl() {
                              <button className="w-9 h-9 rounded-full bg-slate-50 group-hover:bg-white/10 flex items-center justify-center text-slate-400 group-hover:text-indigo-400 transition-all">
                                 <ShieldCheck size={18} />
                              </button>
-                             <button className="w-9 h-9 rounded-full bg-slate-50 group-hover:bg-white/10 flex items-center justify-center text-slate-400 group-hover:text-rose-500 transition-all">
+                             <button 
+                                onClick={() => toggleStatus(user.id, user.status)}
+                                className={`w-9 h-9 rounded-full bg-slate-50 group-hover:bg-white/10 flex items-center justify-center transition-all ${user.status === 'active' ? 'text-slate-400 group-hover:text-rose-500' : 'text-emerald-400 group-hover:text-emerald-500'}`}>
                                 <UserX size={18} />
                              </button>
                           </div>

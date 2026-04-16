@@ -49,23 +49,70 @@ const chartData = [
 
 export default function SuperAdminDashboard() {
   const [mounted, setMounted] = React.useState(false);
-  const [stats] = useState({
-    users: 1280,
-    partners: 84,
-    employees: 156,
-    farmers: 2450,
-    todayRegistrations: 42,
-    totalRevenue: 154200,
-    todayRevenue: 4200,
-    pendingPayments: 12,
-    successPayments: 412,
-    failedPayments: 8,
-    health: 'Optimal'
+  const [stats, setStats] = useState({
+    users: 0,
+    partners: 0,
+    employees: 0,
+    farmers: 0,
+    todayRegistrations: 0,
+    totalRevenue: 0,
+    todayRevenue: 0,
+    pendingPayments: 0,
+    successPayments: 0,
+    failedPayments: 0,
+    health: 'Node Synchronizing...'
   });
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [leads, setLeads] = useState([]);
 
   React.useEffect(() => {
     setMounted(true);
+    fetchDashboardStats();
   }, []);
+
+  const fetchDashboardStats = async () => {
+    try {
+      setIsLoading(true);
+      const [uRes, pRes, lRes] = await Promise.all([
+        fetch('/api/admin/users'),
+        fetch('/api/admin/partners'),
+        fetch('/api/admin/leads')
+      ]);
+
+      const users = await uRes.json();
+      const partners = await pRes.json();
+      const leadData = await lRes.json();
+      setLeads(leadData);
+
+      setStats({
+        users: users.length || 0,
+        partners: partners.length || 0,
+        employees: users.filter(u => u.role === 'employee').length,
+        farmers: users.filter(u => u.role === 'farmer').length,
+        todayRegistrations: users.filter(u => new Date(u.createdAt).toDateString() === new Date().toDateString()).length,
+        totalRevenue: leadData.filter(l => l.paymentStatus === 'success').length * 249,
+        todayRevenue: leadData.filter(l => l.paymentStatus === 'success' && new Date(l.createdAt).toDateString() === new Date().toDateString()).length * 249,
+        pendingPayments: leadData.filter(l => l.paymentStatus === 'pending').length,
+        successPayments: leadData.filter(l => l.paymentStatus === 'success').length,
+        failedPayments: leadData.filter(l => l.paymentStatus === 'failed').length,
+        health: 'Optimal'
+      });
+    } catch (err) {
+      console.error('Stats Sync Error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const chartData = [
+    { name: 'Node-7', revenue: stats.successPayments * 249 * 0.1 },
+    { name: 'Node-6', revenue: stats.successPayments * 249 * 0.3 },
+    { name: 'Node-5', revenue: stats.successPayments * 249 * 0.2 },
+    { name: 'Node-4', revenue: stats.successPayments * 249 * 0.5 },
+    { name: 'Node-3', revenue: stats.successPayments * 249 * 0.4 },
+    { name: 'ACTIVE', revenue: stats.successPayments * 249 },
+  ];
 
   const kpiCards = [
     { title: 'Total Users', value: stats.users, icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-50', trend: '+12%' },
@@ -76,9 +123,7 @@ export default function SuperAdminDashboard() {
   ];
 
   const paymentCards = [
-    { title: 'Total Revenue', value: `₹${stats.totalRevenue.toLocaleString()}`, icon: IndianRupee, color: 'text-slate-900', bg: 'bg-slate-50' },
-    { title: 'Today Revenue', value: `₹${stats.todayRevenue.toLocaleString()}`, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { title: 'Pending', value: stats.pendingPayments, icon: AlertCircle, color: 'text-amber-600', bg: 'bg-amber-50' },
+    { title: 'Pending', value: stats.pendingPayments, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
     { title: 'Success', value: stats.successPayments, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
     { title: 'Failed', value: stats.failedPayments, icon: XCircle, color: 'text-rose-600', bg: 'bg-rose-50' },
   ];
@@ -205,8 +250,8 @@ export default function SuperAdminDashboard() {
                      <Flame size={20} className="text-rose-500 animate-pulse" />
                      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Yield Prediction</p>
                   </div>
-                  <h4 className="text-4xl font-black italic tracking-tighter mb-2">₹4.2M</h4>
-                  <p className="text-[11px] text-indigo-400 font-bold italic mb-8">Expected Monthly Volume</p>
+                  <h4 className="text-4xl font-black italic tracking-tighter mb-2">₹{stats.totalRevenue.toLocaleString()}</h4>
+                  <p className="text-[11px] text-indigo-400 font-bold italic mb-8">Total Volume</p>
                   
                   <div className="space-y-4 pt-6 border-t border-white/10">
                      <div className="flex justify-between items-center text-[10px] font-black font-mono tracking-tighter uppercase">
@@ -227,7 +272,7 @@ export default function SuperAdminDashboard() {
                  Payment Stream
                </h4>
                <div className="space-y-4">
-                  {paymentCards.slice(2).map((item) => (
+                  {paymentCards.map((item) => (
                     <div key={item.title} className="flex items-center justify-between p-4 rounded-2xl bg-white/40 border border-white hover:bg-white transition-colors">
                        <div className="flex items-center gap-3">
                           <div className={`w-8 h-8 ${item.bg} ${item.color} rounded-lg flex items-center justify-center`}>
@@ -268,35 +313,32 @@ export default function SuperAdminDashboard() {
                      <th className="px-6 pb-2 text-right">Sequence</th>
                   </tr>
                </thead>
-               <tbody>
-                  {[
-                    { id: 'ADS-1042', action: 'Direct Server Payout', status: 'Success', time: '2m ago', color: 'text-emerald-600', bg: 'bg-emerald-50' },
-                    { id: 'ADS-1041', action: 'Identity Hash Verified', status: 'Success', time: '14m ago', color: 'text-emerald-600', bg: 'bg-emerald-50' },
-                    { id: 'ADS-1040', action: 'New Farmer Protocol', status: 'Pending', time: '28m ago', color: 'text-amber-600', bg: 'bg-amber-50' }
-                  ].map((log) => (
-                    <tr key={log.id} className="group bg-white/40 hover:bg-slate-900 hover:text-white transition-all duration-300">
-                       <td className="px-6 py-4 rounded-l-2xl border-y border-l border-white/60">
-                          <span className="text-[10px] font-black tracking-tighter uppercase font-mono">{log.id}</span>
-                       </td>
-                       <td className="px-6 py-4 border-y border-white/60">
-                          <div className="flex items-center gap-3">
-                             <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 group-hover:bg-white/10 group-hover:text-white">
-                                <Activity size={16} />
-                             </div>
-                             <span className="text-[11px] font-black italic">{log.action}</span>
-                          </div>
-                       </td>
-                       <td className="px-6 py-4 border-y border-white/60">
-                          <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase italic ${log.bg} ${log.color} group-hover:bg-white group-hover:text-slate-900 border border-current`}>
-                             {log.status}
-                          </span>
-                       </td>
-                       <td className="px-6 py-4 rounded-r-2xl border-y border-r border-white/60 text-right">
-                          <span className="text-[9px] font-black text-slate-400 italic group-hover:text-slate-500">{log.time}</span>
-                       </td>
-                    </tr>
-                  ))}
-               </tbody>
+                <tbody>
+                   {leads.slice(0, 5).map((lead) => (
+                     <tr key={lead.id} className="group bg-white/40 hover:bg-slate-900 hover:text-white transition-all duration-300 shadow-sm hover:shadow-2xl">
+                        <td className="px-6 py-4 rounded-l-2xl border-y border-l border-white/60">
+                           <span className="text-[10px] font-black tracking-tighter uppercase font-mono group-hover:text-indigo-400">{lead.id.split('-')[0]}</span>
+                        </td>
+                        <td className="px-6 py-4 border-y border-white/60">
+                           <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-slate-100/50 rounded-lg flex items-center justify-center text-slate-400 group-hover:bg-white/10 group-hover:text-white transition-colors">
+                                 <Activity size={16} />
+                              </div>
+                              <span className="text-[11px] font-black italic">{lead.form?.name || 'Identity Sync'}</span>
+                           </div>
+                        </td>
+                        <td className="px-6 py-4 border-y border-white/60">
+                           <div className="flex items-center gap-2">
+                              <div className={`w-1.5 h-1.5 rounded-full ${lead.status === 'approved' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                              <span className="text-[9px] font-black uppercase tracking-widest italic">{lead.status}</span>
+                           </div>
+                        </td>
+                        <td className="px-6 py-4 rounded-r-2xl border-y border-r border-white/60 text-right">
+                           <span className="text-[9px] font-black text-slate-400 italic group-hover:text-slate-500">Node_{Math.floor(Math.random()*900)+100}</span>
+                        </td>
+                     </tr>
+                   ))}
+                </tbody>
             </table>
          </div>
       </motion.div>

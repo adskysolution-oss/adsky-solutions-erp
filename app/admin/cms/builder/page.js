@@ -4,15 +4,53 @@ import React, { useState } from 'react';
 import { Layers, Plus, Move, Trash2, Globe, Sparkles, Layout, Type, Image as ImageIcon, CreditCard, ChevronDown } from 'lucide-react';
 import { motion, Reorder } from 'framer-motion';
 
-export default function CMSPageBuilder() {
-  const [sections, setSections] = useState([
-    { id: 'sec-1', type: 'Hero', content: 'Modern Farming Solutions' },
-    { id: 'sec-2', type: 'Features', content: '25X Growth Network' },
-    { id: 'sec-3', type: 'Payments', content: 'Cashfree Integration' },
-  ]);
+export default function CMSBuilder() {
+  const [sections, setSections] = useState([]);
+  const [isSaving, setIsSaving] = useState(false);
+
+  React.useEffect(() => {
+    fetchPage();
+  }, []);
+
+  const fetchPage = async () => {
+    try {
+      const res = await fetch('/api/admin/cms/pages?slug=home');
+      const data = await res.json();
+      if (data && data.layoutJson) {
+         setSections(data.layoutJson);
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+    }
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+       await fetch('/api/admin/cms/pages', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({
+            slug: 'home',
+            title: 'Home Page',
+            layoutJson: sections,
+            published: true
+         })
+       });
+       alert('CMS Node Synchronized to Production.');
+    } catch (err) {
+       console.error('Save error:', err);
+    } finally {
+       setIsSaving(false);
+    }
+  };
 
   const addSection = (type) => {
     setSections([...sections, { id: `sec-${Date.now()}`, type, content: `New ${type} Content` }]);
+  };
+
+  const removeSection = (id) => {
+    setSections(sections.filter(s => s.id !== id));
   };
 
   return (

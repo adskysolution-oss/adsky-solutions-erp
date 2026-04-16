@@ -24,34 +24,45 @@ export async function GET(req) {
   }
 
   const { searchParams } = new URL(req.url);
-  const slug = searchParams.get('slug');
+  const status = searchParams.get('status');
+  const partnerCode = searchParams.get('partnerCode');
 
   try {
-     if (slug) {
-        const page = await prisma.page.findUnique({ where: { slug } });
-        return NextResponse.json(page);
-     }
-     const pages = await prisma.page.findMany({ orderBy: { updatedAt: 'desc' } });
-     return NextResponse.json(pages);
+    const submissions = await prisma.submission.findMany({
+      where: {
+        AND: [
+          status ? { status } : {},
+          partnerCode ? { partnerCode } : {}
+        ]
+      },
+      include: {
+        form: {
+           select: { name: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 200
+    });
+
+    return NextResponse.json(submissions);
   } catch (error) {
-     return NextResponse.json({ error: 'Failed to retrieve CMS nodes' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to retrieve mission stream' }, { status: 500 });
   }
 }
 
-export async function POST(req) {
+export async function PATCH(req) {
   if (!await verifyAdmin()) {
     return NextResponse.json({ error: 'Access Denied: Admin Elevation Required' }, { status: 403 });
   }
 
   try {
-    const { slug, title, layoutJson, published } = await req.json();
-    const updated = await prisma.page.upsert({
-      where: { slug },
-      update: { title, layoutJson, published, updatedAt: new Date() },
-      create: { slug, title, layoutJson, published }
+    const { id, status } = await req.json();
+    const updated = await prisma.submission.update({
+      where: { id },
+      data: { status }
     });
-    return NextResponse.json({ message: 'CMS node synchronized', page: updated });
+    return NextResponse.json({ message: 'Mission node updated', submission: updated });
   } catch (error) {
-    return NextResponse.json({ error: 'CMS synchronization failed' }, { status: 500 });
+    return NextResponse.json({ error: 'Mission update failed' }, { status: 500 });
   }
 }

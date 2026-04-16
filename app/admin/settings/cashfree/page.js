@@ -6,20 +6,53 @@ import { motion } from 'framer-motion';
 
 export default function CashfreeSettings() {
   const [config, setConfig] = useState({
-    appId: 'TEST10477006857ea2687a4ba7ff664960077401',
-    secretKey: 'cfsk_ma_test_************************',
-    env: 'sandbox',
-    status: 'connected'
+    cashfreeAppId: '',
+    cashfreeSecretKey: '',
+    isLive: false,
+    status: 'connecting'
   });
 
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleSave = () => {
+  React.useEffect(() => {
+    fetchConfig();
+  }, []);
+
+  const fetchConfig = async () => {
+    try {
+      const res = await fetch('/api/admin/config');
+      const data = await res.json();
+      setConfig({
+        cashfreeAppId: data.cashfreeAppId || '',
+        cashfreeSecretKey: data.cashfreeSecretKey || '',
+        isLive: data.isLive || false,
+        status: 'connected'
+      });
+    } catch (err) {
+      console.error('Config fetch error:', err);
+      setConfig(prev => ({ ...prev, status: 'error' }));
+    }
+  };
+
+  const handleSave = async () => {
     setIsSaving(true);
-    setTimeout(() => {
+    try {
+       await fetch('/api/admin/config', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({
+            cashfreeAppId: config.cashfreeAppId,
+            cashfreeSecretKey: config.cashfreeSecretKey,
+            isLive: config.isLive
+         })
+       });
+       alert('Cashfree Protocols Synchronized.');
+       fetchConfig();
+    } catch (err) {
+       console.error('Save error:', err);
+    } finally {
        setIsSaving(false);
-       alert('Cashfree Credentials Updated Locally. (Backend Sync in Progress)');
-    }, 1500);
+    }
   };
 
   return (
@@ -54,8 +87,8 @@ export default function CashfreeSettings() {
                      <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1 italic">App ID (Client ID)</label>
                      <input 
                         type="text" 
-                        value={config.appId}
-                        onChange={(e) => setConfig({...config, appId: e.target.value})}
+                        value={config.cashfreeAppId}
+                        onChange={(e) => setConfig({...config, cashfreeAppId: e.target.value})}
                         className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:bg-white text-sm font-mono font-bold transition-all"
                      />
                   </div>
@@ -64,8 +97,8 @@ export default function CashfreeSettings() {
                      <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1 italic">Secret Key</label>
                      <input 
                         type="password" 
-                        value={config.secretKey}
-                        onChange={(e) => setConfig({...config, secretKey: e.target.value})}
+                        value={config.cashfreeSecretKey}
+                        onChange={(e) => setConfig({...config, cashfreeSecretKey: e.target.value})}
                         className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/5 focus:bg-white text-sm font-mono font-bold transition-all"
                      />
                      <p className="text-[9px] text-slate-400 font-bold mt-2 ml-1">Do not share your secret key. Keys are encrypted at rest.</p>
@@ -74,13 +107,16 @@ export default function CashfreeSettings() {
                   <div className="space-y-2">
                      <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1 italic">Environment</label>
                      <div className="flex gap-4">
-                        {['sandbox', 'production'].map((env) => (
+                        {[
+                          { id: false, label: 'sandbox' },
+                          { id: true, label: 'production' }
+                        ].map((env) => (
                           <button 
-                            key={env}
-                            onClick={() => setConfig({...config, env})}
-                            className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest italic border transition-all ${config.env === env ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-400 border-slate-100 hover:border-indigo-200'}`}
+                            key={env.label}
+                            onClick={() => setConfig({...config, isLive: env.id})}
+                            className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest italic border transition-all ${config.isLive === env.id ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-400 border-slate-100 hover:border-indigo-200'}`}
                           >
-                             {env}
+                             {env.label}
                           </button>
                         ))}
                      </div>

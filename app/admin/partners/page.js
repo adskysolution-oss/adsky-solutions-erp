@@ -5,11 +5,40 @@ import { Briefcase, Search, Filter, Plus, UserCheck, TrendingUp, IndianRupee, Ma
 import { motion } from 'framer-motion';
 
 export default function PartnersManagement() {
-  const partners = [
-    { id: 'ADS-101', name: 'Maharashtra Operations', region: 'Mumbai', commission: 30, employees: 42, status: 'active' },
-    { id: 'ADS-102', name: 'Gujarat Regional Hub', region: 'Surat', commission: 25, employees: 28, status: 'active' },
-    { id: 'ADS-103', name: 'MP Central Node', region: 'Satna', commission: 30, employees: 56, status: 'paused' },
-  ];
+  const [partners, setPartners] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    fetchPartners();
+  }, []);
+
+  const fetchPartners = async () => {
+    try {
+      const res = await fetch('/api/admin/partners');
+      const data = await res.json();
+      setPartners(data);
+    } catch (err) {
+      console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleProvision = async () => {
+    const userId = prompt('Enter User ID for new partner (or use a test UUID):');
+    if (!userId) return;
+    
+    try {
+      await fetch('/api/admin/partners', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, region: 'New Regional Hub' })
+      });
+      fetchPartners();
+    } catch (err) {
+       console.error('Provisioning error:', err);
+    }
+  };
 
   return (
     <div className="space-y-8 pb-32 pt-4 px-4 overflow-x-hidden">
@@ -20,7 +49,10 @@ export default function PartnersManagement() {
            </h1>
            <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em]">Corporate Franchisee & Hub Control</p>
         </div>
-        <button className="flex items-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-2xl shadow-xl shadow-indigo-500/10 active:scale-95 transition-all">
+        <button 
+          onClick={handleProvision}
+          className="flex items-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-2xl shadow-xl shadow-indigo-500/10 active:scale-95 transition-all"
+        >
            <Plus size={18} />
            <span className="text-xs font-black uppercase tracking-widest italic">Provision New Hub</span>
         </button>
@@ -75,10 +107,10 @@ export default function PartnersManagement() {
                   {partners.map((partner) => (
                     <tr key={partner.id} className="group bg-white/40 hover:bg-slate-900 hover:text-white transition-all duration-300 shadow-sm hover:shadow-2xl">
                        <td className="px-8 py-5 rounded-l-3xl border-y border-l border-white/60">
-                          <p className="text-[11px] font-black tracking-tighter uppercase font-mono group-hover:text-indigo-400">{partner.id}</p>
+                          <p className="text-[11px] font-black tracking-tighter uppercase font-mono group-hover:text-indigo-400">{partner.partnerCode}</p>
                        </td>
                        <td className="px-8 py-5 border-y border-white/60">
-                          <p className="text-[13px] font-black italic">{partner.name}</p>
+                          <p className="text-[13px] font-black italic">{partner.user?.email || 'System Hub'}</p>
                        </td>
                        <td className="px-8 py-5 border-y border-white/60">
                           <div className="flex items-center gap-2 text-xs font-bold text-slate-500 group-hover:text-white/60">
@@ -86,7 +118,7 @@ export default function PartnersManagement() {
                           </div>
                        </td>
                        <td className="px-8 py-5 border-y border-white/60">
-                          <span className="text-xs font-black italic text-indigo-600 group-hover:text-indigo-400">{partner.commission}%</span>
+                          <span className="text-xs font-black italic text-indigo-600 group-hover:text-indigo-400">{partner.commissionRate}%</span>
                        </td>
                        <td className="px-8 py-5 rounded-r-3xl border-y border-r border-white/60 text-right">
                           <button className="px-6 py-2 bg-slate-50 group-hover:bg-white/10 rounded-full text-[9px] font-black uppercase tracking-widest italic group-hover:text-white transition-all">
