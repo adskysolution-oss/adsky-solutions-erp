@@ -21,8 +21,11 @@ import {
   Zap,
   IndianRupee,
   Activity,
-  UserCheck
+  UserCheck,
+  Monitor,
+  Flame
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const MENU_GROUPS = [
   {
@@ -68,39 +71,54 @@ export default function DashboardSidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="w-72 bg-white border-r border-slate-100 flex flex-col h-full shadow-2xl z-40 relative group">
+    <div className="w-80 glass-card fixed left-0 top-0 h-screen hidden md:flex flex-col z-50 shadow-[20px_0_60px_-15px_rgba(30,41,59,0.05)] border-r border-white/40">
       {/* Brand Header */}
-      <div className="p-8 border-b border-slate-50 flex items-center justify-between">
-         <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-sky-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-sky-200">
-               <Activity size={24} />
+      <div className="p-8 pb-10 flex items-center justify-between relative overflow-hidden">
+         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-500/5 to-rose-500/5 opacity-50" />
+         <div className="flex items-center gap-4 relative z-10">
+            <div className="w-12 h-12 bg-slate-900 rounded-[1.25rem] flex items-center justify-center text-white shadow-2xl glow-indigo group-hover:rotate-6 transition-all duration-500">
+               <Activity size={26} />
             </div>
             <div>
-               <h1 className="text-xl font-black text-slate-900 tracking-tighter italic leading-none">AdSky</h1>
-               <p className="text-[10px] font-black uppercase text-sky-600 tracking-widest mt-0.5">25X SYSTEM</p>
+               <h1 className="text-2xl font-black text-slate-900 tracking-tighter italic leading-none">AdSky</h1>
+               <p className="text-[10px] font-black uppercase text-indigo-600 tracking-widest mt-1">25X SYSTEM</p>
             </div>
+         </div>
+         <div className="text-vibrant-emerald flex items-center animate-pulse">
+            <Monitor size={14} />
          </div>
       </div>
 
       {/* Sidebar Nav */}
-      <div className="flex-grow overflow-y-auto px-4 py-8 space-y-8 custom-scrollbar">
+      <div className="flex-grow overflow-y-auto px-6 py-6 space-y-10 custom-scrollbar relative z-10">
          {MENU_GROUPS.map((group) => (
-           <div key={group.title} className="space-y-2">
-              <h3 className="px-4 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4">{group.title}</h3>
+           <div key={group.title} className="space-y-3">
+              <h3 className="px-4 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-4 flex items-center gap-2">
+                <div className="w-1 h-3 bg-indigo-500/20 rounded-full" />
+                {group.title}
+              </h3>
               {group.items.map((item) => {
                  const isActive = pathname === item.path;
                  return (
                    <Link 
                      key={item.name} 
                      href={item.path}
-                     className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 relative group/item ${isActive ? 'bg-sky-50 text-sky-900 border border-sky-100 shadow-lg shadow-sky-500/5' : 'text-slate-500 hover:bg-slate-50'}`}
+                     className={`flex items-center gap-4 px-5 py-4 rounded-[1.75rem] transition-all duration-500 relative group/item overflow-hidden ${isActive ? 'bg-slate-900 text-white shadow-2xl shadow-indigo-500/20' : 'text-slate-500 hover:bg-white/60 hover:shadow-xl hover:shadow-slate-200/50'}`}
                    >
-                      <item.icon size={18} className={`${isActive ? 'text-sky-600' : 'text-slate-300 group-hover/item:text-slate-500'}`} />
-                      <span className={`text-[11px] font-black tracking-tight ${isActive ? '' : 'uppercase tracking-widest opacity-80'}`}>
+                      {isActive && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-rose-500 to-amber-500 opacity-20" />
+                      )}
+                      
+                      <div className={`relative z-10 w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-300 ${isActive ? 'bg-white/10 text-white' : 'text-slate-400 group-hover/item:text-indigo-600 group-hover/item:bg-indigo-50'}`}>
+                        <item.icon size={20} />
+                      </div>
+                      
+                      <span className={`relative z-10 text-[11.5px] font-black tracking-tight ${isActive ? 'italic' : 'uppercase tracking-widest opacity-80'}`}>
                          {item.name}
                       </span>
+                      
                       {isActive && (
-                         <div className="absolute right-3 w-1 h-5 bg-sky-600 rounded-full shadow-glow" />
+                         <div className="absolute right-4 w-1.5 h-1.5 bg-indigo-400 rounded-full shadow-[0_0_10px_#818cf8]" />
                       )}
                    </Link>
                  );
@@ -110,19 +128,19 @@ export default function DashboardSidebar() {
       </div>
 
       {/* User Status / Logout */}
-      <div className="p-6 border-t border-slate-50 bg-slate-50/50">
-         <div className="p-4 bg-white border border-slate-100 rounded-[2rem] flex items-center justify-between shadow-sm">
-            <div className="flex items-center gap-3">
-               <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white">
-                  <UserCheck size={18} />
+      <div className="p-8 relative z-10">
+         <div className="p-5 glass-card bg-white/60 rounded-[2.5rem] flex items-center justify-between shadow-2xl shadow-indigo-500/5 group/profile">
+            <div className="flex items-center gap-4">
+               <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white glow-indigo group-hover/profile:scale-110 transition-transform">
+                  <UserCheck size={22} />
                </div>
                <div>
-                  <p className="text-xs font-black text-slate-900 leading-none">Root Admin</p>
-                  <span className="text-[8px] font-bold text-emerald-500 uppercase tracking-widest">Master Auth</span>
+                  <p className="text-sm font-black text-slate-900 leading-none mb-1 italic">Root Admin</p>
+                  <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Master Auth</span>
                </div>
             </div>
-            <button className="p-2 text-slate-300 hover:text-rose-500 transition-colors">
-               <LogOut size={18} />
+            <button className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 hover:bg-rose-50 hover:text-rose-500 transition-all shadow-inner">
+               <LogOut size={20} />
             </button>
          </div>
       </div>

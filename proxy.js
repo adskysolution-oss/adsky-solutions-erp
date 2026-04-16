@@ -39,13 +39,27 @@ export function proxy(req) {
     subdomain = parts.length > 3 ? parts[1].toLowerCase() : null;
   }
 
-  // 5. Routing Logic
+  // 5. Routing Logic & Auth Sentinel
   const validSubdomains = ['admin', 'partner', 'field', 'farmer'];
   
   if (subdomain && validSubdomains.includes(subdomain)) {
-    // Internal rewrite: URL remains subdomain, but serves from folder
-    console.log(`[AdSky Routing] Host: ${currentHost} | Subdomain: ${subdomain} | Path: ${url.pathname}`);
+    console.log(`[AdSky Sentinel] Subdomain: ${subdomain} | Path: ${url.pathname}`);
+
+    // EXEMPTIONS: Don't check for token on the login page itself
+    if (url.pathname === '/login') {
+      return NextResponse.rewrite(new URL(`/${subdomain}${url.pathname}`, req.url));
+    }
+
+    // CHECK FOR AUTH TOKEN
+    const token = req.cookies.get('token')?.value;
+
+    if (!token) {
+      // Redirect to login on the SAME subdomain
+      console.log(`[AdSky Sentinel] No token found. Redirecting to /login`);
+      return NextResponse.rewrite(new URL(`/${subdomain}/login`, req.url));
+    }
     
+    // Internal rewrite: URL remains subdomain, but serves from folder
     // Safety check: Don't infinite loop if already at the rewritten path
     if (!url.pathname.startsWith(`/${subdomain}`)) {
       return NextResponse.rewrite(new URL(`/${subdomain}${url.pathname}`, req.url));
