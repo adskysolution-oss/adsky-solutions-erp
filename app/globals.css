@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@theme {
+  --color-border: rgb(var(--border) / <alpha-value>);
+  --color-background: rgb(var(--background) / <alpha-value>);
+  --color-foreground: rgb(var(--foreground) / <alpha-value>);
+  --color-primary: rgb(var(--primary) / <alpha-value>);
+  --color-secondary: rgb(var(--secondary) / <alpha-value>);
+}
+
 @layer base {
   :root {
     /* Base Standard Colors (can be overridden by Admin) */
