@@ -54,9 +54,9 @@ export function proxy(req) {
     const token = req.cookies.get('token')?.value;
 
     if (!token) {
-      // Redirect to login on the SAME subdomain
+      // Redirect to shared login while keeping subdomain URL
       console.log(`[AdSky Sentinel] No token found. Redirecting to /login`);
-      return NextResponse.rewrite(new URL(`/${subdomain}/login`, req.url));
+      return NextResponse.rewrite(new URL(`/login`, req.url));
     }
     
     // Internal rewrite: URL remains subdomain, but serves from folder
