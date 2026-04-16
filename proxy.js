@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
  * Advanced multi-tenant routing for adskysolution.com
  */
 
-export function middleware(req) {
+export function proxy(req) {
   const url = req.nextUrl;
   
   // 1. Get Hostname from multiple possible headers (Vercel compatibility)
