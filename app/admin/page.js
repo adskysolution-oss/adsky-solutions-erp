@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { 
   Users, 
   Briefcase, 
@@ -47,6 +48,7 @@ const chartData = [
 ];
 
 export default function SuperAdminDashboard() {
+  const [mounted, setMounted] = React.useState(false);
   const [stats] = useState({
     users: 1280,
     partners: 84,
@@ -60,6 +62,10 @@ export default function SuperAdminDashboard() {
     failedPayments: 8,
     health: 'Optimal'
   });
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const kpiCards = [
     { title: 'Total Users', value: stats.users, icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-50', trend: '+12%' },
@@ -161,24 +167,28 @@ export default function SuperAdminDashboard() {
             </div>
 
             <div className="h-[300px] w-full mt-4">
-               <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData}>
-                     <defs>
-                        <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                           <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.1}/>
-                           <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
-                        </linearGradient>
-                     </defs>
-                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                     <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 900, fill: '#94a3b8'}} />
-                     <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 900, fill: '#94a3b8'}} />
-                     <Tooltip 
-                        contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', fontWeight: 900 }}
-                        cursor={{ stroke: '#4f46e5', strokeWidth: 2 }}
-                     />
-                     <Area type="monotone" dataKey="revenue" stroke="#4f46e5" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" />
-                  </AreaChart>
-               </ResponsiveContainer>
+               {mounted ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                     <AreaChart data={chartData}>
+                        <defs>
+                           <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.1}/>
+                              <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
+                           </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 900, fill: '#94a3b8'}} />
+                        <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 900, fill: '#94a3b8'}} />
+                        <Tooltip 
+                           contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', fontWeight: 900 }}
+                           cursor={{ stroke: '#4f46e5', strokeWidth: 2 }}
+                        />
+                        <Area type="monotone" dataKey="revenue" stroke="#4f46e5" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" />
+                     </AreaChart>
+                  </ResponsiveContainer>
+               ) : (
+                  <div className="w-full h-full bg-slate-50 animate-pulse rounded-2xl" />
+               )}
             </div>
          </motion.div>
 
