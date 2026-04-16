@@ -297,7 +297,7 @@ export default function PartnerHubDashboard() {
               </div>
             ))}
          </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
