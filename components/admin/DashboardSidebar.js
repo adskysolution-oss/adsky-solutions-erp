@@ -71,7 +71,7 @@ export default function DashboardSidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="w-72 glass-card fixed left-0 top-0 h-screen hidden md:flex flex-col z-50 shadow-[10px_0_40px_rgba(0,0,0,0.02)] border-r border-slate-100">
+    <div className="w-80 glass-card fixed left-0 top-0 h-screen hidden md:flex flex-col z-50 shadow-[10px_0_40px_rgba(0,0,0,0.02)] border-r border-slate-200/50">
       {/* Brand Header */}
       <div className="p-6 pb-8 flex items-center justify-between relative overflow-hidden">
          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-500/5 to-rose-500/5 opacity-50" />
