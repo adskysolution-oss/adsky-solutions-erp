@@ -16,7 +16,9 @@ import {
   Lock,
   Globe,
   Palette,
-  LayoutDashboard
+  LayoutDashboard,
+  Monitor,
+  ArrowRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeArchitect from './ThemeArchitect';
