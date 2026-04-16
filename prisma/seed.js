@@ -1,32 +1,38 @@
 const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🚀 Initializing AdSky 25X Seed Engine...');
+  console.log('🚀 Initializing AdSky 25X Seed Engine (SECURE MODE)...');
 
-  // 🛡️ 1. Clear existing nodes (Optional)
-  // await prisma.user.deleteMany();
+  // Helper to hash password
+  const hashPassword = async (password) => {
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
+  };
 
-  // 🔑 2. Seed Super Admin
+  // 🔑 1. Seed Super Admin
+  const adminPwd = await hashPassword('admin123');
   const admin = await prisma.user.upsert({
     where: { email: 'admin@adskysolution.com' },
-    update: {},
+    update: { passwordHash: adminPwd },
     create: {
       email: 'admin@adskysolution.com',
-      passwordHash: 'admin123', // IN PROD: Use bcrypt!
+      passwordHash: adminPwd,
       role: 'admin',
       status: 'active'
     }
   });
-  console.log('✅ Admin Node Provisioned: admin@adskysolution.com');
+  console.log('✅ Admin Node Provisioned (Secure Hash): admin@adskysolution.com');
 
-  // 🏢 3. Seed Partner
+  // 🏢 2. Seed Partner
+  const partnerPwd = await hashPassword('partner123');
   const partnerUser = await prisma.user.upsert({
     where: { email: 'partner@adskysolution.com' },
-    update: {},
+    update: { passwordHash: partnerPwd },
     create: {
       email: 'partner@adskysolution.com',
-      passwordHash: 'partner123',
+      passwordHash: partnerPwd,
       role: 'partner'
     }
   });
@@ -43,13 +49,14 @@ async function main() {
   });
   console.log('✅ Partner Node Provisioned: ADS-101');
 
-  // 📲 4. Seed Employee (Agent)
+  // 📲 3. Seed Employee (Agent)
+  const agentPwd = await hashPassword('agent123');
   const agentUser = await prisma.user.upsert({
     where: { email: 'agent@adskysolution.com' },
-    update: {},
+    update: { passwordHash: agentPwd },
     create: {
       email: 'agent@adskysolution.com',
-      passwordHash: 'agent123',
+      passwordHash: agentPwd,
       role: 'employee'
     }
   });
@@ -65,19 +72,20 @@ async function main() {
   });
   console.log('✅ Agent Node Provisioned: EMP-900');
 
-  // 🚜 5. Seed Farmer
+  // 🚜 4. Seed Farmer
+  const farmerPwd = await hashPassword('farmer123');
   await prisma.user.upsert({
     where: { email: 'farmer@adskysolution.com' },
-    update: {},
+    update: { passwordHash: farmerPwd },
     create: {
       email: 'farmer@adskysolution.com',
-      passwordHash: 'farmer123',
+      passwordHash: farmerPwd,
       role: 'farmer'
     }
   });
   console.log('✅ Farmer Node Provisioned: farmer@adskysolution.com');
 
-  // ⚙️ 6. Seed Global Configuration
+  // ⚙️ 5. Seed Global Configuration
   await prisma.websiteConfig.upsert({
     where: { id: 'global' },
     update: {},
@@ -91,7 +99,7 @@ async function main() {
   });
   console.log('✅ Global Mission Configuration Set');
 
-  console.log('🏁 Seeding Complete. Use "npm run dev" to test panels.');
+  console.log('🏁 Seeding Complete. All passwords encrypted.');
 }
 
 main()
