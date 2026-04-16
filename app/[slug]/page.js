@@ -1,50 +1,58 @@
-'use client';
+import React from 'react';
+import { notFound } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import DynamicRenderer from '@/components/cms/DynamicRenderer';
 
-import React, { useEffect, useState } from 'react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import SectionRenderer from '@/components/SectionRenderer';
-import { Loader2 } from 'lucide-react';
-import { useParams } from 'next/navigation';
+/**
+ * AdSky 25X Dynamic Delivery Node
+ * Serves all CMS-driven pages based on mission slug.
+ */
 
-export default function DynamicPage() {
-  const { slug } = useParams();
-  const [page, setPage] = useState(null);
-  const [loading, setLoading] = useState(true);
+export async function generateMetadata({ params }) {
+  const page = await prisma.page.findUnique({
+    where: { slug: params.slug },
+  });
 
-  useEffect(() => {
-    const fetchPage = async () => {
-      try {
-        const res = await fetch(`/api/admin/cms/pages?slug=${slug}`);
-        const data = await res.json();
-        if (data && !data.error) {
-          setPage(data);
-        }
-      } catch (err) {
-        console.error('Page fetch error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (slug) fetchPage();
-  }, [slug]);
+  if (!page) return { title: 'Not Found | AdSky' };
 
-  if (loading) return <div style={{ minHeight: '100vh', background: '#020617', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Loader2 className="animate-spin" size={48} color="#3b82f6" /></div>;
+  const seo = page.seoMeta || {};
+  return {
+    title: seo.title || `${page.title} | AdSky 25X`,
+    description: seo.description || 'Enterprise-grade SaaS ecosystem for high-speed regional operations.',
+    openGraph: {
+      title: seo.title,
+      description: seo.description,
+      images: seo.ogImage ? [{ url: seo.ogImage }] : [],
+    },
+  };
+}
+
+export default async function CMSDynamicPage({ params }) {
+  // Fetch page orchestration data from PostgreSQL
+  const page = await prisma.page.findUnique({
+    where: { slug: params.slug },
+  });
+
+  // Security: Only serve published pages to the public
+  if (!page || !page.published) {
+    notFound();
+  }
 
   return (
-    <main className="min-h-screen flex flex-col bg-[#020617] text-white">
-      <Navbar />
-      <main className="flex-grow">
-        {page ? (
-          <SectionRenderer sections={page.sections} />
-        ) : (
-          <div className="py-40 text-center">
-            <h1 className="text-4xl font-black mb-4">404 - Node Not Found</h1>
-            <p className="text-slate-400">The requested dynamic page does not exist in the CMS engine.</p>
-          </div>
-        )}
-      </main>
-      <Footer />
-    </main>
+    <div className="min-h-screen bg-white font-sans">
+      {/* 🚀 Dynamic Delivery Engine */}
+      <DynamicRenderer sections={page.layoutJson} />
+    </div>
   );
+}
+
+// Optimization: Static Params Generation for build-time caching
+export async function generateStaticParams() {
+  const pages = await prisma.page.findMany({
+    select: { slug: true }
+  });
+
+  return pages.map((page) => ({
+    slug: page.slug,
+  }));
 }

@@ -1,59 +1,137 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import { Briefcase, Building, ShieldCheck, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { 
+  Mail, 
+  Lock, 
+  ArrowRight, 
+  Loader2, 
+  ShieldCheck, 
+  Zap,
+  Globe,
+  LayoutDashboard
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function LoginPage() {
-  const loginRoles = [
-    { title: 'Candidate Portal', desc: 'Find latest job opportunities', icon: Briefcase, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'hover:border-blue-500/50', path: '/candidate/login' },
-    { title: 'Employer Portal', desc: 'Manage job postings & candidates', icon: Building, color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'hover:border-orange-500/50', path: '/employer/login' },
-    { title: 'Admin Console', desc: 'Manage system settings & content', icon: ShieldCheck, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'hover:border-emerald-500/50', path: '/admin' }
-  ];
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      
+      const data = await res.json();
+      
+      if (data.success) {
+        // Simple cookie set for demo (middleware should handle real logic)
+        document.cookie = `token=${data.token}; path=/`;
+        router.push(data.redirectUrl || '/admin');
+      } else {
+        alert(data.error || 'Invalid credentials');
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#020617] text-white">
-      <Navbar />
-      
-      <main className="flex-grow flex items-center justify-center pt-32 pb-24 px-6 relative overflow-hidden">
-        {/* Background glow effects */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none"></div>
-        
-        <div className="w-full max-w-4xl z-10 relative">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tighter italic">Welcome to <span className="text-blue-500">AdSky</span></h1>
-            <p className="text-slate-400 text-lg">Select your portal to continue securely.</p>
-          </div>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 relative overflow-hidden font-sans">
+      {/* Dynamic Background Elements */}
+      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-sky-600/5 rounded-full blur-[100px] -ml-44 -mt-44" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[100px] -mr-44 -mb-44" />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {loginRoles.map((role, i) => (
-              <Link href={role.path} key={i}>
-                <div className={`p-8 rounded-[2rem] bg-white/5 border border-white/10 ${role.border} transition-all group flex flex-col items-center hover:-translate-y-2 hover:shadow-2xl hover:shadow-${role.color.split('-')[1]}/10 cursor-pointer h-full`}>
-                  <div className={`w-20 h-20 rounded-2xl ${role.bg} ${role.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500`}>
-                    <role.icon size={40} />
-                  </div>
-                  <h3 className="text-xl font-bold mb-2 text-center text-white group-hover:text-white transition-colors">{role.title}</h3>
-                  <p className="text-slate-400 text-sm text-center mb-6 flex-grow">{role.desc}</p>
-                  
-                  <div className="flex items-center text-sm font-bold uppercase tracking-wider text-white/50 group-hover:text-white transition-colors">
-                    Login Now <ArrowRight size={16} className="ml-2 group-hover:translate-x-2 transition-transform" />
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-          
-          <div className="mt-12 text-center">
-            <p className="text-slate-500 font-medium text-sm">
-              Don't have an account? <Link href="/register" className="text-blue-400 hover:text-blue-300 ml-1 hover:underline">Register Here</Link>
-            </p>
-          </div>
+      <div className="w-full max-w-md z-10">
+        {/* Brand Header */}
+        <div className="text-center mb-10">
+           <motion.div 
+             initial={{ scale: 0.8, opacity: 0 }}
+             animate={{ scale: 1, opacity: 1 }}
+             className="w-20 h-20 bg-sky-600 rounded-3xl flex items-center justify-center text-white text-3xl font-black italic shadow-2xl shadow-sky-200 mx-auto mb-6"
+           >
+             AS
+           </motion.div>
+           <h1 className="text-4xl font-black text-slate-900 tracking-tighter italic mb-2">AdSky <span className="text-sky-600">ERP</span></h1>
+           <p className="text-slate-500 text-sm font-medium">Production Access Gateway</p>
         </div>
-      </main>
 
-      <Footer />
+        {/* Login Card */}
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="bg-white border border-slate-100 rounded-[3rem] p-10 shadow-2xl shadow-slate-200/50"
+        >
+           <form onSubmit={handleLogin} className="space-y-8">
+              <div className="space-y-2">
+                 <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-2">Secure Identity</label>
+                 <div className="relative group">
+                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-sky-600 transition-colors" size={20} />
+                    <input 
+                      required
+                      type="email" 
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      placeholder="Access Email"
+                      className="w-full py-5 pl-14 pr-6 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-sky-500/50 focus:bg-white transition-all text-slate-900 font-bold"
+                    />
+                 </div>
+              </div>
+
+              <div className="space-y-2">
+                 <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] ml-2">Access Key</label>
+                 <div className="relative group">
+                    <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-sky-600 transition-colors" size={20} />
+                    <input 
+                      required
+                      type="password" 
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full py-5 pl-14 pr-6 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-sky-500/50 focus:bg-white transition-all text-slate-900 font-bold"
+                    />
+                 </div>
+              </div>
+
+              <button 
+                disabled={loading}
+                type="submit"
+                className="w-full py-5 bg-sky-600 hover:bg-sky-700 text-white font-black uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-sky-200 flex items-center justify-center gap-3 active:scale-[0.98]"
+              >
+                {loading ? <Loader2 className="animate-spin" size={24} /> : (
+                  <>
+                    Initialize Session
+                    <ArrowRight size={22} className="opacity-70" />
+                  </>
+                )}
+              </button>
+           </form>
+
+           <div className="mt-10 pt-8 border-t border-slate-50 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+              <span className="flex items-center gap-2"><ShieldCheck size={14} className="text-emerald-500" /> SSL Active</span>
+              <span className="flex items-center gap-2"><Zap size={14} className="text-sky-500" /> Node JS 20+</span>
+           </div>
+        </motion.div>
+
+        {/* Support Section */}
+        <div className="mt-10 text-center space-y-4">
+           <p className="text-slate-400 text-xs font-medium italic opacity-60 leading-relaxed">
+             Authorized personnel only. All access is monitored and encrypted.<br/>
+             Contact: IT Support for credential recovery.
+           </p>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,361 +1,141 @@
 'use client';
-import { useState, useEffect } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { 
-  Users, UserPlus, Search, Filter, Mail, Phone, 
-  Calendar, Download, Edit3, Trash2, MoreVertical, 
-  CheckCircle2, XCircle, Clock, Loader2, Award, 
-  ShieldCheck, UserCheck, Briefcase, ChevronRight, X,
-  Save, Key, FileText, ChevronDown, Plus, 
-  Activity, Zap, BarChart2, Globe2
+  Users, 
+  Search, 
+  Filter, 
+  MapPin, 
+  ShieldCheck, 
+  Mail, 
+  Phone,
+  Briefcase,
+  ExternalLink,
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
-import Link from 'next/link';
+import { motion } from 'framer-motion';
 
-const roles = ['admin', 'manager', 'sales', 'support'];
-const statusList = ['active', 'suspended', 'pending'];
-
-export default function AdminEmployees() {
+export default function EmployeesPage() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filters, setFilters] = useState({ role: 'All', status: 'All', dateRange: 'All' });
-  const [showModal, setShowModal] = useState(false);
-  const [currentEmp, setCurrentEmp] = useState(null); // For edit/add
-  const [saving, setSaving] = useState(false);
 
-  // Modal form state
-  const [formData, setFormData] = useState({ 
-    name: '', email: '', phone: '', role: 'support', 
-    subBranch: '', category: '', password: '' 
-  });
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
 
-  const [meta, setMeta] = useState({ branches: [], categories: [] });
-  const [showMetaSettings, setShowMetaSettings] = useState(false);
-  const [newMeta, setNewMeta] = useState({ type: 'branches', value: '' });
-
-  async function loadEmployees() {
+  const fetchEmployees = async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/admin/employees');
       const data = await res.json();
-      if (res.ok) setEmployees(data.data || []);
+      if (!data.error) setEmployees(data);
     } catch (err) {
-      console.error(err);
-      // Demo Data
-      setEmployees([
-        { _id: '1', name: 'Zeeshan Ahmad', email: 'zeeshan@adsky.com', role: 'admin', status: 'active', phone: '+91 9876543210', createdAt: '2026-04-03' },
-        { _id: '2', name: 'Rohan Gupta', email: 'rohan@adsky.com', role: 'sales', status: 'active', phone: '+91 9876543211', createdAt: '2026-04-02' },
-        { _id: '3', name: 'Simran Kaur', email: 'simran@adsky.com', role: 'support', status: 'pending', phone: '+91 9876543212', createdAt: '2026-04-01' },
-      ]);
-    }
-    setLoading(false);
-  }
-
-  async function loadMeta() {
-    try {
-      const res = await fetch('/api/admin/meta');
-      const data = await res.json();
-      if (res.ok) setMeta(data.data);
-    } catch (err) { console.error(err); }
-  }
-
-  useEffect(() => { 
-    loadEmployees(); 
-    loadMeta();
-  }, []);
-
-  const handleOpenModal = (emp = null) => {
-    if (emp) {
-      setCurrentEmp(emp);
-      setFormData({ 
-        name: emp.name, 
-        email: emp.email, 
-        phone: emp.phone || '', 
-        role: emp.role, 
-        subBranch: emp.subBranch || '',
-        category: emp.category || '',
-        password: '' 
-      });
-    } else {
-      setCurrentEmp(null);
-      const autoPass = Math.random().toString(36).slice(-8);
-      setFormData({ 
-        name: '', email: '', phone: '', role: 'support', 
-        subBranch: meta.branches[0] || '', 
-        category: meta.categories[0] || '', 
-        password: autoPass 
-      });
-    }
-    setShowModal(true);
-  };
-
-  const handleMetaAction = async (action, type, value) => {
-    try {
-      const res = await fetch('/api/admin/meta' + (action === 'delete' ? `?type=${type}&value=${value}` : ''), {
-        method: action === 'delete' ? 'DELETE' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: action === 'add' ? JSON.stringify({ type, value }) : undefined
-      });
-      if (res.ok) loadMeta();
-    } catch (err) { console.error(err); }
-  };
-
-  const handleSave = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      const method = currentEmp ? 'PUT' : 'POST';
-      const body = currentEmp ? { ...formData, id: currentEmp._id } : formData;
-      const res = await fetch('/api/admin/employees', {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      if (res.ok) {
-        loadEmployees();
-        setShowModal(false);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-    setSaving(false);
-  };
-
-  const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this member?')) return;
-    try {
-      const res = await fetch(`/api/admin/employees?id=${id}`, { method: 'DELETE' });
-      if (res.ok) loadEmployees();
-    } catch (err) {
-      console.error(err);
+      console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
     }
   };
-
-  const exportCSV = () => {
-    const headers = ['Name', 'Email', 'Role', 'Status', 'Phone', 'Created At'];
-    const rows = employees.map(e => [e.name, e.email, e.role, e.status, e.phone, e.createdAt]);
-    const csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.map(r => r.join(",")).join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `employees_report_${new Date().toLocaleDateString()}.csv`);
-    document.body.appendChild(link);
-    link.click();
-  };
-
-  const filtered = employees.filter(e => {
-    const matchSearch = e.name.toLowerCase().includes(searchTerm.toLowerCase()) || e.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchRole = filters.role === 'All' || e.role === filters.role;
-    const matchStatus = filters.status === 'All' || e.status === filters.status;
-    return matchSearch && matchRole && matchStatus;
-  });
 
   return (
-    <div style={{ paddingBottom: '60px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px' }}>
-        <div>
-          <h1 style={{ fontSize: '32px', fontWeight: '900', color: 'white', margin: 0, letterSpacing: '-0.02em' }}>Member Management</h1>
-          <p style={{ color: '#64748b', fontSize: '15px', marginTop: '8px' }}>Organize and monitor your internal AdSky Solution team.</p>
-        </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-           <button onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 24px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', color: '#94a3b8', fontSize: '14px', fontWeight: '800', cursor: 'pointer' }}>
-              <Download size={18} /> Export Data
-           </button>
-           <button onClick={() => handleOpenModal()} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 28px', background: 'linear-gradient(135deg, #3b82f6, #6366f1)', border: 'none', borderRadius: '16px', color: 'white', fontSize: '14px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 10px 20px -5px rgba(59,130,246,0.3)' }}>
-              <UserPlus size={18} /> Add New Member
-           </button>
-        </div>
+    <div className="space-y-8 pb-20">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-black text-white italic">Field <span className="text-blue-500">Agents</span></h1>
+        <p className="text-slate-400 mt-1">Monitor all ground-level onboarding employees across the network.</p>
       </div>
 
-      {/* Control Bar */}
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '32px', flexWrap: 'wrap' }}>
-         <div style={{ position: 'relative', flex: 1, minWidth: '300px' }}>
-            <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#475569' }} />
-            <input type="text" placeholder="Search by name, email or role..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ width: '100%', outline: 'none', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '14px 14px 14px 48px', color: 'white', fontSize: '15px' }} />
-         </div>
-         <div style={{ display: 'flex', gap: '12px' }}>
-            <select value={filters.role} onChange={e => setFilters({...filters, role: e.target.value})} style={{ padding: '0 20px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '16px', color: '#94a3b8', fontSize: '14px', outline: 'none' }}>
-               <option value="All">Role: All</option>
-               {roles.map(r => <option key={r} value={r}>{r.toUpperCase()}</option>)}
-            </select>
-            <select value={filters.status} onChange={e => setFilters({...filters, status: e.target.value})} style={{ padding: '0 20px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '16px', color: '#94a3b8', fontSize: '14px', outline: 'none' }}>
-               <option value="All">Status: All</option>
-               {statusList.map(s => <option key={s} value={s}>{s.toUpperCase()}</option>)}
-            </select>
-            <button onClick={() => setShowMetaSettings(!showMetaSettings)} style={{ padding: '0 20px', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '16px', color: '#60a5fa', fontSize: '13px', fontWeight: '800' }}>
-               Manage Lists
-            </button>
-            <select value={filters.dateRange} onChange={e => setFilters({...filters, dateRange: e.target.value})} style={{ padding: '0 20px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '16px', color: '#94a3b8', fontSize: '14px', outline: 'none' }}>
-               <option value="All">Today</option>
-               <option value="Week">This Week</option>
-               <option value="Month">This Month</option>
-            </select>
-         </div>
+      {/* Filters & Search */}
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="relative flex-grow">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+          <input 
+            type="text" 
+            placeholder="Search agents by name, code or partner..." 
+            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-slate-500 focus:border-blue-500/50 outline-none transition-all"
+          />
+        </div>
+        <button className="bg-white/5 border border-white/10 text-slate-300 px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-all font-bold text-sm">
+          <Filter size={18} />
+          Filters
+        </button>
       </div>
 
-      {showMetaSettings && (
-        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '24px', padding: '24px', marginBottom: '32px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
-            {['branches', 'categories'].map(type => (
-              <div key={type}>
-                <h4 style={{ color: 'white', fontSize: '14px', fontWeight: '800', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Manage {type}</h4>
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-                  <input 
-                    type="text" 
-                    placeholder={`Add new ${type}...`} 
-                    value={newMeta.type === type ? newMeta.value : ''} 
-                    onChange={e => setNewMeta({ type, value: e.target.value })}
-                    style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '10px 14px', color: 'white' }}
-                  />
-                  <button 
-                    onClick={() => { handleMetaAction('add', type, newMeta.value); setNewMeta({ type, value: '' }); }}
-                    style={{ padding: '10px 20px', background: '#3b82f6', border: 'none', borderRadius: '12px', color: 'white', fontWeight: '700' }}
-                  >
-                    Add
-                  </button>
-                </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {meta[type].map(val => (
-                    <div key={val} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', padding: '6px 12px', borderRadius: '10px', fontSize: '13px', color: '#94a3b8' }}>
-                      {val}
-                      <button onClick={() => handleMetaAction('delete', type, val)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: 0 }}><X size={14} /></button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+      {/* Employees Table */}
+      <div className="bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-4">
+            <Loader2 className="animate-spin text-blue-500" size={40} />
+            <p className="text-slate-400 font-medium">Scanning agent network...</p>
           </div>
-        </div>
-      )}
-
-      {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}><Loader2 size={40} className="animate-spin text-blue-500" /></div>
-      ) : (
-        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '32px', overflow: 'hidden' }}>
-           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
               <thead>
-                 <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                    <th style={{ padding: '24px', fontSize: '12px', color: '#475569', fontWeight: '800', textTransform: 'uppercase' }}>Member Profile</th>
-                    <th style={{ padding: '24px', fontSize: '12px', color: '#475569', fontWeight: '800', textTransform: 'uppercase' }}>Access Node</th>
-                    <th style={{ padding: '24px', fontSize: '12px', color: '#475569', fontWeight: '800', textTransform: 'uppercase' }}>Productivity</th>
-                    <th style={{ padding: '24px', fontSize: '12px', color: '#475569', fontWeight: '800', textTransform: 'uppercase' }}>Live Node</th>
-                    <th style={{ padding: '24px', textAlign: 'right' }}>Actions</th>
-                 </tr>
+                <tr className="border-b border-white/10 bg-white/[0.02]">
+                  <th className="px-8 py-5 text-xs font-black uppercase tracking-widest text-slate-500">Agent Details</th>
+                  <th className="px-8 py-5 text-xs font-black uppercase tracking-widest text-slate-500">Employee Code</th>
+                  <th className="px-8 py-5 text-xs font-black uppercase tracking-widest text-slate-500">Associated Partner</th>
+                  <th className="px-8 py-5 text-xs font-black uppercase tracking-widest text-slate-500">Performance</th>
+                  <th className="px-8 py-5 text-xs font-black uppercase tracking-widest text-slate-500 text-right">Actions</th>
+                </tr>
               </thead>
-              <tbody>
-                 {filtered.map(emp => (
-                   <tr key={emp._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', transition: 'all 0.2s' }}>
-                      <td style={{ padding: '24px' }}>
-                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                            <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: 'linear-gradient(135deg, #3b82f6, #6366f1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: '900', color: 'white' }}>{emp.name[0]}</div>
-                            <div>
-                               <div style={{ fontSize: '16px', fontWeight: '800', color: 'white' }}>{emp.name}</div>
-                               <div style={{ fontSize: '12px', color: '#475569', marginTop: '2px' }}>{emp.email}</div>
-                            </div>
-                         </div>
+              <tbody className="divide-y divide-white/10">
+                {employees.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="px-8 py-20 text-center">
+                       <div className="flex flex-col items-center gap-2 opacity-50">
+                         <AlertCircle size={40} className="text-slate-400" />
+                         <p className="text-slate-400 italic">No field agents registered yet.</p>
+                       </div>
+                    </td>
+                  </tr>
+                ) : (
+                  employees.map((emp) => (
+                    <tr key={emp._id} className="hover:bg-white/[0.02] transition-colors group">
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 font-bold text-lg uppercase italic">
+                            {emp.user?.name?.charAt(0)}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-white font-bold">{emp.user?.name}</span>
+                            <span className="text-slate-500 text-[10px] flex items-center gap-1">
+                              <Phone size={10} /> {emp.user?.phone}
+                            </span>
+                          </div>
+                        </div>
                       </td>
-                      <td style={{ padding: '24px' }}>
-                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '12px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', fontSize: '12px', fontWeight: '800', color: '#60a5fa', textTransform: 'uppercase' }}>
-                            <ShieldCheck size={14} /> {emp.role}
-                         </div>
+                      <td className="px-8 py-6">
+                        <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-black rounded uppercase border border-emerald-500/20">
+                          {emp.employeeCode}
+                        </span>
                       </td>
-                      <td style={{ padding: '24px' }}>
-                         <div style={{ width: '100%', maxWidth: '120px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#64748b', marginBottom: '6px' }}>
-                               <span>Score</span>
-                               <span style={{ color: '#10b981' }}>{85 + (emp.name.length % 15)}%</span>
-                            </div>
-                            <div style={{ width: '100%', height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
-                               <div style={{ width: `${85 + (emp.name.length % 15)}%`, height: '100%', background: 'linear-gradient(90deg, #3b82f6, #10b981)' }} />
-                            </div>
-                         </div>
+                      <td className="px-8 py-6">
+                        <span className="text-slate-300 font-bold text-sm flex items-center gap-2">
+                          <Briefcase size={14} className="text-blue-400" />
+                          {emp.partnerCode}
+                        </span>
                       </td>
-                      <td style={{ padding: '24px' }}>
-                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: '700', color: emp.status === 'active' ? '#10b981' : '#f59e0b' }}>
-                            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: emp.status === 'active' ? '#10b981' : '#f59e0b' }} className={emp.status === 'active' ? 'animate-pulse' : ''} />
-                            {emp.status === 'active' ? 'Operational' : 'Idle'}
-                         </div>
+                      <td className="px-8 py-6">
+                        <div className="flex flex-col">
+                          <span className="text-white font-bold text-sm tracking-tight">{emp.totalLeads} Leads</span>
+                          <span className="text-slate-500 text-[10px] uppercase font-bold">Earnings: ₹{emp.totalEarnings}</span>
+                        </div>
                       </td>
-                      <td style={{ padding: '24px', textAlign: 'right' }}>
-                         <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                            <Link href={`/admin/employees/${emp._id}`} style={{ padding: '10px', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', borderRadius: '12px', color: '#60a5fa', cursor: 'pointer', display: 'flex' }}>
-                               <Activity size={18} />
-                            </Link>
-                            <button onClick={() => handleOpenModal(emp)} style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', color: '#94a3b8', cursor: 'pointer' }}><Edit3 size={18} /></button>
-                         </div>
+                      <td className="px-8 py-6 text-right">
+                        <button className="p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-all">
+                          <ExternalLink size={18} />
+                        </button>
                       </td>
-                   </tr>
-                 ))}
+                    </tr>
+                  ))
+                )}
               </tbody>
-           </table>
-           {filtered.length === 0 && <div style={{ padding: '80px', textAlign: 'center', color: '#475569' }}>No members matched your filters.</div>}
-        </div>
-      )}
-
-      {/* Add/Edit Modal */}
-      {showModal && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-           <div onClick={() => setShowModal(false)} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(8px)' }} />
-           <div style={{ position: 'relative', width: '500px', background: '#0d1224', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '32px', padding: '40px', boxShadow: '0 30px 60px -15px rgba(0,0,0,0.5)' }}>
-              <button onClick={() => setShowModal(false)} style={{ position: 'absolute', top: '24px', right: '24px', background: 'none', border: 'none', color: '#475569', cursor: 'pointer' }}><X size={24} /></button>
-              <h2 style={{ fontSize: '24px', fontWeight: '900', color: 'white', marginBottom: '8px' }}>{currentEmp ? 'Update Member' : 'New AdSky Member'}</h2>
-              <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '32px' }}>Configure access rights and personal info for the team.</p>
-
-              <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b' }}>FULL NAME</label>
-                    <input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '14px', color: 'white', fontSize: '14px', outline: 'none' }} />
-                 </div>
-                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b' }}>EMAIL ADDRESS</label>
-                    <input required type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '14px', color: 'white', fontSize: '14px', outline: 'none' }} />
-                 </div>
-                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                       <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b' }}>ACCESS ROLE</label>
-                       <select value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '14px', color: 'white', fontSize: '14px', outline: 'none' }}>
-                          {roles.map(r => <option key={r} value={r}>{r.toUpperCase()}</option>)}
-                       </select>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                       <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b' }}>CONTACT NO</label>
-                       <input required value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '14px', color: 'white', fontSize: '14px', outline: 'none' }} />
-                    </div>
-                 </div>
-
-                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                       <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b' }}>SUB-BRANCH LOCATION</label>
-                       <select value={formData.subBranch} onChange={e => setFormData({...formData, subBranch: e.target.value})} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '14px', color: 'white', fontSize: '14px', outline: 'none' }}>
-                          <option value="">Select Branch</option>
-                          {meta.branches.map(b => <option key={b} value={b}>{b}</option>)}
-                       </select>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                       <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b' }}>MEMBER CATEGORY</label>
-                       <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '14px', color: 'white', fontSize: '14px', outline: 'none' }}>
-                          <option value="">Select Category</option>
-                          {meta.categories.map(c => <option key={c} value={c}>{c}</option>)}
-                       </select>
-                    </div>
-                 </div>
-
-                 {!currentEmp && (
-                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b' }}>AUTO-GENERATED PASSWORD</label>
-                      <div style={{ background: 'rgba(59,130,246,0.1)', border: '1px dashed rgba(59,130,246,0.3)', borderRadius: '14px', padding: '14px', color: '#60a5fa', fontSize: '14px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                         <Key size={16} /> {formData.password}
-                      </div>
-                      <p style={{ fontSize: '11px', color: '#475569', marginTop: '2px' }}>This credencials will be sent to the member's email automatically.</p>
-                   </div>
-                 )}
-                 <button type="submit" disabled={saving} style={{ marginTop: '20px', padding: '18px', background: 'linear-gradient(135deg, #3b82f6, #6366f1)', border: 'none', borderRadius: '18px', color: 'white', fontSize: '15px', fontWeight: '900', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                    {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
-                    {saving ? 'Processing...' : currentEmp ? 'Update Permissions' : 'Onboard Member'}
-                 </button>
-              </form>
-           </div>
-        </div>
-      )}
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

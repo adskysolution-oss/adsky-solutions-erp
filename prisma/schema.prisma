@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 🔐 Core Auth & Role System
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  role          String    @default("farmer") // admin, partner, employee, farmer
+  status        String    @default("active")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relationships
+  wallet        Wallet?
+  auditLogs     AuditLog[]
+  partner       Partner?
+  employee      Employee?
+}
+
+// 🏢 Multi-tenant Logic
+model Partner {
+  id              String     @id @default(uuid())
+  userId          String     @unique
+  user            User       @relation(fields: [userId], references: [id])
+  partnerCode     String     @unique
+  region          String?
+  commissionRate  Float      @default(30.0)
+  employees       Employee[]
+}
+
+model Employee {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id])
+  partnerId     String
+  partner       Partner  @relation(fields: [partnerId], references: [id])
+  employeeCode  String   @unique
+}
+
+// 📊 Lead & Submission System (25X Engine)
+model Form {
+  id          String       @id @default(uuid())
+  name        String
+  schemaJson  Json         // Stores JSON structure for Drag & Drop
+  isActive    Boolean      @default(true)
+  submissions Submission[]
+  createdAt   DateTime     @default(now())
+}
+
+model Submission {
+  id            String   @id @default(uuid())
+  formId        String
+  form          Form     @relation(fields: [formId], references: [id])
+  partnerCode   String?
+  employeeCode  String?
+  dataJson      Json     // Full original farmer details
+  
+  // Flattened Location Fields for 1M+ scale filtering
+  state         String?
+  district      String?
+  tehsil        String?
+  village       String?
+  pincode       String?
+
+  status        String   @default("submitted") // submitted, review, approved, rejected
+  paymentStatus String   @default("pending")
+  createdAt     DateTime @default(now())
+
+  @@index([state])
+  @@index([district])
+  @@index([partnerCode])
+  @@index([employeeCode])
+  @@index([status])
+}
+
+// 💰 Financial & Commission Engine
+model Wallet {
+  id          String        @id @default(uuid())
+  userId      String        @unique
+  user        User          @relation(fields: [userId], references: [id])
+  balance     Float         @default(0.0)
+  transactions Transaction[]
+  updatedAt   DateTime      @updatedAt
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  walletId    String
+  wallet      Wallet   @relation(fields: [walletId], references: [id])
+  type        String   // credit, debit
+  amount      Float
+  description String
+  referenceId String?  // Optional reference to a submission or payout
+  createdAt   DateTime @default(now())
+}
+
+// 🧩 CMS Website Builder
+model Page {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  title       String
+  layoutJson  Json     // Section-based D&D structure
+  seoMeta     Json?
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// 🔖 Saved View Orchestration
+model SavedFilter {
+  id          String   @id @default(uuid())
+  name        String
+  target      String   // users, submissions, payments
+  queryJson   Json     // The filter logic object
+  isGlobal    Boolean  @default(false)
+  ownerId     String?
+  createdAt   DateTime @default(now())
+}
+
+// 🧬 Technical Logging
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  metadata  Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
+
+model WebsiteConfig {
+  id                  String  @id @default("global")
+  applicationFee      Float   @default(249.0)
+  partnerCommission   Float   @default(30.0)
+  employeeCommission  Float   @default(50.0)
+  cashfreeAppId       String?
+  cashfreeSecretKey   String?
+  isLive              Boolean @default(false)
+  themeConfig         Json?   // Stores dynamic branding tokens
+}
