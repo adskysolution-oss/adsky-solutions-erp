@@ -1,6 +1,4 @@
-'use client';
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DataTable from '@/components/admin/DataTable';
 import { motion } from 'framer-motion';
 import { 
@@ -10,33 +8,50 @@ import {
   Search,
   CheckCircle2,
   Clock,
-  XCircle
+  XCircle,
+  Loader2
 } from 'lucide-react';
-
-const userData = [
-  { name: 'Ravi Kumar', role: 'Farmer', state: 'MP', status: 'Active', email: 'ravi@example.com', joinDate: '12 Apr 2026' },
-  { name: 'Anita Singh', role: 'Partner', state: 'UP', status: 'Pending', email: 'anita@example.com', joinDate: '15 Apr 2026' },
-  { name: 'Sanjay Verma', role: 'Employee', state: 'Delhi', status: 'Active', email: 'sanjay@example.com', joinDate: '10 Apr 2026' },
-  { name: 'Megha Gupta', role: 'Vendor', state: 'Haryana', status: 'Inactive', email: 'megha@example.com', joinDate: '08 Apr 2026' },
-  { name: 'Vikram Das', role: 'Farmer', state: 'Odisha', status: 'Active', email: 'vikram@example.com', joinDate: '14 Apr 2026' },
-];
+import { adminAPI } from '@/lib/api-client';
 
 const columns = [
   { key: 'name', label: 'USER NAME' },
   { key: 'role', label: 'ROLE / CATEGORY' },
   { key: 'state', label: 'STATE' },
-  { key: 'joinDate', label: 'MEMBERSHIP' },
+  { key: 'phone', label: 'PHONE' },
   { key: 'status', label: 'ACCOUNT STATUS' },
 ];
 
 export default function UsersManagement() {
   const [activeTab, setActiveTab] = useState('All');
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const data = await adminAPI.getUsers();
+        setUsers(data);
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const stats = [
-    { label: 'ACTIVE USERS', value: '8.4K', icon: CheckCircle2, color: 'text-[#22c55e]' },
+    { label: 'ACTIVE USERS', value: users.length, icon: CheckCircle2, color: 'text-[#22c55e]' },
     { label: 'PENDING VERIFICATION', value: '1.2K', icon: Clock, color: 'text-[#f59e0b]' },
     { label: 'BLOCKED / INACTIVE', value: '420', icon: XCircle, color: 'text-[#ef4444]' },
   ];
+
+  const filteredUsers = activeTab === 'All' 
+    ? users 
+    : users.filter(u => u.role.toLowerCase() === activeTab.slice(0, -1).toLowerCase());
 
   return (
     <div className="space-y-12">
@@ -91,11 +106,24 @@ export default function UsersManagement() {
       </div>
 
       {/* Data Table */}
-      <DataTable 
-        title={`${activeTab} Users`} 
-        columns={columns} 
-        data={userData} 
-      />
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 size={40} className="text-[#38bdf8] animate-spin" />
+        </div>
+      ) : error ? (
+        <div className="p-10 bg-red-500/10 border border-red-500/20 text-red-500 rounded-3xl text-center font-bold italic">
+           Error syncing with system: {error}
+        </div>
+      ) : (
+        <DataTable 
+          title={`${activeTab} Users`} 
+          columns={columns} 
+          data={filteredUsers.map(u => ({
+            ...u,
+            status: u.isActive ? 'Active' : 'Inactive'
+          }))} 
+        />
+      )}
     </div>
   );
 }
