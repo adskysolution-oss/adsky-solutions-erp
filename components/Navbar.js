@@ -53,7 +53,7 @@ export default function Navbar() {
                   <Link 
                     key={link.name} 
                     href={link.href} 
-                    className="relative text-xs font-bold uppercase tracking-[0.2em] transition-colors py-2 text-foreground/70 hover:text-white"
+                    className="relative text-xs font-bold uppercase tracking-[0.2em] transition-colors py-2 text-white/70 hover:text-white"
                   >
                     {link.name}
                   </Link>
