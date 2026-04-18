@@ -1,347 +1,131 @@
 'use client';
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
+import React from 'react';
+import StatCard from '@/components/admin/StatCard';
 import { 
   Users, 
+  Sprout, 
+  Handshake, 
   Briefcase, 
-  IndianRupee, 
-  Zap, 
-  Activity, 
+  Store, 
   TrendingUp, 
-  ArrowUpRight, 
-  ShieldCheck,
-  Globe,
-  Database,
-  BarChart3,
-  ArrowRight,
-  Flame,
-  Layout,
+  DollarSign, 
   Clock,
+  Activity,
+  Zap,
   CheckCircle2,
-  AlertCircle,
-  XCircle,
-  TrendingDown
+  AlertCircle
 } from 'lucide-react';
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  Cell
-} from 'recharts';
+import { motion } from 'framer-motion';
 
-const chartData = [
-  { name: 'Mon', revenue: 4000, users: 2400 },
-  { name: 'Tue', revenue: 3000, users: 1398 },
-  { name: 'Wed', revenue: 2000, users: 9800 },
-  { name: 'Thu', revenue: 2780, users: 3908 },
-  { name: 'Fri', revenue: 1890, users: 4800 },
-  { name: 'Sat', revenue: 2390, users: 3800 },
-  { name: 'Sun', revenue: 3490, users: 4300 },
-];
-
-export default function SuperAdminDashboard() {
-  const [mounted, setMounted] = React.useState(false);
-  const [stats, setStats] = useState({
-    users: 0,
-    partners: 0,
-    employees: 0,
-    farmers: 0,
-    todayRegistrations: 0,
-    totalRevenue: 0,
-    todayRevenue: 0,
-    pendingPayments: 0,
-    successPayments: 0,
-    failedPayments: 0,
-    health: 'Node Synchronizing...'
-  });
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [leads, setLeads] = useState([]);
-
-  React.useEffect(() => {
-    setMounted(true);
-    fetchDashboardStats();
-  }, []);
-
-  const fetchDashboardStats = async () => {
-    try {
-      setIsLoading(true);
-      const [uRes, pRes, lRes] = await Promise.all([
-        fetch('/api/admin/users'),
-        fetch('/api/admin/partners'),
-        fetch('/api/admin/leads')
-      ]);
-
-      const users = await uRes.json();
-      const partners = await pRes.json();
-      const leadData = await lRes.json();
-      setLeads(leadData);
-
-      setStats({
-        users: users.length || 0,
-        partners: partners.length || 0,
-        employees: users.filter(u => u.role === 'employee').length,
-        farmers: users.filter(u => u.role === 'farmer').length,
-        todayRegistrations: users.filter(u => new Date(u.createdAt).toDateString() === new Date().toDateString()).length,
-        totalRevenue: leadData.filter(l => l.paymentStatus === 'success').length * 249,
-        todayRevenue: leadData.filter(l => l.paymentStatus === 'success' && new Date(l.createdAt).toDateString() === new Date().toDateString()).length * 249,
-        pendingPayments: leadData.filter(l => l.paymentStatus === 'pending').length,
-        successPayments: leadData.filter(l => l.paymentStatus === 'success').length,
-        failedPayments: leadData.filter(l => l.paymentStatus === 'failed').length,
-        health: 'Optimal'
-      });
-    } catch (err) {
-      console.error('Stats Sync Error:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const chartData = [
-    { name: 'Node-7', revenue: stats.successPayments * 249 * 0.1 },
-    { name: 'Node-6', revenue: stats.successPayments * 249 * 0.3 },
-    { name: 'Node-5', revenue: stats.successPayments * 249 * 0.2 },
-    { name: 'Node-4', revenue: stats.successPayments * 249 * 0.5 },
-    { name: 'Node-3', revenue: stats.successPayments * 249 * 0.4 },
-    { name: 'ACTIVE', revenue: stats.successPayments * 249 },
+export default function Dashboard() {
+  const stats = [
+    { title: 'Total Users', value: '12,482', trend: '+12%', icon: Users },
+    { title: 'Farmers', value: '8,291', trend: '+18%', icon: Sprout },
+    { title: 'Partners', value: '452', trend: '+5%', icon: Handshake },
+    { title: 'Employees', value: '124', trend: '+2%', icon: Briefcase },
+    { title: 'Vendors', value: '86', trend: '+9%', icon: Store },
+    { title: "Today's Revenue", value: '₹42,850', trend: '+15%', icon: TrendingUp },
+    { title: 'Total Revenue', value: '₹1.2Cr', trend: '+32%', icon: DollarSign },
+    { title: 'Pending Loans', value: '₹18.4L', trend: '-4%', icon: Clock },
   ];
 
-  const kpiCards = [
-    { title: 'Total Users', value: stats.users, icon: Users, color: 'text-indigo-600', bg: 'bg-indigo-50', trend: '+12%' },
-    { title: 'Active Partners', value: stats.partners, icon: Briefcase, color: 'text-emerald-600', bg: 'bg-emerald-50', trend: '+5%' },
-    { title: 'Field Force', value: stats.employees, icon: Zap, color: 'text-amber-600', bg: 'bg-amber-50', trend: '+8%' },
-    { title: 'Total Farmers', value: stats.farmers, icon: Globe, color: 'text-rose-600', bg: 'bg-rose-50', trend: '+15%' },
-    { title: 'Today Reg.', value: stats.todayRegistrations, icon: Clock, color: 'text-sky-600', bg: 'bg-sky-50', trend: '+4%' },
-  ];
-
-  const paymentCards = [
-    { title: 'Pending', value: stats.pendingPayments, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { title: 'Success', value: stats.successPayments, icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { title: 'Failed', value: stats.failedPayments, icon: XCircle, color: 'text-rose-600', bg: 'bg-rose-50' },
+  const activities = [
+    { id: 1, text: 'New Farmer Registered: Rajesh Kumar', time: '2 mins ago', icon: Sprout, color: 'text-[#38bdf8]' },
+    { id: 2, text: 'Payment Received: ₹249 from Adarsh', time: '15 mins ago', icon: DollarSign, color: 'text-[#22c55e]' },
+    { id: 3, text: 'Loan Submitted: Application #LN921', time: '45 mins ago', icon: Zap, color: 'text-[#f59e0b]' },
+    { id: 4, text: 'New Employee Lead: Sanya Gupta', time: '1 hour ago', icon: Briefcase, color: 'text-[#6366f1]' },
   ];
 
   return (
-    <div className="space-y-8 pb-20 mesh-gradient-vibrant min-h-screen pt-4 px-4 overflow-x-hidden">
-      {/* Compact Command Header */}
+    <div className="space-y-12">
+      {/* Header Section */}
       <motion.div 
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="glass-card p-6 rounded-[2.5rem] relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl border-white/60"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
       >
-         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-rose-500/5 to-amber-500/5 opacity-40" />
-         
-         <div className="flex items-center gap-6 relative z-10">
-            <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-lg">
-               <ShieldCheck size={32} />
-            </div>
-            <div>
-               <h1 className="text-3xl font-black text-slate-900 tracking-tighter italic leading-none mb-2">
-                  Command <span className="text-gradient-vibrant">Cockpit</span>
-               </h1>
-               <div className="flex items-center gap-3">
-                  <span className="text-[9px] font-black uppercase text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full tracking-[0.1em] italic">Priority Access</span>
-                  <div className="h-1 w-1 bg-slate-300 rounded-full" />
-                  <span className="text-[9px] font-black uppercase text-emerald-600 tracking-widest flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> 
-                    {stats.health}
-                  </span>
-               </div>
-            </div>
-         </div>
-
-         <div className="flex items-center gap-3 relative z-10">
-            <div className="glass-card bg-white/40 p-4 rounded-3xl flex items-center gap-4 border-white/40 shadow-sm">
-               <div className="text-right">
-                  <p className="text-[8px] font-black uppercase text-slate-400 tracking-[0.2em]">Auth Node</p>
-                  <p className="text-xs font-black text-slate-900 uppercase">MASTER_SESSION_X</p>
-               </div>
-               <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-600">
-                  <Activity size={20} />
-               </div>
-            </div>
-         </div>
+        <div>
+          <h1 className="text-4xl md:text-5xl font-black text-[#f3f4f6] tracking-tighter italic">Dashboard Overview.</h1>
+          <p className="text-[#9ca3af] font-medium italic mt-2">Welcome back, Admin. Here's what's happening today.</p>
+        </div>
+        <div className="flex items-center gap-4 bg-[#111827] border border-[#1f2937] p-2 rounded-2xl">
+           <button className="px-6 py-2 rounded-xl bg-[#38bdf8] text-[#0b1220] text-xs font-black italic shadow-lg">REAL-TIME</button>
+           <button className="px-6 py-2 rounded-xl text-[#6b7280] hover:text-[#f3f4f6] text-xs font-black italic transition-all">ANALYTICS</button>
+        </div>
       </motion.div>
 
-      {/* Primary KPI Grid - Dense */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-6">
-         {kpiCards.map((card, idx) => (
-           <motion.div 
-             initial={{ opacity: 0, scale: 0.95 }}
-             animate={{ opacity: 1, scale: 1 }}
-             transition={{ delay: idx * 0.05 }}
-             key={card.title}
-             className="p-6 glass-card rounded-[2rem] shadow-lg border-white/50 group hover:shadow-xl transition-all"
-           >
-              <div className={`w-10 h-10 ${card.bg} ${card.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                 <card.icon size={20} />
-              </div>
-              <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest mb-1 italic">{card.title}</p>
-              <div className="flex items-baseline justify-between gap-2">
-                 <h3 className="text-2xl font-black text-slate-900 tracking-tighter italic">{card.value.toLocaleString()}</h3>
-                 <span className="text-[10px] font-bold text-emerald-600">{card.trend}</span>
-              </div>
-           </motion.div>
-         ))}
+      {/* Metrics Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, idx) => (
+          <StatCard key={idx} {...stat} />
+        ))}
       </div>
 
-      {/* Combined Analytics & Activity Area */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-         {/* Main Chart Section */}
-         <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-2 p-8 glass-card rounded-[3rem] shadow-xl border-white/60 relative overflow-hidden"
-         >
-            <div className="flex items-center justify-between mb-8">
-               <div>
-                  <h4 className="text-xl font-black text-slate-900 italic tracking-tight">Revenue <span className="text-indigo-600">Pulse</span></h4>
-                  <p className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em] mt-1">Global Settlement Analytics</p>
-               </div>
-               <div className="flex gap-2">
-                  <button className="px-4 py-1.5 bg-slate-900 text-white text-[9px] font-black rounded-full italic uppercase tracking-widest">Growth</button>
-                  <button className="px-4 py-1.5 bg-white text-slate-400 text-[9px] font-black rounded-full uppercase tracking-widest border border-slate-100">Nodes</button>
-               </div>
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        {/* Main Graph Placeholder */}
+        <div className="lg:col-span-2 bg-[#111827] border border-[#1f2937] rounded-[3rem] p-10 relative overflow-hidden group">
+           <div className="absolute top-0 right-0 p-8">
+              <div className="flex items-center gap-3">
+                 <div className="flex items-center gap-1.5 text-[10px] font-black italic text-[#22c55e]">
+                    <div className="w-1.5 h-1.5 bg-[#22c55e] rounded-full"></div> REVENUE
+                 </div>
+                 <div className="flex items-center gap-1.5 text-[10px] font-black italic text-[#38bdf8]">
+                    <div className="w-1.5 h-1.5 bg-[#38bdf8] rounded-full"></div> PROJECTIONS
+                 </div>
+              </div>
+           </div>
+           
+           <h2 className="text-3xl font-black text-[#f3f4f6] tracking-tight italic mb-10">Revenue Velocity.</h2>
+           
+           <div className="h-80 flex items-end justify-between gap-4">
+              {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 100].map((h, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ height: 0 }}
+                  whileInView={{ height: `${h}%` }}
+                  transition={{ delay: i * 0.05, duration: 1 }}
+                  className="flex-grow bg-gradient-to-t from-[#38bdf8]/10 to-[#38bdf8]/40 rounded-t-xl relative group"
+                >
+                  <div className="absolute inset-x-0 top-0 h-1.5 bg-[#38bdf8] rounded-full shadow-[0_0_15px_#38bdf8] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </motion.div>
+              ))}
+           </div>
+           
+           <div className="flex justify-between mt-6 px-2 text-[10px] font-black text-[#6b7280] italic uppercase tracking-widest">
+              <span>Jan</span><span>Mar</span><span>May</span><span>Jul</span><span>Sep</span><span>Dec</span>
+           </div>
+        </div>
 
-            <div className="h-[300px] w-full mt-4">
-               {mounted ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                     <AreaChart data={chartData}>
-                        <defs>
-                           <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.1}/>
-                              <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
-                           </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 900, fill: '#94a3b8'}} />
-                        <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 900, fill: '#94a3b8'}} />
-                        <Tooltip 
-                           contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', fontWeight: 900 }}
-                           cursor={{ stroke: '#4f46e5', strokeWidth: 2 }}
-                        />
-                        <Area type="monotone" dataKey="revenue" stroke="#4f46e5" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" />
-                     </AreaChart>
-                  </ResponsiveContainer>
-               ) : (
-                  <div className="w-full h-full bg-slate-50 animate-pulse rounded-2xl" />
-               )}
+        {/* Live Activity Feed */}
+        <div className="bg-[#111827] border border-[#1f2937] rounded-[3rem] p-10 flex flex-col">
+          <div className="flex items-center justify-between mb-10">
+            <h2 className="text-2xl font-black text-[#f3f4f6] tracking-tight italic">Live Activity</h2>
+            <div className="flex items-center gap-2">
+               <span className="w-2 h-2 bg-[#22c55e] rounded-full animate-pulse"></span>
+               <span className="text-[10px] font-black uppercase text-[#22c55e] tracking-widest">Live</span>
             </div>
-         </motion.div>
+          </div>
 
-         {/* Distribution & Performance */}
-         <div className="space-y-8">
-            <motion.div 
-               initial={{ opacity: 0, x: 20 }}
-               animate={{ opacity: 1, x: 0 }}
-               className="p-8 bg-slate-900 text-white rounded-[3rem] shadow-2xl relative overflow-hidden group border-4 border-slate-800"
-            >
-               <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/20 blur-3xl -mr-20 -mt-20 group-hover:scale-150 transition-all duration-1000" />
-               <div className="relative z-10">
-                  <div className="flex items-center gap-3 mb-6">
-                     <Flame size={20} className="text-rose-500 animate-pulse" />
-                     <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Yield Prediction</p>
-                  </div>
-                  <h4 className="text-4xl font-black italic tracking-tighter mb-2">₹{stats.totalRevenue.toLocaleString()}</h4>
-                  <p className="text-[11px] text-indigo-400 font-bold italic mb-8">Total Volume</p>
-                  
-                  <div className="space-y-4 pt-6 border-t border-white/10">
-                     <div className="flex justify-between items-center text-[10px] font-black font-mono tracking-tighter uppercase">
-                        <span className="text-slate-500">Node Accuracy</span>
-                        <span className="text-emerald-400">99.2%</span>
-                     </div>
-                     <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-500 w-[92%] shadow-[0_0_10px_#10b981]" />
-                     </div>
-                  </div>
-               </div>
-            </motion.div>
+          <div className="space-y-8 flex-grow">
+            {activities.map((act) => (
+              <div key={act.id} className="flex gap-5 group cursor-default">
+                <div className={`w-12 h-12 rounded-2xl bg-[#1f2937] border border-[#1f2937] flex items-center justify-center ${act.color} group-hover:scale-110 group-hover:bg-[#0b1220] transition-all shrink-0`}>
+                   <act.icon size={20} />
+                </div>
+                <div>
+                  <p className="text-[13px] font-bold text-[#f3f4f6] italic leading-snug">{act.text}</p>
+                  <p className="text-[10px] font-black text-[#6b7280] uppercase tracking-wider mt-1">{act.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
 
-            {/* Payment Pulse - Simplified */}
-            <div className="p-8 glass-card rounded-[3rem] shadow-xl border-white/60">
-               <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-6 flex items-center gap-2">
-                 <div className="w-1 h-3 bg-rose-500/40 rounded-full" />
-                 Payment Stream
-               </h4>
-               <div className="space-y-4">
-                  {paymentCards.map((item) => (
-                    <div key={item.title} className="flex items-center justify-between p-4 rounded-2xl bg-white/40 border border-white hover:bg-white transition-colors">
-                       <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 ${item.bg} ${item.color} rounded-lg flex items-center justify-center`}>
-                             <item.icon size={16} />
-                          </div>
-                          <div>
-                             <p className="text-[10px] font-black italic text-slate-900">{item.title}</p>
-                          </div>
-                       </div>
-                       <span className="text-xs font-black italic text-slate-900">{item.value}</span>
-                    </div>
-                  ))}
-               </div>
-            </div>
-         </div>
+          <button className="mt-10 w-full py-4 rounded-2xl bg-white/5 border border-white/5 text-[#f3f4f6] text-[10px] font-black uppercase tracking-[0.3em] italic hover:bg-white/10 transition-all">
+            View All Events
+          </button>
+        </div>
       </div>
-
-      {/* Operations Intelligence Stream - Compact Table */}
-      <motion.div 
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="p-10 glass-card rounded-[4rem] shadow-xl border-white/50"
-      >
-         <div className="flex items-center justify-between mb-8">
-            <h4 className="text-xl font-black text-slate-900 italic tracking-tight">System <span className="text-gradient-vibrant">Traffic</span></h4>
-            <Link href="/admin/leads" className="text-[10px] font-black text-indigo-600 uppercase tracking-widest hover:underline flex items-center gap-2">
-               View All Stream <ArrowRight size={14} />
-            </Link>
-         </div>
-
-         <div className="overflow-x-auto">
-            <table className="w-full border-separate border-spacing-y-3">
-               <thead>
-                  <tr className="text-left text-[9px] font-black uppercase text-slate-400 tracking-[0.3em]">
-                     <th className="px-6 pb-2">Node ID</th>
-                     <th className="px-6 pb-2">Operation</th>
-                     <th className="px-6 pb-2">Status</th>
-                     <th className="px-6 pb-2 text-right">Sequence</th>
-                  </tr>
-               </thead>
-                <tbody>
-                   {leads.slice(0, 5).map((lead) => (
-                     <tr key={lead.id} className="group bg-white/40 hover:bg-slate-900 hover:text-white transition-all duration-300 shadow-sm hover:shadow-2xl">
-                        <td className="px-6 py-4 rounded-l-2xl border-y border-l border-white/60">
-                           <span className="text-[10px] font-black tracking-tighter uppercase font-mono group-hover:text-indigo-400">{lead.id.split('-')[0]}</span>
-                        </td>
-                        <td className="px-6 py-4 border-y border-white/60">
-                           <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 bg-slate-100/50 rounded-lg flex items-center justify-center text-slate-400 group-hover:bg-white/10 group-hover:text-white transition-colors">
-                                 <Activity size={16} />
-                              </div>
-                              <span className="text-[11px] font-black italic">{lead.form?.name || 'Identity Sync'}</span>
-                           </div>
-                        </td>
-                        <td className="px-6 py-4 border-y border-white/60">
-                           <div className="flex items-center gap-2">
-                              <div className={`w-1.5 h-1.5 rounded-full ${lead.status === 'approved' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                              <span className="text-[9px] font-black uppercase tracking-widest italic">{lead.status}</span>
-                           </div>
-                        </td>
-                        <td className="px-6 py-4 rounded-r-2xl border-y border-r border-white/60 text-right">
-                           <span className="text-[9px] font-black text-slate-400 italic group-hover:text-slate-500">Node_{Math.floor(Math.random()*900)+100}</span>
-                        </td>
-                     </tr>
-                   ))}
-                </tbody>
-            </table>
-         </div>
-      </motion.div>
     </div>
   );
 }
