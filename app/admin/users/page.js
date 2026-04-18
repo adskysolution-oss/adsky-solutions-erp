@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import DataTable from '@/components/admin/DataTable';
 import { motion } from 'framer-motion';
