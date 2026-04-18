@@ -10,7 +10,8 @@ import {
   Settings, 
   Users,
   Target,
-  ArrowUpRight
+  ArrowUpRight,
+  ArrowRight
 } from 'lucide-react';
 
 const commissionData = [
