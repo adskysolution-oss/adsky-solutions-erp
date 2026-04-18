@@ -1,11 +1,269 @@
-﻿export const metadata = {
-title: 'AdSky Solution - Careers',
-};
+'use client';
 
-export default function Page() {
-  const bodyHtml = "<div hidden=\"\"><!--\\\\$--><!--/\\\\$--></div><div class=\"min-h-screen flex flex-col bg-background text-foreground\"><div class=\"fixed top-6 left-0 right-0 z-50 flex justify-center px-6\"><div class=\"relative w-full max-w-5xl\"><div class=\"relative p-[1px] rounded-[3rem] overflow-hidden transition-all duration-500 ease-in-out\"><div class=\"absolute inset-[-400%] opacity-100\" style=\"background:conic-gradient(from 0deg, transparent 0deg, #3B82F6 120deg, #6366F1 240deg, #F97316 360deg)\"></div><nav class=\"relative w-full h-full transition-all duration-500 ease-in-out z-10 rounded-[3rem] bg-[#0F172A]/80 backdrop-blur-xl py-3 px-10\"><div class=\"flex items-center justify-between\"><a class=\"flex items-center group gap-3\" href=\"/\"><div class=\"relative flex items-center justify-center rounded-xl overflow-hidden shadow-lg border border-white/10 group-hover:scale-110 transition-transform duration-500 w-12 h-12\"><img alt=\"AD Sky Solution Logo\" loading=\"lazy\" decoding=\"async\" data-nimg=\"fill\" class=\"object-cover\" style=\"position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent\" sizes=\"100vw\" srcSet=\"https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=640&amp;q=75 640w, https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=750&amp;q=75 750w, https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=828&amp;q=75 828w, https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=1080&amp;q=75 1080w, https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=1200&amp;q=75 1200w, https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=1920&amp;q=75 1920w, https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=2048&amp;q=75 2048w, https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=3840&amp;q=75 3840w\" src=\"https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=3840&amp;q=75\"/></div><div class=\"flex flex-col leading-none\"><span class=\"font-medium tracking-tight transition-colors italic text-xl text-white\">AD SKY</span><span class=\"uppercase font-normal tracking-[0.4em] text-[9px] text-white/60\">Solution</span></div></a><div class=\"hidden md:flex items-center gap-10\"><a class=\"relative text-xs font-bold uppercase tracking-[0.2em] transition-colors py-2 text-foreground/70 hover:text-white\" href=\"/\">Home</a><a class=\"relative text-xs font-bold uppercase tracking-[0.2em] transition-colors py-2 text-foreground/70 hover:text-white\" href=\"/about\">About</a><a class=\"relative text-xs font-bold uppercase tracking-[0.2em] transition-colors py-2 text-foreground/70 hover:text-white\" href=\"/services\">Services</a><a class=\"relative text-xs font-bold uppercase tracking-[0.2em] transition-colors py-2 text-foreground/70 hover:text-white\" href=\"/pricing\">Pricing</a><a class=\"relative text-xs font-bold uppercase tracking-[0.2em] transition-colors py-2 text-foreground/70 hover:text-white\" href=\"/projects\">Projects</a><a class=\"relative text-xs font-bold uppercase tracking-[0.2em] transition-colors py-2 text-foreground/70 hover:text-white\" href=\"/gallery\">Gallery</a><a class=\"relative text-xs font-bold uppercase tracking-[0.2em] transition-colors py-2 text-yellow-400\" href=\"/careers\">Careers<div class=\"absolute -bottom-1 left-0 right-0 h-[2px] bg-yellow-400 rounded-full\" style=\"opacity: 1\"><div class=\"absolute inset-0 bg-yellow-400/50 blur-sm rounded-full\"></div></div></a></div><button class=\"md:hidden text-foreground p-2 hover:bg-white/10 rounded-full transition-colors\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-menu\" aria-hidden=\"true\"><path d=\"M4 5h16\"></path><path d=\"M4 12h16\"></path><path d=\"M4 19h16\"></path></svg></button></div></nav></div></div></div><main class=\"flex-grow pt-24\"><section class=\"py-24 px-6\"><div class=\"max-w-7xl mx-auto\"><div class=\"p-12 md:p-20 rounded-[3rem] bg-linear-to-br from-primary/20 to-secondary/20 border border-white/10 mb-20 relative overflow-hidden text-center\" style=\"opacity: 1;transform:scale(0.95)\"><div class=\"relative z-10\"><h1 class=\"text-4xl md:text-6xl font-normal mb-6 italic\">Join Our Mission</h1><p class=\"text-xl text-muted max-w-2xl mx-auto mb-10\">Shape the future of business and talent in India. Explore opportunities to grow with AD Sky Solution.</p><div class=\"max-w-xl mx-auto flex gap-4 p-2 bg-background rounded-2xl border border-white/5 shadow-2xl\"><div class=\"grow flex items-center px-4\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-search text-muted mr-3\" aria-hidden=\"true\"><path d=\"m21 21-4.34-4.34\"></path><circle cx=\"11\" cy=\"11\" r=\"8\"></circle></svg><input type=\"text\" placeholder=\"Search job titles...\" class=\"bg-transparent outline-none w-full text-sm\"/></div><button class=\"px-6 py-3 bg-primary rounded-xl font-bold text-sm\">Find Jobs</button></div></div><div class=\"absolute top-0 left-0 w-64 h-64 bg-primary/30 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2\"></div></div><div class=\"grid grid-cols-1 lg:grid-cols-3 gap-12\"><div class=\"lg:col-span-2 space-y-6\"><h2 class=\"text-2xl font-bold mb-8\">Latest Openings</h2><div class=\"p-8 rounded-[2.5rem] bg-linear-to-br from-[#020617] via-[#020617] to-blue-900 border border-white/5 hover:border-blue-500/30 transition-all group shadow-xl\"><div class=\"flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6\"><div><h3 class=\"text-2xl font-bold mb-2 group-hover:text-primary transition-colors\">Senior Business Consultant</h3><div class=\"flex flex-wrap gap-4 text-xs font-medium text-muted\"><span class=\"flex items-center gap-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-map-pin\" aria-hidden=\"true\"><path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg> <!-- -->Noida, UP</span><span class=\"flex items-center gap-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-briefcase\" aria-hidden=\"true\"><path d=\"M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16\"></path><rect width=\"20\" height=\"14\" x=\"2\" y=\"6\" rx=\"2\"></rect></svg> <!-- -->Full Time</span><span class=\"flex items-center gap-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-dollar-sign\" aria-hidden=\"true\"><line x1=\"12\" x2=\"12\" y1=\"2\" y2=\"22\"></line><path d=\"M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6\"></path></svg> <!-- -->\u20b912L - \u20b918L PA</span><span class=\"flex items-center gap-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-clock\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><path d=\"M12 6v6l4 2\"></path></svg> <!-- -->2 days ago</span></div></div><button class=\"px-6 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-primary hover:text-white transition-all font-bold text-sm\">Apply Now</button></div><p class=\"text-muted text-sm leading-relaxed mb-6\">Lead strategic consulting projects for MSME clients and manage institutional partnerships.</p><div class=\"flex flex-wrap gap-2\"><span class=\"px-3 py-1 bg-white/5 rounded-lg text-[10px] font-bold uppercase tracking-wider text-primary/80\">Management</span><span class=\"px-3 py-1 bg-white/5 rounded-lg text-[10px] font-bold uppercase tracking-wider text-primary/80\">MSME</span><span class=\"px-3 py-1 bg-white/5 rounded-lg text-[10px] font-bold uppercase tracking-wider text-primary/80\">Consulting</span></div></div><div class=\"p-8 rounded-[2.5rem] bg-linear-to-br from-[#020617] via-[#020617] to-blue-900 border border-white/5 hover:border-blue-500/30 transition-all group shadow-xl\"><div class=\"flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6\"><div><h3 class=\"text-2xl font-bold mb-2 group-hover:text-primary transition-colors\">Project Coordinator (Skill Dev)</h3><div class=\"flex flex-wrap gap-4 text-xs font-medium text-muted\"><span class=\"flex items-center gap-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-map-pin\" aria-hidden=\"true\"><path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg> <!-- -->Remote / Noida</span><span class=\"flex items-center gap-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-briefcase\" aria-hidden=\"true\"><path d=\"M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16\"></path><rect width=\"20\" height=\"14\" x=\"2\" y=\"6\" rx=\"2\"></rect></svg> <!-- -->Full Time</span><span class=\"flex items-center gap-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-dollar-sign\" aria-hidden=\"true\"><line x1=\"12\" x2=\"12\" y1=\"2\" y2=\"22\"></line><path d=\"M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6\"></path></svg> <!-- -->\u20b96L - \u20b99L PA</span><span class=\"flex items-center gap-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-clock\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><path d=\"M12 6v6l4 2\"></path></svg> <!-- -->1 week ago</span></div></div><button class=\"px-6 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-primary hover:text-white transition-all font-bold text-sm\">Apply Now</button></div><p class=\"text-muted text-sm leading-relaxed mb-6\">Coordinate vocational training batches and ensure compliance with government mission guidelines.</p><div class=\"flex flex-wrap gap-2\"><span class=\"px-3 py-1 bg-white/5 rounded-lg text-[10px] font-bold uppercase tracking-wider text-primary/80\">Project Management</span><span class=\"px-3 py-1 bg-white/5 rounded-lg text-[10px] font-bold uppercase tracking-wider text-primary/80\">Govt. Liaison</span></div></div><div class=\"p-8 rounded-[2.5rem] bg-linear-to-br from-[#020617] via-[#020617] to-blue-900 border border-white/5 hover:border-blue-500/30 transition-all group shadow-xl\"><div class=\"flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6\"><div><h3 class=\"text-2xl font-bold mb-2 group-hover:text-primary transition-colors\">Manpower Resource Manager</h3><div class=\"flex flex-wrap gap-4 text-xs font-medium text-muted\"><span class=\"flex items-center gap-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-map-pin\" aria-hidden=\"true\"><path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg> <!-- -->Gurugram, HR</span><span class=\"flex items-center gap-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-briefcase\" aria-hidden=\"true\"><path d=\"M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16\"></path><rect width=\"20\" height=\"14\" x=\"2\" y=\"6\" rx=\"2\"></rect></svg> <!-- -->Contract</span><span class=\"flex items-center gap-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-dollar-sign\" aria-hidden=\"true\"><line x1=\"12\" x2=\"12\" y1=\"2\" y2=\"22\"></line><path d=\"M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6\"></path></svg> <!-- -->\u20b98L - \u20b912L PA</span><span class=\"flex items-center gap-1\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-clock\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><path d=\"M12 6v6l4 2\"></path></svg> <!-- -->3 days ago</span></div></div><button class=\"px-6 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-primary hover:text-white transition-all font-bold text-sm\">Apply Now</button></div><p class=\"text-muted text-sm leading-relaxed mb-6\">Oversee recruitment and payroll for large-scale private sector manpower requirements.</p><div class=\"flex flex-wrap gap-2\"><span class=\"px-3 py-1 bg-white/5 rounded-lg text-[10px] font-bold uppercase tracking-wider text-primary/80\">HR</span><span class=\"px-3 py-1 bg-white/5 rounded-lg text-[10px] font-bold uppercase tracking-wider text-primary/80\">Recruitment</span><span class=\"px-3 py-1 bg-white/5 rounded-lg text-[10px] font-bold uppercase tracking-wider text-primary/80\">Operations</span></div></div></div><div class=\"space-y-6\"><div class=\"p-8 rounded-3xl bg-primary/10 border border-primary/20 sticky top-32\"><h4 class=\"text-xl font-bold mb-4\">Why AD Sky?</h4><ul class=\"space-y-4\"><li class=\"flex items-center gap-3 text-sm text-foreground/80\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"text-primary shrink-0\"><circle cx=\"8\" cy=\"8\" r=\"8\" fill=\"currentColor\" fill-opacity=\"0.1\"></circle><path d=\"M11 6L7 10L5 8\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg>Dynamic Work Environment</li><li class=\"flex items-center gap-3 text-sm text-foreground/80\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"text-primary shrink-0\"><circle cx=\"8\" cy=\"8\" r=\"8\" fill=\"currentColor\" fill-opacity=\"0.1\"></circle><path d=\"M11 6L7 10L5 8\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg>Continuous Learning</li><li class=\"flex items-center gap-3 text-sm text-foreground/80\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"text-primary shrink-0\"><circle cx=\"8\" cy=\"8\" r=\"8\" fill=\"currentColor\" fill-opacity=\"0.1\"></circle><path d=\"M11 6L7 10L5 8\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg>Competitive Benefits</li><li class=\"flex items-center gap-3 text-sm text-foreground/80\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" class=\"text-primary shrink-0\"><circle cx=\"8\" cy=\"8\" r=\"8\" fill=\"currentColor\" fill-opacity=\"0.1\"></circle><path d=\"M11 6L7 10L5 8\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path></svg>Impactful Govt. Projects</li></ul><div class=\"mt-8 p-4 rounded-2xl bg-white/5 border border-white/10\"><p class=\"text-xs text-muted leading-relaxed\">&quot;Joining AD Sky was the best career move. The opportunities here are truly unique.&quot;</p><p class=\"text-xs font-bold mt-2\">\u2014 Sneha R., Senior Lead</p></div></div></div></div></div></section></main><footer class=\"pt-24 pb-12 px-6 bg-[#020617] border-t border-green-400/10\"><div class=\"max-w-7xl mx-auto\"><div class=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16\"><div class=\"lg:col-span-2\"><a class=\"flex items-center group gap-3\" href=\"/\"><div class=\"relative flex items-center justify-center rounded-xl overflow-hidden shadow-lg border border-white/10 group-hover:scale-110 transition-transform duration-500 w-12 h-12\"><img alt=\"AD Sky Solution Logo\" loading=\"lazy\" decoding=\"async\" data-nimg=\"fill\" class=\"object-cover\" style=\"position:absolute;height:100%;width:100%;left:0;top:0;right:0;bottom:0;color:transparent\" sizes=\"100vw\" srcSet=\"https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=640&amp;q=75 640w, https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=750&amp;q=75 750w, https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=828&amp;q=75 828w, https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=1080&amp;q=75 1080w, https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=1200&amp;q=75 1200w, https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=1920&amp;q=75 1920w, https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=2048&amp;q=75 2048w, https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=3840&amp;q=75 3840w\" src=\"https://www.adskysolution.com/_next/image?url=%2Flogo(2).jpeg&amp;w=3840&amp;q=75\"/></div><div class=\"flex flex-col leading-none\"><span class=\"font-medium tracking-tight transition-colors italic text-xl text-white\">AD SKY</span><span class=\"uppercase font-normal tracking-[0.4em] text-[9px] text-white/60\">Solution</span></div></a><p class=\"mt-6 text-muted max-w-sm leading-relaxed\">Empowering businesses and individuals through expert consulting, skill development, and strategic management solutions.</p><div class=\"flex items-center gap-6 mt-8\"><a class=\"group relative w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-green-400/10 transition-all duration-300 border border-white/5 hover:border-green-400/30 overflow-hidden shadow-2xl\" href=\"#\"><div class=\"absolute inset-0 bg-green-400/5 opacity-0 group-hover:opacity-100 transition-opacity\"></div><div class=\"relative z-10 text-white/70 transform transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 group-hover:text-green-400\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"w-5 h-5\"><path d=\"M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z\"></path></svg></div><div class=\"absolute inset-0 bg-green-400/20 blur-xl opacity-0 group-hover:opacity-40 transition-opacity\"></div></a><a class=\"group relative w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-green-400/10 transition-all duration-300 border border-white/5 hover:border-green-400/30 overflow-hidden shadow-2xl\" href=\"#\"><div class=\"absolute inset-0 bg-green-400/5 opacity-0 group-hover:opacity-100 transition-opacity\"></div><div class=\"relative z-10 text-white/70 transform transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 group-hover:text-green-400\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"w-5 h-5\"><rect x=\"2\" y=\"2\" width=\"20\" height=\"20\" rx=\"5\" ry=\"5\"></rect><path d=\"M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z\"></path><line x1=\"17.5\" y1=\"6.5\" x2=\"17.51\" y2=\"6.5\"></line></svg></div><div class=\"absolute inset-0 bg-green-400/20 blur-xl opacity-0 group-hover:opacity-40 transition-opacity\"></div></a><a class=\"group relative w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-green-400/10 transition-all duration-300 border border-white/5 hover:border-green-400/30 overflow-hidden shadow-2xl\" href=\"#\"><div class=\"absolute inset-0 bg-green-400/5 opacity-0 group-hover:opacity-100 transition-opacity\"></div><div class=\"relative z-10 text-white/70 transform transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 group-hover:text-green-400\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"w-5 h-5\"><path d=\"M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z\"></path></svg></div><div class=\"absolute inset-0 bg-green-400/20 blur-xl opacity-0 group-hover:opacity-40 transition-opacity\"></div></a><a class=\"group relative w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 hover:bg-green-400/10 transition-all duration-300 border border-white/5 hover:border-green-400/30 overflow-hidden shadow-2xl\" href=\"#\"><div class=\"absolute inset-0 bg-green-400/5 opacity-0 group-hover:opacity-100 transition-opacity\"></div><div class=\"relative z-10 text-white/70 transform transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 group-hover:text-green-400\"><svg viewBox=\"0 0 24 24\" fill=\"currentColor\" class=\"w-5 h-5\"><path d=\"M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0z\"></path></svg></div><div class=\"absolute inset-0 bg-green-400/20 blur-xl opacity-0 group-hover:opacity-40 transition-opacity\"></div></a></div></div><div><h4 class=\"text-green-400 font-bold mb-6 italic uppercase tracking-wider text-sm\">Company</h4><ul class=\"space-y-4\"><li><a class=\"text-muted hover:text-green-400 transition-colors text-sm font-medium\" href=\"/about\">About Us</a></li><li><a class=\"text-muted hover:text-green-400 transition-colors text-sm font-medium\" href=\"/services\">Services</a></li><li><a class=\"text-muted hover:text-green-400 transition-colors text-sm font-medium\" href=\"/contact\">Contact</a></li><li><a class=\"text-muted hover:text-green-400 transition-colors text-sm font-medium\" href=\"/gallery\">Gallery</a></li></ul></div><div><h4 class=\"text-green-400 font-bold mb-6 italic uppercase tracking-wider text-sm\">Services</h4><ul class=\"space-y-4\"><li><a class=\"text-muted hover:text-green-400 transition-colors text-sm font-medium\" href=\"/services\">IT Project Planning</a></li><li><a class=\"text-muted hover:text-green-400 transition-colors text-sm font-medium\" href=\"/services\">Web &amp; App Strategy</a></li><li><a class=\"text-muted hover:text-green-400 transition-colors text-sm font-medium\" href=\"/services\">Process Automation</a></li><li><a class=\"text-muted hover:text-green-400 transition-colors text-sm font-medium\" href=\"/services\">Architecture Advisory</a></li></ul></div><div><h4 class=\"text-green-400 font-bold mb-6 italic uppercase tracking-wider text-sm\">Legal</h4><ul class=\"space-y-4\"><li><a class=\"text-muted hover:text-green-400 transition-colors text-sm font-medium\" href=\"/pricing\">Pricing</a></li><li><a class=\"text-muted hover:text-green-400 transition-colors text-sm font-medium\" href=\"/terms\">Terms &amp; Conditions</a></li><li><a class=\"text-muted hover:text-green-400 transition-colors text-sm font-medium\" href=\"/privacy\">Privacy Policy</a></li><li><a class=\"text-muted hover:text-green-400 transition-colors text-sm font-medium\" href=\"/refund\">Refund Policy</a></li><li><a class=\"text-muted hover:text-green-400 transition-colors text-sm font-medium\" href=\"/delivery\">Delivery Policy</a></li></ul></div></div><div class=\"grid grid-cols-1 md:grid-cols-3 gap-8 py-12 border-y border-white/5 mb-12\"><div class=\"flex items-start gap-4 group cursor-default\"><div class=\"w-12 h-12 flex items-center justify-center rounded-2xl bg-green-400/10 text-green-400 shrink-0 transition-transform group-hover:scale-110 shadow-[0_0_15px_rgba(74,222,128,0.1)]\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-map-pin\" aria-hidden=\"true\"><path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg></div><div><h5 class=\"font-bold mb-1 text-green-400/90\">Our Location</h5><p class=\"text-muted text-sm leading-relaxed\">AD Sky Solution, 126 Satyam Enclave Sahibabad, <br/> Ghaziabad UTTAR PRADESH 201003</p></div></div><div class=\"flex items-start gap-4 group cursor-default\"><div class=\"w-12 h-12 flex items-center justify-center rounded-2xl bg-green-400/10 text-green-400 shrink-0 transition-transform group-hover:scale-110 shadow-[0_0_15px_rgba(74,222,128,0.1)]\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-phone\" aria-hidden=\"true\"><path d=\"M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384\"></path></svg></div><div><h5 class=\"font-bold mb-1 text-green-400/90\">Call Us</h5><p class=\"text-muted text-sm leading-relaxed font-medium\">8076611842  <br/></p></div></div><div class=\"flex items-start gap-4 group cursor-default\"><div class=\"w-12 h-12 flex items-center justify-center rounded-2xl bg-green-400/10 text-green-400 shrink-0 transition-transform group-hover:scale-110 shadow-[0_0_15px_rgba(74,222,128,0.1)]\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-mail\" aria-hidden=\"true\"><path d=\"m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7\"></path><rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"></rect></svg></div><div><h5 class=\"font-bold mb-1 text-green-400/90\">Email Us</h5><p class=\"text-muted text-sm leading-relaxed font-medium\">info@adskysolution.com <br/> info@adskysolution.com</p></div></div></div><div class=\"flex flex-col md:flex-row items-center justify-between gap-6 pt-8\"><div class=\"flex flex-col gap-1\"><p class=\"text-xs text-muted/60\">\u00a9 2026 AD Sky Solution.</p></div><p class=\"text-xs text-green-400 font-bold tracking-widest uppercase\">Crafted for Excellence.</p></div></div></footer></div><!--\\\\$--><!--/\\\\$-->\\";
-  
+import React, { useState } from 'react';
+import { 
+  Search, 
+  MapPin, 
+  Briefcase, 
+  DollarSign, 
+  Clock, 
+  ArrowRight,
+  CheckCircle2,
+  Users,
+  Award,
+  Zap,
+  Sparkles,
+  ChevronRight
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+
+const jobs = [
+  {
+    id: 1,
+    title: "Senior Business Consultant",
+    location: "Noida, UP",
+    type: "Full Time",
+    salary: "₹12L - ₹18L PA",
+    posted: "2 days ago",
+    description: "Lead strategic consulting projects for MSME clients and manage institutional partnerships.",
+    tags: ["Management", "MSME", "Consulting"],
+    category: "Consulting"
+  },
+  {
+    id: 2,
+    title: "Project Coordinator (Skill Dev)",
+    location: "Remote / Noida",
+    type: "Full Time",
+    salary: "₹6L - ₹9L PA",
+    posted: "1 week ago",
+    description: "Coordinate vocational training batches and ensure compliance with government mission guidelines.",
+    tags: ["Project Management", "Govt. Liaison"],
+    category: "Management"
+  },
+  {
+    id: 3,
+    title: "Manpower Resource Manager",
+    location: "Gurugram, HR",
+    type: "Contract",
+    salary: "₹8L - ₹12L PA",
+    posted: "3 days ago",
+    description: "Oversee recruitment and payroll for large-scale private sector manpower requirements.",
+    tags: ["HR", "Recruitment", "Operations"],
+    category: "Operations"
+  }
+];
+
+export default function CareersPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredJobs = jobs.filter(job => 
+    job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    job.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
   return (
-    <div dangerouslySetInnerHTML={{ __html: bodyHtml }} suppressHydrationWarning />
+    <div className="min-h-screen flex flex-col bg-[#020617] text-white overflow-hidden relative">
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+      
+      <Navbar />
+
+      <main className="flex-grow pt-32">
+        {/* --- HERO SECTION --- */}
+        <section className="py-24 px-6 relative">
+          <div className="max-w-7xl mx-auto relative z-10 text-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7 }}
+            >
+              <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-black mb-8 tracking-tighter italic bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-500 to-white/40 leading-[0.85] drop-shadow-2xl">
+                Join Our <br /> Mission.
+              </h1>
+            </motion.div>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto font-medium italic mb-12"
+            >
+              Shape the future of business and talent in India. Explore opportunities to grow with AD Sky Solution.
+            </motion.p>
+
+            {/* Search Bar */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.4 }}
+              className="max-w-xl mx-auto group relative"
+            >
+              <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+              <div className="relative flex items-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-2 h-16 shadow-2xl">
+                <div className="flex-grow flex items-center px-4 gap-3 text-white/50 focus-within:text-white transition-colors">
+                  <Search size={22} />
+                  <input 
+                    type="text" 
+                    placeholder="Search job titles or skills..." 
+                    className="bg-transparent border-none outline-none w-full text-white placeholder:text-white/20 font-medium italic"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <button className="h-full px-8 bg-white text-black font-black italic rounded-xl hover:bg-blue-400 hover:text-white transition-all transform active:scale-95 shadow-lg flex items-center gap-2">
+                  FIND <ChevronRight size={18} />
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* --- JOBS LISTING SECTION --- */}
+        <section className="py-24 px-6 relative">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+              {/* Job Feed */}
+              <div className="lg:col-span-2 space-y-10">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-3xl font-black italic tracking-tight">Latest Openings</h2>
+                  <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-white/40 italic">
+                    {filteredJobs.length} Positions Available
+                  </span>
+                </div>
+
+                <div className="space-y-6">
+                  <AnimatePresence mode='popLayout'>
+                    {filteredJobs.map((job, idx) => (
+                      <JobCard key={job.id} job={job} index={idx} />
+                    ))}
+                    {filteredJobs.length === 0 && (
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-center py-20 bg-white/[0.02] rounded-[3rem] border border-white/5"
+                      >
+                        <p className="text-slate-400 italic">No openings found matching your search. Try different keywords.</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+
+              {/* Sidebar / Why Us */}
+              <div className="space-y-10">
+                <div className="sticky top-40 space-y-10">
+                  <motion.div 
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    className="p-10 rounded-[3.5rem] bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/15 backdrop-blur-2xl shadow-3xl overflow-hidden relative"
+                  >
+                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-600/10 rounded-full blur-[60px]"></div>
+                    <h3 className="text-3xl font-black italic mb-8 tracking-tight">Why AD Sky?</h3>
+                    <ul className="space-y-6">
+                      <WhyStep icon={Zap} title="Dynamic Growth" desc="Turbocharge your career trajectory." />
+                      <WhyStep icon={Award} title="Govt. Impact" desc="Work on nation-scale projects." />
+                      <WhyStep icon={Users} title="Top 1% Talent" desc="Collaborate with industry leaders." />
+                    </ul>
+
+                    <div className="mt-12 pt-10 border-t border-white/5">
+                      <div className="relative p-6 rounded-2xl bg-white/5 border border-white/5">
+                        <Sparkles className="absolute -top-3 -right-3 text-blue-400 animate-pulse" size={24} />
+                        <p className="text-slate-400 text-sm italic font-medium leading-relaxed">
+                          "Joining AD Sky was the best career move. The scale of impact here is truly unmatched."
+                        </p>
+                        <p className="mt-4 font-black italic text-xs text-white/60 uppercase tracking-widest">— Sneha R., Senior Lead</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+function JobCard({ job, index }) {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="group relative p-10 rounded-[3rem] bg-white/[0.03] border border-white/10 hover:border-blue-500/40 hover:bg-white/[0.06] transition-all duration-700 shadow-2xl overflow-hidden"
+    >
+      <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-600/10 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      
+      <div className="relative z-10 flex flex-col md:flex-row justify-between items-start gap-8">
+        <div className="space-y-4 max-w-xl">
+          <div className="flex items-center gap-3">
+             <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-[9px] font-black uppercase tracking-widest border border-blue-500/20 italic">
+               {job.category}
+             </span>
+             <span className="text-[10px] text-white/40 font-bold italic flex items-center gap-1">
+               <Clock size={12} /> {job.posted}
+             </span>
+          </div>
+          <h3 className="text-3xl font-black italic tracking-tighter group-hover:text-blue-400 transition-colors">
+            {job.title}
+          </h3>
+          <p className="text-slate-400 font-medium italic leading-relaxed text-sm">
+            {job.description}
+          </p>
+          
+          <div className="flex flex-wrap gap-6 pt-4">
+            <JobMeta icon={MapPin} text={job.location} />
+            <JobMeta icon={Briefcase} text={job.type} />
+            <JobMeta icon={DollarSign} text={job.salary} />
+          </div>
+
+          <div className="flex flex-wrap gap-2 pt-4">
+            {job.tags.map(tag => (
+              <span key={tag} className="px-3 py-1 rounded-lg bg-white/5 border border-white/5 text-[9px] font-bold uppercase tracking-wider text-white/60 italic">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <button className="px-10 py-6 rounded-2xl bg-white text-black font-black transform transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-2 active:scale-95 shadow-2xl flex items-center gap-3 text-sm italic uppercase tracking-widest shrink-0">
+          APPLY <ArrowRight size={18} />
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+function JobMeta({ icon: Icon, text }) {
+  return (
+    <div className="flex items-center gap-2 text-white/50 text-xs font-bold italic">
+      <Icon size={14} className="text-blue-400" />
+      <span>{text}</span>
+    </div>
+  );
+}
+
+function WhyStep({ icon: Icon, title, desc }) {
+  return (
+    <motion.li 
+      whileHover={{ x: 10 }}
+      className="flex items-start gap-5 group cursor-default"
+    >
+      <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-lg shrink-0">
+        <Icon size={24} />
+      </div>
+      <div>
+        <h5 className="font-black italic text-sm text-white mb-1">{title}</h5>
+        <p className="text-white/40 text-[11px] font-medium leading-tight italic">{desc}</p>
+      </div>
+    </motion.li>
   );
 }

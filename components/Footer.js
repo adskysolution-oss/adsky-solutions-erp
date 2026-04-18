@@ -34,7 +34,7 @@ export default function Footer() {
                 <span className="uppercase font-normal tracking-[0.4em] text-[9px] text-white/60">{config?.siteTitle || 'Solution'}</span>
               </div>
             </Link>
-            <p className="mt-6 text-slate-400 max-w-sm leading-relaxed">
+            <p className="mt-6 text-slate-300 max-w-sm leading-relaxed font-medium">
               {config?.siteDescription || 'Empowering businesses and individuals through expert consulting, skill development, and strategic management solutions.'}
             </p>
             
@@ -64,7 +64,7 @@ export default function Footer() {
             <h4 className="text-green-400 font-bold mb-6 italic uppercase tracking-wider text-sm">Company</h4>
             <ul className="space-y-4">
               {['About Us', 'Services', 'Contact', 'Gallery'].map((item) => (
-                <li key={item}><Link href={`/${item.toLowerCase().replace(' ', '')}`} className="text-slate-400 hover:text-green-400 transition-colors text-sm font-medium">{item}</Link></li>
+                <li key={item}><Link href={`/${item.toLowerCase().replace(' ', '')}`} className="text-slate-300 hover:text-green-400 transition-colors text-sm font-semibold">{item}</Link></li>
               ))}
             </ul>
           </div>
@@ -73,7 +73,7 @@ export default function Footer() {
             <h4 className="text-green-400 font-bold mb-6 italic uppercase tracking-wider text-sm">Services</h4>
             <ul className="space-y-4">
               {['IT Project Planning', 'Web & App Strategy', 'Process Automation', 'Architecture Advisory'].map((item) => (
-                <li key={item}><Link href="/services" className="text-slate-400 hover:text-green-400 transition-colors text-sm font-medium">{item}</Link></li>
+                <li key={item}><Link href="/services" className="text-slate-300 hover:text-green-400 transition-colors text-sm font-semibold">{item}</Link></li>
               ))}
             </ul>
           </div>
@@ -82,7 +82,7 @@ export default function Footer() {
             <h4 className="text-green-400 font-bold mb-6 italic uppercase tracking-wider text-sm">Legal</h4>
             <ul className="space-y-4">
               {['Pricing', 'Terms & Conditions', 'Privacy Policy', 'Refund Policy'].map((item) => (
-                <li key={item}><Link href="/pricing" className="text-slate-400 hover:text-green-400 transition-colors text-sm font-medium">{item}</Link></li>
+                <li key={item}><Link href="/pricing" className="text-slate-300 hover:text-green-400 transition-colors text-sm font-semibold">{item}</Link></li>
               ))}
             </ul>
           </div>
@@ -96,7 +96,7 @@ export default function Footer() {
             </div>
             <div>
               <h5 className="font-bold mb-1 text-green-400/90">Our Location</h5>
-              <p className="text-slate-400 text-sm leading-relaxed whitespace-pre-line">{config?.contact?.address || 'AD Sky Solution, 126 Satyam Enclave Sahibabad, \n Ghaziabad UTTAR PRADESH 201003'}</p>
+              <p className="text-slate-300 text-sm leading-relaxed font-semibold whitespace-pre-line">{config?.contact?.address || 'AD Sky Solution, 126 Satyam Enclave Sahibabad, \n Ghaziabad UTTAR PRADESH 201003'}</p>
             </div>
           </div>
           <div className="flex items-start gap-4 group">
@@ -105,7 +105,7 @@ export default function Footer() {
             </div>
             <div>
               <h5 className="font-bold mb-1 text-green-400/90">Call Us</h5>
-              <p className="text-slate-400 text-sm leading-relaxed font-medium">{config?.contact?.phone || '8076611842'}</p>
+              <p className="text-slate-300 text-sm leading-relaxed font-bold">{config?.contact?.phone || '8076611842'}</p>
             </div>
           </div>
           <div className="flex items-start gap-4 group">
@@ -114,13 +114,13 @@ export default function Footer() {
             </div>
             <div>
               <h5 className="font-bold mb-1 text-green-400/90">Email Us</h5>
-              <p className="text-slate-400 text-sm leading-relaxed font-medium">{config?.contact?.email || 'info@adskysolution.com'}</p>
+              <p className="text-slate-300 text-sm leading-relaxed font-bold">{config?.contact?.email || 'info@adskysolution.com'}</p>
             </div>
           </div>
         </div>
 
         <div className="text-center">
-            <p className="text-slate-500 text-sm font-medium">{config?.footer?.copyright || `© ${currentYear} AD Sky Solution. All Rights Reserved.`}</p>
+            <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">{config?.footer?.copyright || `© ${currentYear} AD Sky Solution. All Rights Reserved.`}</p>
         </div>
       </div>
     </footer>

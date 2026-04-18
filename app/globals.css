@@ -20,6 +20,7 @@
     /* Base Standard Colors (can be overridden by Admin) */
     --background: 255 255 255;
     --foreground: 15 23 42;
+    --muted: 100 116 139;    /* Slate 500 equivalent */
     
     --primary: 99 102 241;   /* Vibrant Indigo */
     --secondary: 244 63 94;  /* Vibrant Rose */
