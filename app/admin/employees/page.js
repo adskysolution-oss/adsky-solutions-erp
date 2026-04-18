@@ -1,140 +1,113 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { 
-  Users, 
-  Search, 
-  Filter, 
-  MapPin, 
-  ShieldCheck, 
-  Mail, 
-  Phone,
-  Briefcase,
-  ExternalLink,
-  Loader2,
-  AlertCircle
-} from 'lucide-react';
+import React from 'react';
+import DataTable from '@/components/admin/DataTable';
 import { motion } from 'framer-motion';
+import { 
+  Briefcase, 
+  Users, 
+  Target, 
+  ShieldCheck, 
+  TrendingUp, 
+  Plus,
+  Search,
+  MapPin,
+  ExternalLink
+} from 'lucide-react';
+
+const employeeData = [
+  { name: 'Sanya Gupta', code: 'EMP-900', partner: 'Elite Hub', leads: '124', earnings: '₹4,500', status: 'Active' },
+  { name: 'Rohan Mehta', code: 'EMP-901', partner: 'Apex Logistics', leads: '86', earnings: '₹2,800', status: 'Active' },
+  { name: 'Isha Sharma', code: 'EMP-902', partner: 'Elite Hub', leads: '210', earnings: '₹8,200', status: 'Active' },
+];
+
+const columns = [
+  { key: 'name', label: 'AGENT IDENTITY' },
+  { key: 'code', label: 'EMPLOYEE CODE' },
+  { key: 'partner', label: 'ASSOCIATED HUB' },
+  { key: 'leads', label: 'LEAD VOLUME' },
+  { key: 'earnings', label: 'NET EARNINGS' },
+  { key: 'status', label: 'OPERATIONAL STATUS' },
+];
 
 export default function EmployeesPage() {
-  const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
-
-  const fetchEmployees = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/admin/employees');
-      const data = await res.json();
-      if (!data.error) setEmployees(data);
-    } catch (err) {
-      console.error('Fetch error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="space-y-8 pb-20">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-black text-white italic">Field <span className="text-blue-500">Agents</span></h1>
-        <p className="text-slate-400 mt-1">Monitor all ground-level onboarding employees across the network.</p>
-      </div>
-
-      {/* Filters & Search */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-grow">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-          <input 
-            type="text" 
-            placeholder="Search agents by name, code or partner..." 
-            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-slate-500 focus:border-blue-500/50 outline-none transition-all"
-          />
+    <div className="space-y-12">
+      {/* Page Header */}
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8"
+      >
+        <div>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-8 h-8 rounded-lg bg-[#6366f1]/10 flex items-center justify-center text-[#6366f1]">
+              <Briefcase size={18} />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#6366f1] italic">Field Intelligence</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black text-[#f3f4f6] tracking-tighter italic">Field Agents.</h1>
+          <p className="text-[#9ca3af] font-medium italic mt-1">Monitor all ground-level onboarding employees across the partner network.</p>
         </div>
-        <button className="bg-white/5 border border-white/10 text-slate-300 px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-white/10 transition-all font-bold text-sm">
-          <Filter size={18} />
-          Filters
+
+        <button className="flex items-center gap-3 px-8 py-4 bg-[#6366f1] text-white rounded-2xl font-black italic shadow-xl hover:scale-105 transition-all">
+          <Plus size={20} /> ONBOARD NEW AGENT
         </button>
+      </motion.div>
+
+      {/* Analytics Mini Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {[
+          { label: 'TOTAL AGENTS', value: '1,248', icon: Users, color: 'text-[#38bdf8]' },
+          { label: 'ACTIVE TODAY', value: '842', icon: ShieldCheck, color: 'text-[#22c55e]' },
+          { label: 'TOTAL LEADS', value: '14.2K', icon: Target, color: 'text-[#f59e0b]' },
+          { label: 'AVG. EARNINGS', value: '₹5.4K', icon: TrendingUp, color: 'text-[#6366f1]' },
+        ].map((item, idx) => (
+          <div key={idx} className="p-8 bg-[#111827] border border-[#1f2937] rounded-[2.5rem] flex flex-col items-center text-center group hover:border-[#6366f1]/20 transition-all">
+             <div className={`w-12 h-12 rounded-2xl bg-[#0b1220] flex items-center justify-center ${item.color} mb-6 shadow-xl group-hover:scale-110 transition-transform`}>
+                <item.icon size={22} />
+             </div>
+             <p className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic mb-1">{item.label}</p>
+             <p className="text-2xl font-black text-[#f3f4f6] italic">{item.value}</p>
+          </div>
+        ))}
       </div>
 
-      {/* Employees Table */}
-      <div className="bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <Loader2 className="animate-spin text-blue-500" size={40} />
-            <p className="text-slate-400 font-medium">Scanning agent network...</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-white/10 bg-white/[0.02]">
-                  <th className="px-8 py-5 text-xs font-black uppercase tracking-widest text-slate-500">Agent Details</th>
-                  <th className="px-8 py-5 text-xs font-black uppercase tracking-widest text-slate-500">Employee Code</th>
-                  <th className="px-8 py-5 text-xs font-black uppercase tracking-widest text-slate-500">Associated Partner</th>
-                  <th className="px-8 py-5 text-xs font-black uppercase tracking-widest text-slate-500">Performance</th>
-                  <th className="px-8 py-5 text-xs font-black uppercase tracking-widest text-slate-500 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/10">
-                {employees.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="px-8 py-20 text-center">
-                       <div className="flex flex-col items-center gap-2 opacity-50">
-                         <AlertCircle size={40} className="text-slate-400" />
-                         <p className="text-slate-400 italic">No field agents registered yet.</p>
+      {/* Main Table */}
+      <DataTable 
+        title="Agent Force Matrix" 
+        columns={columns} 
+        data={employeeData} 
+      />
+
+      {/* Performance Grid Placeholder */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mt-12">
+         <div className="p-10 bg-[#111827] border border-[#1f2937] rounded-[3.5rem] relative overflow-hidden group">
+            <h3 className="text-2xl font-black text-[#f3f4f6] italic mb-8">Top Performers</h3>
+            <div className="space-y-6">
+               {[1, 2, 3].map(i => (
+                 <div key={i} className="flex items-center justify-between p-4 bg-[#0b1220]/50 rounded-2xl border border-[#1f2937] hover:border-[#6366f1]/30 transition-all">
+                    <div className="flex items-center gap-4">
+                       <div className="w-10 h-10 rounded-xl bg-[#6366f1]/10 flex items-center justify-center text-[#6366f1] font-black italic">#{i}</div>
+                       <div>
+                          <p className="text-sm font-black text-[#f3f4f6] italic">Agent Zero-{i}</p>
+                          <p className="text-[10px] uppercase font-black text-[#6b7280]">Elite Hub • {150-i*10} Leads</p>
                        </div>
-                    </td>
-                  </tr>
-                ) : (
-                  employees.map((emp) => (
-                    <tr key={emp._id} className="hover:bg-white/[0.02] transition-colors group">
-                      <td className="px-8 py-6">
-                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 font-bold text-lg uppercase italic">
-                            {emp.user?.name?.charAt(0)}
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-white font-bold">{emp.user?.name}</span>
-                            <span className="text-slate-500 text-[10px] flex items-center gap-1">
-                              <Phone size={10} /> {emp.user?.phone}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-8 py-6">
-                        <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-black rounded uppercase border border-emerald-500/20">
-                          {emp.employeeCode}
-                        </span>
-                      </td>
-                      <td className="px-8 py-6">
-                        <span className="text-slate-300 font-bold text-sm flex items-center gap-2">
-                          <Briefcase size={14} className="text-blue-400" />
-                          {emp.partnerCode}
-                        </span>
-                      </td>
-                      <td className="px-8 py-6">
-                        <div className="flex flex-col">
-                          <span className="text-white font-bold text-sm tracking-tight">{emp.totalLeads} Leads</span>
-                          <span className="text-slate-500 text-[10px] uppercase font-bold">Earnings: ₹{emp.totalEarnings}</span>
-                        </div>
-                      </td>
-                      <td className="px-8 py-6 text-right">
-                        <button className="p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-all">
-                          <ExternalLink size={18} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+                    </div>
+                    <ExternalLink size={16} className="text-[#6b7280]" />
+                 </div>
+               ))}
+            </div>
+         </div>
+
+         <div className="p-10 bg-gradient-to-br from-[#111827] to-[#0b1220] border border-[#1f2937] rounded-[3.5rem] flex flex-col items-center justify-center text-center space-y-6">
+            <div className="w-20 h-20 bg-[#6366f1]/10 rounded-3xl flex items-center justify-center text-[#6366f1] mb-2 group-hover:scale-110 transition-transform">
+               <MapPin size={40} />
+            </div>
+            <h3 className="text-3xl font-black text-[#f3f4f6] italic">Live Tracking <br /> Protcol</h3>
+            <p className="text-slate-400 text-sm font-medium italic max-w-xs">Field agents are tracked in real-time. This ensures mission integrity and distribution accuracy.</p>
+            <button className="px-10 py-3 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-widest italic hover:scale-105 transition-all">Enable GPS Feed</button>
+         </div>
       </div>
     </div>
   );
