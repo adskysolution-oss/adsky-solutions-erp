@@ -1,9 +1,11 @@
 'use client';
 
 import React from 'react';
-import { ChevronLeft, ChevronRight, MoreHorizontal, Download, Filter as FilterIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MoreHorizontal, Download, Filter as FilterIcon, XCircle } from 'lucide-react';
 
-export default function DataTable({ title, columns, data, onFilter, onExport }) {
+
+export default function DataTable({ title, columns, data, onFilter, onExport, onEdit, onDelete }) {
+
   return (
     <div className="bg-[#111827] border border-[#1f2937] rounded-[2.5rem] shadow-2xl overflow-hidden mb-12">
       {/* Table Header */}
@@ -56,10 +58,26 @@ export default function DataTable({ title, columns, data, onFilter, onExport }) 
                   </td>
                 ))}
                 <td className="px-8 py-5 text-right">
-                  <button className="p-2 rounded-lg bg-[#1f2937] text-[#6b7280] hover:text-[#38bdf8] hover:bg-[#38bdf8]/10 transition-all opacity-0 group-hover:opacity-100">
-                    <MoreHorizontal size={18} />
-                  </button>
+                  <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                    <button 
+                      onClick={() => onEdit && onEdit(row)}
+                      className="p-2 rounded-lg bg-[#1f2937] text-[#6b7280] hover:text-[#38bdf8] hover:bg-[#38bdf8]/10 transition-all"
+                    >
+                      <MoreHorizontal size={18} />
+                    </button>
+                    <button 
+                      onClick={() => {
+                        if (window.confirm('Terminate this identity node?')) {
+                          onDelete && onDelete(row);
+                        }
+                      }}
+                      className="p-2 rounded-lg bg-[#ef4444]/5 text-[#ef4444]/50 hover:text-[#ef4444] hover:bg-[#ef4444]/10 transition-all"
+                    >
+                      <XCircle size={18} />
+                    </button>
+                  </div>
                 </td>
+
               </tr>
             ))}
           </tbody>
