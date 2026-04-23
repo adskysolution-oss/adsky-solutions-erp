@@ -88,15 +88,15 @@ export default function UsersManagement() {
     setFormData({ ...formData, state: stateName, district: '' });
     
     if (stateId) {
-      fetch(`https://cdn-api.co-vin.in/api/v2/admin/location/districts/${stateId}`)
+      fetch(`/api/geo/districts?stateId=${stateId}`)
         .then(res => res.json())
         .then(data => setGeo(prev => ({ ...prev, districts: data.districts || [] })))
         .catch(err => {
           console.error('Districts API Error:', err);
-          // Fallback if API fails
           setGeo(prev => ({ ...prev, districts: [] }));
         });
     } else {
+
       setGeo(prev => ({ ...prev, districts: [] }));
     }
   };
