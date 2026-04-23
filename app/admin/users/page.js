@@ -66,13 +66,22 @@ export default function UsersManagement() {
   ];
 
   const filteredUsers = users.filter(u => {
-    const matchesTab = activeTab === 'All' || u.role?.toLowerCase() === activeTab.slice(0, -1).toLowerCase();
+    const userRole = (u.role || '').toLowerCase();
+    const currentTab = activeTab.toLowerCase();
+    
+    // Support both singular and plural role matching
+    const matchesTab = currentTab === 'all' || 
+                       userRole === currentTab || 
+                       userRole === currentTab.slice(0, -1);
+                       
     const matchesSearch = !searchTerm || 
-      u.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.phone?.includes(searchTerm);
+      (u.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+      (u.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (u.phone || '').includes(searchTerm);
+      
     return matchesTab && matchesSearch;
   });
+
 
   const handleOpenModal = (user = null) => {
     if (user) {
@@ -176,6 +185,7 @@ export default function UsersManagement() {
               </button>
             ))}
          </div>
+
       </div>
 
       {/* Mini Stats Tier */}
