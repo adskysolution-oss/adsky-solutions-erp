@@ -57,6 +57,7 @@ export default function UsersManagement() {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -68,6 +69,7 @@ export default function UsersManagement() {
     tehsil: '',
     village: ''
   });
+
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -176,7 +178,10 @@ export default function UsersManagement() {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    if (isSaving) return;
+    
     try {
+      setIsSaving(true);
       if (editingUser) {
         await adminAPI.patch(`/api/admin/users`, {
           userId: editingUser._id,
@@ -189,8 +194,11 @@ export default function UsersManagement() {
       fetchUsers();
     } catch (err) {
       alert(err.message);
+    } finally {
+      setIsSaving(false);
     }
   };
+
 
   const handleDelete = useCallback(async (user) => {
     if (!window.confirm(`Terminate identity ${user.name}?`)) return;
@@ -380,9 +388,21 @@ export default function UsersManagement() {
                       </div>
                    </div>
 
-                   <button type="submit" className="w-full py-5 bg-[#38bdf8] text-[#0b1220] rounded-2xl font-black uppercase tracking-widest italic shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all mt-8">
-                     Synchronize Identity
+                   <button 
+                     disabled={isSaving}
+                     type="submit" 
+                     className="w-full py-5 bg-[#38bdf8] text-[#0b1220] rounded-2xl font-black uppercase tracking-widest italic shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all mt-8 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                   >
+                     {isSaving ? (
+                       <>
+                         <Loader2 className="animate-spin" size={20} />
+                         SYNCHRONIZING...
+                       </>
+                     ) : (
+                       'Synchronize Identity'
+                     )}
                    </button>
+
                 </form>
              </motion.div>
           </div>
