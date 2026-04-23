@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import DataTable from '@/components/admin/DataTable';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Users as UsersIcon, 
   UserPlus, 
-  Shield, 
   Search,
   CheckCircle2,
   Clock,
@@ -15,7 +14,7 @@ import {
 } from 'lucide-react';
 import { adminAPI } from '@/lib/api-client';
 
-const columns = [
+const COLUMNS = [
   { key: 'name', label: 'USER NAME' },
   { key: 'role', label: 'ROLE / CATEGORY' },
   { key: 'state', label: 'STATE' },
@@ -42,55 +41,56 @@ export default function UsersManagement() {
     state: ''
   });
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const data = await adminAPI.getUsers();
-      setUsers(data);
+      setUsers(Array.isArray(data) ? data : []);
       setError(null);
     } catch (err) {
+      console.error('Fetch Users Error:', err);
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
-  const stats = [
-    { label: 'ACTIVE USERS', value: users.length, icon: CheckCircle2, color: 'text-[#22c55e]' },
-    { label: 'PENDING VERIFICATION', value: '1.2K', icon: Clock, color: 'text-[#f59e0b]' },
-    { label: 'BLOCKED / INACTIVE', value: '420', icon: XCircle, color: 'text-[#ef4444]' },
-  ];
+  const stats = useMemo(() => [
+    { label: 'ACTIVE USERS', value: users.filter(u => u.status === 'active').length, icon: CheckCircle2, color: 'text-[#22c55e]' },
+    { label: 'PENDING VERIFICATION', value: users.filter(u => u.status === 'pending').length, icon: Clock, color: 'text-[#f59e0b]' },
+    { label: 'BLOCKED / INACTIVE', value: users.filter(u => u.status === 'blocked').length, icon: XCircle, color: 'text-[#ef4444]' },
+  ], [users]);
 
-  const filteredUsers = users.filter(u => {
-    const userRole = (u.role || '').toLowerCase();
-    const currentTab = activeTab.toLowerCase();
-    
-    // Support both singular and plural role matching
-    const matchesTab = currentTab === 'all' || 
-                       userRole === currentTab || 
-                       userRole === currentTab.slice(0, -1);
-                       
-    const matchesSearch = !searchTerm || 
-      (u.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
-      (u.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (u.phone || '').includes(searchTerm);
+  const filteredUsers = useMemo(() => {
+    return users.filter(u => {
+      const userRole = (u.role || '').toLowerCase();
+      const currentTab = activeTab.toLowerCase();
       
-    return matchesTab && matchesSearch;
-  });
+      const matchesTab = currentTab === 'all' || 
+                         userRole === currentTab || 
+                         userRole === currentTab.slice(0, -1);
+                         
+      const matchesSearch = !searchTerm || 
+        (u.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+        (u.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (u.phone || '').includes(searchTerm);
+        
+      return matchesTab && matchesSearch;
+    });
+  }, [users, activeTab, searchTerm]);
 
-
-  const handleOpenModal = (user = null) => {
+  const handleOpenModal = useCallback((user = null) => {
     if (user) {
       setEditingUser(user);
       setFormData({
-        name: user.name,
-        email: user.email,
-        password: '', // Don't show password
-        role: user.role,
+        name: user.name || '',
+        email: user.email || '',
+        password: '',
+        role: user.role || 'farmer',
         phone: user.phone || '',
         state: user.state || ''
       });
@@ -106,7 +106,7 @@ export default function UsersManagement() {
       });
     }
     setIsModalOpen(true);
-  };
+  }, []);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -126,23 +126,35 @@ export default function UsersManagement() {
     }
   };
 
-  const handleDelete = async (user) => {
+  const handleDelete = useCallback(async (user) => {
+    if (!window.confirm(`Terminate identity ${user.name}?`)) return;
     try {
       await adminAPI.delete(`/api/admin/users?id=${user._id}`);
       fetchUsers();
     } catch (err) {
       alert(err.message);
     }
-  };
+  }, [fetchUsers]);
+
+  const tableData = useMemo(() => {
+    return filteredUsers.map(u => ({
+      ...u,
+      status: (
+        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase italic ${
+          u.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 
+          u.status === 'pending' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
+          'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+        }`}>
+          {u.status || 'Unknown'}
+        </span>
+      )
+    }));
+  }, [filteredUsers]);
 
   return (
-    <div className="space-y-12 relative">
+    <div className="space-y-12">
       {/* Page Header */}
-      <motion.div 
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8"
-      >
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
         <div>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-8 h-8 rounded-lg bg-[#38bdf8]/10 flex items-center justify-center text-[#38bdf8]">
@@ -160,7 +172,7 @@ export default function UsersManagement() {
         >
           <UserPlus size={20} /> ADD NEW USER
         </button>
-      </motion.div>
+      </div>
 
       {/* Search & Filter Bar */}
       <div className="flex flex-col md:flex-row gap-6 items-center">
@@ -185,7 +197,6 @@ export default function UsersManagement() {
               </button>
             ))}
          </div>
-
       </div>
 
       {/* Mini Stats Tier */}
@@ -215,113 +226,114 @@ export default function UsersManagement() {
       ) : (
         <DataTable 
           title={`${activeTab} Users`} 
-          columns={columns} 
-          data={filteredUsers.map(u => ({
-            ...u,
-            status: u.status === 'active' ? 'Active' : 'Blocked'
-          }))} 
+          columns={COLUMNS} 
+          data={tableData} 
           onExport={() => alert('Preparing identity export...')}
-          onEdit={(user) => handleOpenModal(user)}
-          onDelete={(user) => handleDelete(user)}
+          onEdit={handleOpenModal}
+          onDelete={handleDelete}
         />
       )}
 
       {/* Modal Overlay */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 backdrop-blur-md bg-black/60">
-           <motion.div 
-             initial={{ scale: 0.9, opacity: 0 }}
-             animate={{ scale: 1, opacity: 1 }}
-             className="bg-[#111827] border border-[#1f2937] w-full max-w-2xl rounded-[3rem] p-10 shadow-2xl relative overflow-hidden"
-           >
-              <div className="absolute top-0 right-0 p-8">
-                 <button onClick={() => setIsModalOpen(false)} className="text-[#6b7280] hover:text-[#f3f4f6] transition-colors"><XCircle size={32}/></button>
-              </div>
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 backdrop-blur-md bg-black/60">
+             <motion.div 
+               initial={{ scale: 0.9, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               exit={{ scale: 0.9, opacity: 0 }}
+               className="bg-[#111827] border border-[#1f2937] w-full max-w-2xl rounded-[3rem] p-10 shadow-2xl relative overflow-hidden"
+             >
+                <div className="absolute top-0 right-0 p-8">
+                   <button onClick={() => setIsModalOpen(false)} className="text-[#6b7280] hover:text-[#f3f4f6] transition-colors"><XCircle size={32}/></button>
+                </div>
 
-              <div className="mb-10">
-                 <h2 className="text-3xl font-black text-[#f3f4f6] italic tracking-tight">{editingUser ? 'Edit' : 'Add'} Identity Node.</h2>
-                 <p className="text-[#6b7280] font-medium italic">Configure core security and access parameters.</p>
-              </div>
+                <div className="mb-10">
+                   <h2 className="text-3xl font-black text-[#f3f4f6] italic tracking-tight">{editingUser ? 'Edit' : 'Add'} Identity Node.</h2>
+                   <p className="text-[#6b7280] font-medium italic">Configure core security and access parameters.</p>
+                </div>
 
-              <form onSubmit={handleSave} className="space-y-6">
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Full Name</label>
-                       <input 
-                         required
-                         type="text" 
-                         value={formData.name}
-                         onChange={e => setFormData({...formData, name: e.target.value})}
-                         className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
-                       />
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Email Address</label>
-                       <input 
-                         required
-                         type="email" 
-                         value={formData.email}
-                         onChange={e => setFormData({...formData, email: e.target.value})}
-                         className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
-                       />
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Phone Number</label>
-                       <input 
-                         required
-                         type="text" 
-                         value={formData.phone}
-                         onChange={e => setFormData({...formData, phone: e.target.value})}
-                         className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
-                       />
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Access Role</label>
-                       <select 
-                         value={formData.role}
-                         onChange={e => setFormData({...formData, role: e.target.value})}
-                         className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all appearance-none"
-                       >
-                          <option value="farmer">Farmer</option>
-                          <option value="partner">Partner</option>
-                          <option value="employee">Employee</option>
-                          <option value="vendor">Vendor</option>
-                          <option value="admin">Admin</option>
-                       </select>
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">State / Territory</label>
-                       <input 
-                         type="text" 
-                         value={formData.state}
-                         onChange={e => setFormData({...formData, state: e.target.value})}
-                         className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
-                       />
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">{editingUser ? 'New Password (Optional)' : 'Access Password'}</label>
-                       <input 
-                         required={!editingUser}
-                         type="password" 
-                         value={formData.password}
-                         onChange={e => setFormData({...formData, password: e.target.value})}
-                         className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
-                       />
-                    </div>
-                 </div>
+                <form onSubmit={handleSave} className="space-y-6">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Full Name</label>
+                         <input 
+                           required
+                           type="text" 
+                           value={formData.name}
+                           onChange={e => setFormData({...formData, name: e.target.value})}
+                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
+                         />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Email Address</label>
+                         <input 
+                           required
+                           type="email" 
+                           value={formData.email}
+                           onChange={e => setFormData({...formData, email: e.target.value})}
+                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
+                         />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Phone Number</label>
+                         <input 
+                           required
+                           type="text" 
+                           value={formData.phone}
+                           onChange={e => setFormData({...formData, phone: e.target.value})}
+                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
+                         />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Access Role</label>
+                         <select 
+                           value={formData.role}
+                           onChange={e => setFormData({...formData, role: e.target.value})}
+                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all appearance-none"
+                         >
+                            <option value="farmer">Farmer</option>
+                            <option value="partner">Partner</option>
+                            <option value="employee">Employee</option>
+                            <option value="vendor">Vendor</option>
+                            <option value="admin">Admin</option>
+                         </select>
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">State / Territory</label>
+                         <input 
+                           type="text" 
+                           value={formData.state}
+                           onChange={e => setFormData({...formData, state: e.target.value})}
+                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
+                         />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">{editingUser ? 'New Password (Optional)' : 'Access Password'}</label>
+                         <input 
+                           required={!editingUser}
+                           type="password" 
+                           value={formData.password}
+                           onChange={e => setFormData({...formData, password: e.target.value})}
+                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
+                         />
+                      </div>
+                   </div>
 
-                 <button 
-                   type="submit"
-                   className="w-full py-5 bg-[#38bdf8] text-[#0b1220] rounded-2xl font-black uppercase tracking-widest italic shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all mt-8"
-                 >
-                   Synchronize Identity
-                 </button>
-              </form>
-           </motion.div>
-        </div>
-      )}
+                   <button 
+                     type="submit"
+                     className="w-full py-5 bg-[#38bdf8] text-[#0b1220] rounded-2xl font-black uppercase tracking-widest italic shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all mt-8"
+                   >
+                     Synchronize Identity
+                   </button>
+                </form>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+
 
 
