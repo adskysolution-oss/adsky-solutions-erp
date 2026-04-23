@@ -312,23 +312,16 @@ export default function UsersManagement() {
         />
       )}
 
-      <AnimatePresence mode="wait">
-        {isModalOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-6 backdrop-blur-md bg-black/60"
-          >
-             <motion.div 
-               initial={{ scale: 0.9, opacity: 0, y: 20 }}
-               animate={{ scale: 1, opacity: 1, y: 0 }}
-               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-               className="bg-[#111827] border border-[#1f2937] w-full max-w-3xl rounded-[3rem] p-10 shadow-2xl relative overflow-y-auto max-h-[90vh]"
-             >
-                <div className="absolute top-0 right-0 p-8">
-                   <button onClick={() => setIsModalOpen(false)} className="text-[#6b7280] hover:text-[#f3f4f6] transition-colors"><XCircle size={32}/></button>
-                </div>
+      {/* Modal Overlay - Simplified to prevent UI lock */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6 backdrop-blur-md bg-black/60 overflow-y-auto">
+           <div className="bg-[#111827] border border-[#1f2937] w-full max-w-3xl rounded-[3rem] p-10 shadow-2xl relative my-auto">
+              <div className="absolute top-0 right-0 p-8">
+                 <button onClick={() => setIsModalOpen(false)} className="text-[#6b7280] hover:text-[#f3f4f6] transition-colors">
+                   <XCircle size={32}/>
+                 </button>
+              </div>
+
 
 
                 <div className="mb-10">
@@ -418,10 +411,10 @@ export default function UsersManagement() {
                    </button>
 
                 </form>
-             </motion.div>
-          </motion.div>
+             </div>
+          </div>
         )}
-      </AnimatePresence>
+
 
     </div>
   );
