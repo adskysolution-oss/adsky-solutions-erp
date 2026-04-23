@@ -419,9 +419,10 @@ export default function UsersManagement() {
 
                 </form>
              </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
+
     </div>
   );
 }
