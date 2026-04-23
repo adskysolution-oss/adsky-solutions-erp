@@ -7,21 +7,10 @@ import { io } from 'socket.io-client';
 
 export default function AdminLayout({ children }) {
   useEffect(() => {
-    const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
-
-    socket.on('connect', () => {
-      console.log('📡 Connected to AdSky Transmission Node');
-    });
-
-    socket.on('live-location', (data) => {
-      console.log('📍 New Live Location Broadcast:', data);
-      // In a real app, you'd update a context or state here to move pins on a map
-    });
-
-    return () => {
-      socket.disconnect();
-    };
+    // Socket.io disabled for Vercel production as it requires a persistent server.
+    // console.log('📡 Transmission Node Ready');
   }, []);
+
 
   return (
     <div className="min-h-screen bg-[#0b1220] text-[#e5e7eb] flex overflow-hidden">

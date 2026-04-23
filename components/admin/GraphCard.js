@@ -25,6 +25,12 @@ const data = [
 ];
 
 export default function GraphCard({ title, type, color }) {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -39,50 +45,53 @@ export default function GraphCard({ title, type, color }) {
       </div>
 
       <div className="h-[300px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          {type === 'line' ? (
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
-              <XAxis 
-                dataKey="name" 
-                stroke="#4b5563" 
-                fontSize={12} 
-                tickLine={false} 
-                axisLine={false}
-              />
-              <YAxis hide />
-              <Tooltip 
-                contentStyle={{ backgroundColor: '#111827', border: '1px solid #1f2937', borderRadius: '12px', fontSize: '12px' }}
-                itemStyle={{ color: color }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="value" 
-                stroke={color} 
-                strokeWidth={4} 
-                dot={false}
-                animationDuration={2000}
-              />
-            </LineChart>
-          ) : (
-            <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
-              <XAxis dataKey="name" stroke="#4b5563" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis hide />
-              <Tooltip 
-                contentStyle={{ backgroundColor: '#111827', border: '1px solid #1f2937', borderRadius: '12px', fontSize: '12px' }}
-                itemStyle={{ color: color }}
-              />
-              <Bar 
-                dataKey="value" 
-                fill={color} 
-                radius={[6, 6, 0, 0]} 
-                animationDuration={2000}
-              />
-            </BarChart>
-          )}
-        </ResponsiveContainer>
+        {mounted && (
+          <ResponsiveContainer width="100%" height="100%">
+            {type === 'line' ? (
+              <LineChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
+                <XAxis 
+                  dataKey="name" 
+                  stroke="#4b5563" 
+                  fontSize={12} 
+                  tickLine={false} 
+                  axisLine={false}
+                />
+                <YAxis hide />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#111827', border: '1px solid #1f2937', borderRadius: '12px', fontSize: '12px' }}
+                  itemStyle={{ color: color }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="value" 
+                  stroke={color} 
+                  strokeWidth={4} 
+                  dot={false}
+                  animationDuration={2000}
+                />
+              </LineChart>
+            ) : (
+              <BarChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
+                <XAxis dataKey="name" stroke="#4b5563" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis hide />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#111827', border: '1px solid #1f2937', borderRadius: '12px', fontSize: '12px' }}
+                  itemStyle={{ color: color }}
+                />
+                <Bar 
+                  dataKey="value" 
+                  fill={color} 
+                  radius={[6, 6, 0, 0]} 
+                  animationDuration={2000}
+                />
+              </BarChart>
+            )}
+          </ResponsiveContainer>
+        )}
       </div>
     </motion.div>
   );
 }
+

@@ -1,5 +1,6 @@
-import connectToDatabase from './utils/db.js';
-import User from './models/User.js';
+import connectToDatabase from '../utils/db.js';
+import User from '../models/User.js';
+
 
 async function debug() {
   try {
