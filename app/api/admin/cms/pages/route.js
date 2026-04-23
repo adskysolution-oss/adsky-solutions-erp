@@ -1,28 +1,12 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/utils/db';
 import Page from '@/models/Page';
-import { cookies } from 'next/headers';
-import jwt from 'jsonwebtoken';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'adsky-master-key';
-
-async function verifyAdmin() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('token');
-  if (!token) return false;
-
-  try {
-    const decoded = jwt.verify(token.value, JWT_SECRET);
-    return decoded.role === 'admin';
-  } catch {
-    return false;
-  }
-}
+import { authorize, rbacResponse } from '@/lib/security/rbac';
 
 export async function GET(req) {
-  if (!await verifyAdmin()) {
-    return NextResponse.json({ error: 'Access Denied: Admin Elevation Required' }, { status: 403 });
-  }
+  const auth = await authorize(['admin']);
+  if (!auth.success) return rbacResponse(auth.error);
+
 
   const { searchParams } = new URL(req.url);
   const slug = searchParams.get('slug');
@@ -41,9 +25,9 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
-  if (!await verifyAdmin()) {
-    return NextResponse.json({ error: 'Access Denied: Admin Elevation Required' }, { status: 403 });
-  }
+  const auth = await authorize(['admin']);
+  if (!auth.success) return rbacResponse(auth.error);
+
 
   try {
     await connectToDatabase();
