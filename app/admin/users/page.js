@@ -25,6 +25,20 @@ const COLUMNS = [
 
 
 
+const INDIAN_STATES = [
+  { id: 1, name: "Andaman and Nicobar Islands" }, { id: 2, name: "Andhra Pradesh" }, { id: 3, name: "Arunachal Pradesh" },
+  { id: 4, name: "Assam" }, { id: 5, name: "Bihar" }, { id: 6, name: "Chandigarh" }, { id: 7, name: "Chhattisgarh" },
+  { id: 8, name: "Dadra and Nagar Haveli" }, { id: 37, name: "Daman and Diu" }, { id: 9, name: "Delhi" },
+  { id: 10, name: "Goa" }, { id: 11, name: "Gujarat" }, { id: 12, name: "Haryana" }, { id: 13, name: "Himachal Pradesh" },
+  { id: 14, name: "Jammu and Kashmir" }, { id: 15, name: "Jharkhand" }, { id: 16, name: "Karnataka" },
+  { id: 17, name: "Kerala" }, { id: 18, name: "Ladakh" }, { id: 20, name: "Lakshadweep" }, { id: 21, name: "Madhya Pradesh" },
+  { id: 22, name: "Maharashtra" }, { id: 23, name: "Manipur" }, { id: 24, name: "Meghalaya" }, { id: 25, name: "Mizoram" },
+  { id: 26, name: "Nagaland" }, { id: 27, name: "Odisha" }, { id: 28, name: "Puducherry" }, { id: 29, name: "Punjab" },
+  { id: 30, name: "Rajasthan" }, { id: 31, name: "Sikkim" }, { id: 32, name: "Tamil Nadu" }, { id: 33, name: "Telangana" },
+  { id: 34, name: "Tripura" }, { id: 35, name: "Uttar Pradesh" }, { id: 36, name: "Uttarakhand" }, { id: 38, name: "West Bengal" }
+];
+
+
 export default function UsersManagement() {
   const [activeTab, setActiveTab] = useState('All');
   const [users, setUsers] = useState([]);
@@ -33,7 +47,7 @@ export default function UsersManagement() {
   const [error, setError] = useState(null);
   
   // Geo API State
-  const [geo, setGeo] = useState({ states: [], districts: [] });
+  const [geo, setGeo] = useState({ states: INDIAN_STATES, districts: [] });
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -66,11 +80,6 @@ export default function UsersManagement() {
 
   useEffect(() => {
     fetchUsers();
-    // Fetch All India States
-    fetch('https://cdn-api.co-vin.in/api/v2/admin/location/states')
-      .then(res => res.json())
-      .then(data => setGeo(prev => ({ ...prev, states: data.states || [] })))
-      .catch(err => console.error('States API Error:', err));
   }, [fetchUsers]);
 
   const handleStateChange = (e) => {
@@ -82,11 +91,16 @@ export default function UsersManagement() {
       fetch(`https://cdn-api.co-vin.in/api/v2/admin/location/districts/${stateId}`)
         .then(res => res.json())
         .then(data => setGeo(prev => ({ ...prev, districts: data.districts || [] })))
-        .catch(err => console.error('Districts API Error:', err));
+        .catch(err => {
+          console.error('Districts API Error:', err);
+          // Fallback if API fails
+          setGeo(prev => ({ ...prev, districts: [] }));
+        });
     } else {
       setGeo(prev => ({ ...prev, districts: [] }));
     }
   };
+
 
 
   const stats = useMemo(() => [
@@ -317,8 +331,9 @@ export default function UsersManagement() {
                            className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all appearance-none"
                          >
                             <option value="">{formData.state || 'Select State'}</option>
-                            {geo.states.map(s => <option key={s.state_id} value={s.state_id}>{s.state_name}</option>)}
+                            {geo.states.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                          </select>
+
                       </div>
 
                       <div className="space-y-2">
