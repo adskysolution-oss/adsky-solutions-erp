@@ -190,14 +190,22 @@ export default function UsersManagement() {
       } else {
         await adminAPI.post(`/api/admin/users`, formData);
       }
+      
+      // Close modal first
       setIsModalOpen(false);
-      fetchUsers();
+      
+      // Delay fetch slightly to allow animation to complete and avoid UI lock
+      setTimeout(() => {
+        fetchUsers();
+      }, 300);
+      
     } catch (err) {
       alert(err.message);
     } finally {
       setIsSaving(false);
     }
   };
+
 
 
   const handleDelete = useCallback(async (user) => {
@@ -304,18 +312,24 @@ export default function UsersManagement() {
         />
       )}
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isModalOpen && (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 backdrop-blur-md bg-black/60">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-6 backdrop-blur-md bg-black/60"
+          >
              <motion.div 
-               initial={{ scale: 0.9, opacity: 0 }}
-               animate={{ scale: 1, opacity: 1 }}
-               exit={{ scale: 0.9, opacity: 0 }}
+               initial={{ scale: 0.9, opacity: 0, y: 20 }}
+               animate={{ scale: 1, opacity: 1, y: 0 }}
+               exit={{ scale: 0.9, opacity: 0, y: 20 }}
                className="bg-[#111827] border border-[#1f2937] w-full max-w-3xl rounded-[3rem] p-10 shadow-2xl relative overflow-y-auto max-h-[90vh]"
              >
                 <div className="absolute top-0 right-0 p-8">
                    <button onClick={() => setIsModalOpen(false)} className="text-[#6b7280] hover:text-[#f3f4f6] transition-colors"><XCircle size={32}/></button>
                 </div>
+
 
                 <div className="mb-10">
                    <h2 className="text-3xl font-black text-[#f3f4f6] italic tracking-tight">{editingUser ? 'Edit' : 'Add'} Identity Node.</h2>
