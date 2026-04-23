@@ -1,6 +1,5 @@
 import './globals.css';
 import { generateCSSVariables } from '@/lib/theme/ThemeRegistry';
-import prisma from '@/lib/prisma';
 
 export const metadata = {
   title: 'AD Sky Solution',
@@ -20,15 +19,20 @@ const DEFAULT_THEME = {
   radius: 1.5,
 };
 
+import connectToDatabase from '@/utils/db';
+import WebsiteConfig from '@/models/WebsiteConfig';
+
 async function getThemeConfig() {
   try {
-    const config = await prisma.websiteConfig.findUnique({ where: { id: 'global' } });
+    await connectToDatabase();
+    const config = await WebsiteConfig.findOne();
     return config?.themeConfig || DEFAULT_THEME;
   } catch (err) {
-    // Fallback if DB is not reachable during transition
+    // Fallback if DB is not reachable
     return DEFAULT_THEME;
   }
 }
+
 
 export default async function RootLayout({ children }) {
   const theme = await getThemeConfig();

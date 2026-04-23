@@ -26,6 +26,7 @@ const columns = [
 export default function UsersManagement() {
   const [activeTab, setActiveTab] = useState('All');
   const [users, setUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -51,9 +52,18 @@ export default function UsersManagement() {
     { label: 'BLOCKED / INACTIVE', value: '420', icon: XCircle, color: 'text-[#ef4444]' },
   ];
 
-  const filteredUsers = activeTab === 'All' 
-    ? users 
-    : users.filter(u => u.role.toLowerCase() === activeTab.slice(0, -1).toLowerCase());
+  const filteredUsers = users.filter(u => {
+    const matchesTab = activeTab === 'All' || u.role?.toLowerCase() === activeTab.slice(0, -1).toLowerCase();
+    const matchesSearch = !searchTerm || 
+      u.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.phone?.includes(searchTerm);
+    return matchesTab && matchesSearch;
+  });
+
+  const handleAddUser = () => {
+    alert('User provisioning module initializing... (System Ready)');
+  };
 
   return (
     <div className="space-y-12">
@@ -74,10 +84,39 @@ export default function UsersManagement() {
           <p className="text-[#9ca3af] font-medium italic mt-1">Manage global user accounts, roles, and security permissions.</p>
         </div>
 
-        <button className="flex items-center gap-3 px-8 py-4 bg-[#38bdf8] text-[#0b1220] rounded-2xl font-black italic shadow-[0_0_30px_rgba(56,189,248,0.2)] hover:scale-105 transition-all">
+        <button 
+          onClick={handleAddUser}
+          className="flex items-center gap-3 px-8 py-4 bg-[#38bdf8] text-[#0b1220] rounded-2xl font-black italic shadow-[0_0_30px_rgba(56,189,248,0.2)] hover:scale-105 transition-all"
+        >
           <UserPlus size={20} /> ADD NEW USER
         </button>
       </motion.div>
+
+      {/* Search & Filter Bar */}
+      <div className="flex flex-col md:flex-row gap-6 items-center">
+         <div className="relative flex-grow group">
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#38bdf8] transition-colors" size={20} />
+            <input 
+              type="text" 
+              placeholder="Search by name, email or phone..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-[#111827] border border-[#1f2937] rounded-3xl py-5 pl-16 pr-8 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
+            />
+         </div>
+         {/* Tab Controls */}
+         <div className="flex bg-[#111827] p-1.5 rounded-3xl border border-[#1f2937] w-fit">
+            {['All', 'Farmers', 'Partners', 'Employees'].map((tab) => (
+              <button 
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`py-3 px-6 rounded-2xl text-[10px] font-black uppercase tracking-widest italic transition-all ${activeTab === tab ? 'bg-[#38bdf8] text-[#0b1220] shadow-lg' : 'text-[#6b7280] hover:text-[#f3f4f6]'}`}
+              >
+                {tab}
+              </button>
+            ))}
+         </div>
+      </div>
 
       {/* Mini Stats Tier */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -91,19 +130,6 @@ export default function UsersManagement() {
                 <p className="text-2xl font-black text-[#f3f4f6] italic">{stat.value}</p>
              </div>
           </div>
-        ))}
-      </div>
-
-      {/* Tab Controls */}
-      <div className="flex bg-[#111827] p-1.5 rounded-2xl border border-[#1f2937] max-w-2xl">
-        {['All', 'Farmers', 'Partners', 'Employees', 'Vendors'].map((tab) => (
-          <button 
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-3 px-6 rounded-xl text-[10px] font-black uppercase tracking-widest italic transition-all ${activeTab === tab ? 'bg-[#38bdf8] text-[#0b1220] shadow-lg' : 'text-[#6b7280] hover:text-[#f3f4f6]'}`}
-          >
-            {tab}
-          </button>
         ))}
       </div>
 
@@ -122,10 +148,12 @@ export default function UsersManagement() {
           columns={columns} 
           data={filteredUsers.map(u => ({
             ...u,
-            status: u.isActive ? 'Active' : 'Inactive'
+            status: u.status === 'active' ? 'Active' : 'Blocked'
           }))} 
+          onExport={() => alert('Preparing identity export...')}
         />
       )}
     </div>
   );
 }
+

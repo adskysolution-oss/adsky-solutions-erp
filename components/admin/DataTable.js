@@ -3,7 +3,7 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, MoreHorizontal, Download, Filter as FilterIcon } from 'lucide-react';
 
-export default function DataTable({ title, columns, data, actions }) {
+export default function DataTable({ title, columns, data, onFilter, onExport }) {
   return (
     <div className="bg-[#111827] border border-[#1f2937] rounded-[2.5rem] shadow-2xl overflow-hidden mb-12">
       {/* Table Header */}
@@ -14,14 +14,21 @@ export default function DataTable({ title, columns, data, actions }) {
         </div>
         
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-5 py-2.5 bg-[#1f2937] text-[#f3f4f6] rounded-xl text-xs font-black italic hover:bg-[#38bdf8] hover:text-[#0b1220] transition-all shadow-lg border border-[#38bdf8]/10">
+          <button 
+            onClick={onFilter}
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#1f2937] text-[#f3f4f6] rounded-xl text-xs font-black italic hover:bg-[#38bdf8] hover:text-[#0b1220] transition-all shadow-lg border border-[#38bdf8]/10"
+          >
             <FilterIcon size={16} /> FILTER
           </button>
-          <button className="flex items-center gap-2 px-5 py-2.5 bg-[#38bdf8] text-[#0b1220] rounded-xl text-xs font-black italic hover:scale-105 transition-all shadow-[0_0_20px_rgba(56,189,248,0.2)]">
+          <button 
+            onClick={onExport}
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#38bdf8] text-[#0b1220] rounded-xl text-xs font-black italic hover:scale-105 transition-all shadow-[0_0_20px_rgba(56,189,248,0.2)]"
+          >
             <Download size={16} /> EXPORT
           </button>
         </div>
       </div>
+
 
       {/* Table Content */}
       <div className="overflow-x-auto">
