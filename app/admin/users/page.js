@@ -116,10 +116,6 @@ export default function UsersManagement() {
   };
 
 
-      setGeo(prev => ({ ...prev, districts: [] }));
-    }
-  };
-
 
 
   const stats = useMemo(() => [
