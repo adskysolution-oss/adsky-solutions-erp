@@ -26,18 +26,23 @@ const COLUMNS = [
 
 
 const INDIAN_STATES = [
-  { id: 1, name: "Andaman and Nicobar Islands" }, { id: 2, name: "Andhra Pradesh" }, { id: 3, name: "Arunachal Pradesh" },
-  { id: 4, name: "Assam" }, { id: 5, name: "Bihar" }, { id: 6, name: "Chandigarh" }, { id: 7, name: "Chhattisgarh" },
-  { id: 8, name: "Dadra and Nagar Haveli" }, { id: 37, name: "Daman and Diu" }, { id: 9, name: "Delhi" },
-  { id: 10, name: "Goa" }, { id: 11, name: "Gujarat" }, { id: 12, name: "Haryana" }, { id: 13, name: "Himachal Pradesh" },
-  { id: 14, name: "Jammu and Kashmir" }, { id: 15, name: "Jharkhand" }, { id: 16, name: "Karnataka" },
-  { id: 17, name: "Kerala" }, { id: 18, name: "Ladakh" }, { id: 20, name: "Lakshadweep" }, { id: 21, name: "Madhya Pradesh" },
-  { id: 22, name: "Maharashtra" }, { id: 23, name: "Manipur" }, { id: 24, name: "Meghalaya" }, { id: 25, name: "Mizoram" },
-  { id: 26, name: "Nagaland" }, { id: 27, name: "Odisha" }, { id: 28, name: "Puducherry" }, { id: 29, name: "Punjab" },
-  { id: 30, name: "Rajasthan" }, { id: 31, name: "Sikkim" }, { id: 32, name: "Tamil Nadu" }, { id: 33, name: "Telangana" },
-  { id: 34, name: "Tripura" }, { id: 35, name: "Uttar Pradesh" }, { id: 36, name: "Uttarakhand" }, { id: 38, name: "West Bengal" }
+  { id: 21, name: "Madhya Pradesh" }, { id: 34, name: "Uttar Pradesh" }, { id: 22, name: "Maharashtra" },
+  { id: 30, name: "Rajasthan" }, { id: 11, name: "Gujarat" }, { id: 9, name: "Delhi" },
+  { id: 12, name: "Haryana" }, { id: 29, name: "Punjab" }, { id: 5, name: "Bihar" },
+  { id: 17, name: "Karnataka" }, { id: 32, name: "Tamil Nadu" }, { id: 38, name: "West Bengal" },
+  // ... adding others as needed
 ];
 
+const DISTRICTS_DATA = {
+  "Madhya Pradesh": ["Indore", "Bhopal", "Gwalior", "Jabalpur", "Ujjain", "Sagar", "Rewa", "Satna", "Ratlam", "Morena", "Bhind", "Shivpuri", "Chhatarpur", "Damoh", "Mandsaur", "Khargone", "Neemuch", "Khandwa", "Guna", "Itarsi", "Vidisha", "Sehore"],
+  "Uttar Pradesh": ["Lucknow", "Kanpur", "Agra", "Varanasi", "Meerut", "Prayagraj", "Ghaziabad", "Bareilly", "Aligarh", "Moradabad", "Saharanpur", "Gorakhpur", "Noida", "Firozabad", "Jhansi"],
+  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik", "Kalyan-Dombivli", "Vasai-Virar", "Aurangabad", "Navi Mumbai", "Solapur", "Mira-Bhayandar", "Bhiwandi", "Amravati"],
+  "Rajasthan": ["Jaipur", "Jodhpur", "Kota", "Bikaner", "Ajmer", "Udaipur", "Bhilwara", "Alwar", "Bharatpur", "Sikar", "Pali", "Churu", "Beawar"],
+  "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi", "Central Delhi", "South West Delhi", "South East Delhi", "North West Delhi"],
+  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Junagadh", "Gandhidham", "Nadiad", "Gandhinagar", "Anand", "Morbi"],
+  "Haryana": ["Faridabad", "Gurugram", "Panipat", "Ambala", "Yamunanagar", "Rohtak", "Hisar", "Karnal", "Sonipat", "Panchkula"],
+  "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Mohali", "Hoshiarpur", "Pathankot", "Moga"]
+};
 
 export default function UsersManagement() {
   const [activeTab, setActiveTab] = useState('All');
@@ -87,6 +92,16 @@ export default function UsersManagement() {
     const stateName = e.target.options[e.target.selectedIndex].text;
     setFormData({ ...formData, state: stateName, district: '' });
     
+    // Check Local Hardcoded Data First (Faster & Reliable)
+    if (DISTRICTS_DATA[stateName]) {
+      setGeo(prev => ({ 
+        ...prev, 
+        districts: DISTRICTS_DATA[stateName].map((d, i) => ({ district_id: i, district_name: d })) 
+      }));
+      return;
+    }
+
+    // Fallback to Proxy API for other states
     if (stateId) {
       fetch(`/api/geo/districts?stateId=${stateId}`)
         .then(res => res.json())
@@ -96,6 +111,10 @@ export default function UsersManagement() {
           setGeo(prev => ({ ...prev, districts: [] }));
         });
     } else {
+      setGeo(prev => ({ ...prev, districts: [] }));
+    }
+  };
+
 
       setGeo(prev => ({ ...prev, districts: [] }));
     }
