@@ -23,13 +23,7 @@ const COLUMNS = [
   { key: 'status', label: 'ACCOUNT STATUS' },
 ];
 
-const GEO_DATA = {
-  'Madhya Pradesh': ['Indore', 'Bhopal', 'Gwalior', 'Jabalpur', 'Ujjain'],
-  'Uttar Pradesh': ['Lucknow', 'Kanpur', 'Agra', 'Varanasi', 'Meerut'],
-  'Maharashtra': ['Mumbai', 'Pune', 'Nagpur', 'Thane', 'Nashik'],
-  'Rajasthan': ['Jaipur', 'Jodhpur', 'Kota', 'Bikaner', 'Ajmer'],
-  'Gujarat': ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Bhavnagar']
-};
+
 
 export default function UsersManagement() {
   const [activeTab, setActiveTab] = useState('All');
@@ -37,6 +31,9 @@ export default function UsersManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Geo API State
+  const [geo, setGeo] = useState({ states: [], districts: [] });
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,7 +66,28 @@ export default function UsersManagement() {
 
   useEffect(() => {
     fetchUsers();
+    // Fetch All India States
+    fetch('https://cdn-api.co-vin.in/api/v2/admin/location/states')
+      .then(res => res.json())
+      .then(data => setGeo(prev => ({ ...prev, states: data.states || [] })))
+      .catch(err => console.error('States API Error:', err));
   }, [fetchUsers]);
+
+  const handleStateChange = (e) => {
+    const stateId = e.target.value;
+    const stateName = e.target.options[e.target.selectedIndex].text;
+    setFormData({ ...formData, state: stateName, district: '' });
+    
+    if (stateId) {
+      fetch(`https://cdn-api.co-vin.in/api/v2/admin/location/districts/${stateId}`)
+        .then(res => res.json())
+        .then(data => setGeo(prev => ({ ...prev, districts: data.districts || [] })))
+        .catch(err => console.error('Districts API Error:', err));
+    } else {
+      setGeo(prev => ({ ...prev, districts: [] }));
+    }
+  };
+
 
   const stats = useMemo(() => [
     { label: 'ACTIVE USERS', value: users.filter(u => u.status === 'active').length, icon: CheckCircle2, color: 'text-[#22c55e]' },
@@ -294,19 +312,28 @@ export default function UsersManagement() {
 
                       <div className="space-y-2">
                          <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">State</label>
-                         <select value={formData.state} onChange={e => setFormData({...formData, state: e.target.value, district: ''})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all appearance-none">
-                            <option value="">Select State</option>
-                            {Object.keys(GEO_DATA).map(s => <option key={s} value={s}>{s}</option>)}
+                         <select 
+                           onChange={handleStateChange}
+                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all appearance-none"
+                         >
+                            <option value="">{formData.state || 'Select State'}</option>
+                            {geo.states.map(s => <option key={s.state_id} value={s.state_id}>{s.state_name}</option>)}
                          </select>
                       </div>
 
                       <div className="space-y-2">
                          <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">District</label>
-                         <select disabled={!formData.state} value={formData.district} onChange={e => setFormData({...formData, district: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all appearance-none disabled:opacity-30">
+                         <select 
+                           disabled={!formData.state}
+                           value={formData.district}
+                           onChange={e => setFormData({...formData, district: e.target.value})}
+                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all appearance-none disabled:opacity-30"
+                         >
                             <option value="">Select District</option>
-                            {formData.state && GEO_DATA[formData.state].map(d => <option key={d} value={d}>{d}</option>)}
+                            {geo.districts.map(d => <option key={d.district_id} value={d.district_name}>{d.district_name}</option>)}
                          </select>
                       </div>
+
 
                       <div className="space-y-2">
                          <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Tehsil</label>
