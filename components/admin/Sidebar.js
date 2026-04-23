@@ -42,7 +42,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="w-72 bg-[#111827] border-r border-[#1f2937] h-screen fixed left-0 top-0 overflow-y-auto hidden lg:flex flex-col z-[100] transition-all">
+    <div className="w-72 bg-[#111827] border-r border-[#1f2937] h-screen fixed left-0 top-0 overflow-y-auto hidden lg:flex flex-col z-[100] transition-all custom-scrollbar">
       {/* Brand */}
       <div className="p-8 border-b border-[#1f2937] flex items-center gap-3">
         <div className="w-10 h-10 bg-[#38bdf8] rounded-xl flex items-center justify-center text-[#0b1220] shadow-[0_0_20px_rgba(56,189,248,0.3)]">
