@@ -5,6 +5,32 @@ import { ChevronLeft, ChevronRight, MoreHorizontal, Download, Filter as FilterIc
 
 
 export default function DataTable({ title, columns, data, onFilter, onExport, onEdit, onDelete }) {
+  const handleExportCSV = () => {
+
+    if (!data || data.length === 0) return;
+    
+    // Extract headers from columns
+    const headers = columns.map(col => col.label).join(',');
+    
+    // Extract rows
+    const rows = data.map(row => 
+      columns.map(col => {
+        const val = row[col.key];
+        // If it's a React element (like status tag), extract text or use raw status
+        if (React.isValidElement(val)) return row.status_raw || 'Unknown';
+        return `"${String(val).replace(/"/g, '""')}"`;
+      }).join(',')
+    ).join('\n');
+    
+    const csvContent = `data:text/csv;charset=utf-8,${headers}\n${rows}`;
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `${title.replace(/\s+/g, '_')}_Export.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="bg-[#111827] border border-[#1f2937] rounded-[2.5rem] shadow-2xl overflow-hidden mb-12">
@@ -23,13 +49,14 @@ export default function DataTable({ title, columns, data, onFilter, onExport, on
             <FilterIcon size={16} /> FILTER
           </button>
           <button 
-            onClick={onExport}
+            onClick={handleExportCSV}
             className="flex items-center gap-2 px-5 py-2.5 bg-[#38bdf8] text-[#0b1220] rounded-xl text-xs font-black italic hover:scale-105 transition-all shadow-[0_0_20px_rgba(56,189,248,0.2)]"
           >
             <Download size={16} /> EXPORT
           </button>
         </div>
       </div>
+
 
 
       {/* Table Content */}

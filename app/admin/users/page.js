@@ -18,9 +18,18 @@ const COLUMNS = [
   { key: 'name', label: 'USER NAME' },
   { key: 'role', label: 'ROLE / CATEGORY' },
   { key: 'state', label: 'STATE' },
+  { key: 'district', label: 'DISTRICT' },
   { key: 'phone', label: 'PHONE' },
   { key: 'status', label: 'ACCOUNT STATUS' },
 ];
+
+const GEO_DATA = {
+  'Madhya Pradesh': ['Indore', 'Bhopal', 'Gwalior', 'Jabalpur', 'Ujjain'],
+  'Uttar Pradesh': ['Lucknow', 'Kanpur', 'Agra', 'Varanasi', 'Meerut'],
+  'Maharashtra': ['Mumbai', 'Pune', 'Nagpur', 'Thane', 'Nashik'],
+  'Rajasthan': ['Jaipur', 'Jodhpur', 'Kota', 'Bikaner', 'Ajmer'],
+  'Gujarat': ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Bhavnagar']
+};
 
 export default function UsersManagement() {
   const [activeTab, setActiveTab] = useState('All');
@@ -38,7 +47,10 @@ export default function UsersManagement() {
     password: '',
     role: 'farmer',
     phone: '',
-    state: ''
+    state: '',
+    district: '',
+    tehsil: '',
+    village: ''
   });
 
   const fetchUsers = useCallback(async () => {
@@ -72,7 +84,8 @@ export default function UsersManagement() {
       
       const matchesTab = currentTab === 'all' || 
                          userRole === currentTab || 
-                         userRole === currentTab.slice(0, -1);
+                         userRole === currentTab.replace(/s$/, '') ||
+                         (currentTab === 'employees' && userRole === 'employee');
                          
       const matchesSearch = !searchTerm || 
         (u.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -92,7 +105,10 @@ export default function UsersManagement() {
         password: '',
         role: user.role || 'farmer',
         phone: user.phone || '',
-        state: user.state || ''
+        state: user.state || '',
+        district: user.district || '',
+        tehsil: user.tehsil || '',
+        village: user.village || ''
       });
     } else {
       setEditingUser(null);
@@ -102,7 +118,10 @@ export default function UsersManagement() {
         password: '',
         role: 'farmer',
         phone: '',
-        state: ''
+        state: '',
+        district: '',
+        tehsil: '',
+        village: ''
       });
     }
     setIsModalOpen(true);
@@ -139,6 +158,7 @@ export default function UsersManagement() {
   const tableData = useMemo(() => {
     return filteredUsers.map(u => ({
       ...u,
+      status_raw: u.status,
       status: (
         <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase italic ${
           u.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 
@@ -153,7 +173,6 @@ export default function UsersManagement() {
 
   return (
     <div className="space-y-12">
-      {/* Page Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -174,7 +193,6 @@ export default function UsersManagement() {
         </button>
       </div>
 
-      {/* Search & Filter Bar */}
       <div className="flex flex-col md:flex-row gap-6 items-center">
          <div className="relative flex-grow group">
             <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-[#38bdf8] transition-colors" size={20} />
@@ -199,7 +217,6 @@ export default function UsersManagement() {
          </div>
       </div>
 
-      {/* Mini Stats Tier */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {stats.map((stat, idx) => (
           <div key={idx} className="p-6 bg-[#111827] border border-[#1f2937] rounded-[2rem] flex items-center gap-5 group hover:border-[#38bdf8]/20 transition-all">
@@ -214,7 +231,6 @@ export default function UsersManagement() {
         ))}
       </div>
 
-      {/* Data Table */}
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 size={40} className="text-[#38bdf8] animate-spin" />
@@ -228,13 +244,11 @@ export default function UsersManagement() {
           title={`${activeTab} Users`} 
           columns={COLUMNS} 
           data={tableData} 
-          onExport={() => alert('Preparing identity export...')}
           onEdit={handleOpenModal}
           onDelete={handleDelete}
         />
       )}
 
-      {/* Modal Overlay */}
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6 backdrop-blur-md bg-black/60">
@@ -242,7 +256,7 @@ export default function UsersManagement() {
                initial={{ scale: 0.9, opacity: 0 }}
                animate={{ scale: 1, opacity: 1 }}
                exit={{ scale: 0.9, opacity: 0 }}
-               className="bg-[#111827] border border-[#1f2937] w-full max-w-2xl rounded-[3rem] p-10 shadow-2xl relative overflow-hidden"
+               className="bg-[#111827] border border-[#1f2937] w-full max-w-3xl rounded-[3rem] p-10 shadow-2xl relative overflow-y-auto max-h-[90vh]"
              >
                 <div className="absolute top-0 right-0 p-8">
                    <button onClick={() => setIsModalOpen(false)} className="text-[#6b7280] hover:text-[#f3f4f6] transition-colors"><XCircle size={32}/></button>
@@ -257,41 +271,19 @@ export default function UsersManagement() {
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                          <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Full Name</label>
-                         <input 
-                           required
-                           type="text" 
-                           value={formData.name}
-                           onChange={e => setFormData({...formData, name: e.target.value})}
-                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
-                         />
+                         <input required type="text" placeholder="Full Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all" />
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Email Address</label>
-                         <input 
-                           required
-                           type="email" 
-                           value={formData.email}
-                           onChange={e => setFormData({...formData, email: e.target.value})}
-                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
-                         />
+                         <input required type="email" placeholder="Email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all" />
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Phone Number</label>
-                         <input 
-                           required
-                           type="text" 
-                           value={formData.phone}
-                           onChange={e => setFormData({...formData, phone: e.target.value})}
-                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
-                         />
+                         <input required type="text" placeholder="Phone" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all" />
                       </div>
                       <div className="space-y-2">
                          <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Access Role</label>
-                         <select 
-                           value={formData.role}
-                           onChange={e => setFormData({...formData, role: e.target.value})}
-                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all appearance-none"
-                         >
+                         <select value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all appearance-none">
                             <option value="farmer">Farmer</option>
                             <option value="partner">Partner</option>
                             <option value="employee">Employee</option>
@@ -299,31 +291,39 @@ export default function UsersManagement() {
                             <option value="admin">Admin</option>
                          </select>
                       </div>
+
                       <div className="space-y-2">
-                         <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">State / Territory</label>
-                         <input 
-                           type="text" 
-                           value={formData.state}
-                           onChange={e => setFormData({...formData, state: e.target.value})}
-                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
-                         />
+                         <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">State</label>
+                         <select value={formData.state} onChange={e => setFormData({...formData, state: e.target.value, district: ''})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all appearance-none">
+                            <option value="">Select State</option>
+                            {Object.keys(GEO_DATA).map(s => <option key={s} value={s}>{s}</option>)}
+                         </select>
+                      </div>
+
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">District</label>
+                         <select disabled={!formData.state} value={formData.district} onChange={e => setFormData({...formData, district: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all appearance-none disabled:opacity-30">
+                            <option value="">Select District</option>
+                            {formData.state && GEO_DATA[formData.state].map(d => <option key={d} value={d}>{d}</option>)}
+                         </select>
+                      </div>
+
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Tehsil</label>
+                         <input type="text" placeholder="Tehsil" value={formData.tehsil} onChange={e => setFormData({...formData, tehsil: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all" />
                       </div>
                       <div className="space-y-2">
-                         <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">{editingUser ? 'New Password (Optional)' : 'Access Password'}</label>
-                         <input 
-                           required={!editingUser}
-                           type="password" 
-                           value={formData.password}
-                           onChange={e => setFormData({...formData, password: e.target.value})}
-                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all"
-                         />
+                         <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">Village</label>
+                         <input type="text" placeholder="Village" value={formData.village} onChange={e => setFormData({...formData, village: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all" />
+                      </div>
+
+                      <div className="space-y-2 md:col-span-2">
+                         <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic ml-4">{editingUser ? 'New Password (Optional)' : 'Password'}</label>
+                         <input required={!editingUser} type="password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all" />
                       </div>
                    </div>
 
-                   <button 
-                     type="submit"
-                     className="w-full py-5 bg-[#38bdf8] text-[#0b1220] rounded-2xl font-black uppercase tracking-widest italic shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all mt-8"
-                   >
+                   <button type="submit" className="w-full py-5 bg-[#38bdf8] text-[#0b1220] rounded-2xl font-black uppercase tracking-widest italic shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all mt-8">
                      Synchronize Identity
                    </button>
                 </form>
@@ -334,6 +334,3 @@ export default function UsersManagement() {
     </div>
   );
 }
-
-
-

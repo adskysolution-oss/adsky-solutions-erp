@@ -50,11 +50,19 @@ export async function POST(req) {
 
     const { email, password, name, role, phone, state } = data;
 
-    // Check if user already exists
-    const existing = await User.findOne({ email });
+    // Check if user already exists (Email or Phone collision)
+    const existing = await User.findOne({ 
+      $or: [
+        { email },
+        { phone }
+      ]
+    });
+
     if (existing) {
-      return NextResponse.json({ error: 'Identity already registered' }, { status: 400 });
+      const field = existing.email === email ? 'Email' : 'Phone';
+      return NextResponse.json({ error: `${field} already registered in system.` }, { status: 400 });
     }
+
 
     const hashedPassword = await bcrypt.hash(password, 12);
     const newUser = await User.create({

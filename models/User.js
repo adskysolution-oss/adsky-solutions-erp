@@ -7,7 +7,7 @@ const UserSchema = new mongoose.Schema({
   phone: { type: String, required: true, unique: true },
   role: { 
     type: String, 
-    enum: ['admin', 'partner', 'employee', 'farmer'],
+    enum: ['admin', 'partner', 'employee', 'farmer', 'vendor'],
     required: true,
     default: 'farmer'
   },
@@ -16,8 +16,13 @@ const UserSchema = new mongoose.Schema({
     enum: ['active', 'blocked', 'pending'],
     default: 'active'
   },
+  state: { type: String },
+  district: { type: String },
+  tehsil: { type: String },
+  village: { type: String },
   profileImage: { type: String },
   lastLogin: { type: Date },
 }, { timestamps: true });
+
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);
