@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import connectToDatabase from '@/utils/db';
+import Partner from '@/models/Partner';
+import User from '@/models/User';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
@@ -24,17 +26,10 @@ export async function GET() {
   }
 
   try {
-    const partners = await prisma.partner.findMany({
-      include: {
-        user: {
-           select: { email: true, status: true }
-        },
-        _count: {
-           select: { employees: true }
-        }
-      },
-      orderBy: { partnerCode: 'desc' }
-    });
+    await connectToDatabase();
+    const partners = await Partner.find()
+      .populate('user', 'name email status')
+      .sort({ partnerCode: -1 });
 
     return NextResponse.json(partners);
   } catch (error) {
@@ -48,31 +43,31 @@ export async function POST(req) {
   }
 
   try {
+    await connectToDatabase();
     const data = await req.json();
     const { userId, region, commissionRate } = data;
 
     // Generate next partner code
-    const lastPartner = await prisma.partner.findFirst({
-      orderBy: { partnerCode: 'desc' }
-    });
+    const lastPartner = await Partner.findOne().sort({ partnerCode: -1 });
     
     let nextCode = 'ADS-101';
-    if (lastPartner) {
+    if (lastPartner && lastPartner.partnerCode.startsWith('ADS-')) {
        const lastNum = parseInt(lastPartner.partnerCode.split('-')[1]);
-       nextCode = `ADS-${lastNum + 1}`;
+       if (!isNaN(lastNum)) {
+         nextCode = `ADS-${lastNum + 1}`;
+       }
     }
 
-    const partner = await prisma.partner.create({
-      data: {
-        userId,
-        partnerCode: nextCode,
-        region,
-        commissionRate: parseFloat(commissionRate) || 30.0
-      }
+    const partner = await Partner.create({
+      user: userId,
+      partnerCode: nextCode,
+      region,
+      commissionRate: parseFloat(commissionRate) || 30.0
     });
 
     return NextResponse.json({ message: 'Hub provisioned successfully', node: partner });
   } catch (error) {
-    return NextResponse.json({ error: 'Hub provisioning failed' }, { status: 500 });
+    return NextResponse.json({ error: 'Hub provisioning failed: ' + error.message }, { status: 500 });
   }
 }
+

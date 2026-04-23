@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import connectToDatabase from '@/utils/db';
+import User from '@/models/User';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
@@ -23,24 +24,24 @@ export async function GET(req) {
     return NextResponse.json({ error: 'Access Denied: Admin Elevation Required' }, { status: 403 });
   }
 
-  const { searchParams } = new URL(req.url);
-  const search = searchParams.get('search') || '';
-  const role = searchParams.get('role');
-  const status = searchParams.get('status');
-
   try {
-    const users = await prisma.user.findMany({
-      where: {
-        AND: [
-          search ? { email: { contains: search, mode: 'insensitive' } } : {},
-          role ? { role } : {},
-          status ? { status } : {}
-        ]
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 100
-    });
+    await connectToDatabase();
+    const { searchParams } = new URL(req.url);
+    const search = searchParams.get('search') || '';
+    const role = searchParams.get('role');
+    const status = searchParams.get('status');
 
+    const query = {};
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } }
+      ];
+    }
+    if (role) query.role = role;
+    if (status) query.status = status;
+
+    const users = await User.find(query).sort({ createdAt: -1 }).limit(100);
     return NextResponse.json(users);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to retrieve identity nodes' }, { status: 500 });
@@ -53,13 +54,17 @@ export async function PATCH(req) {
   }
 
   try {
+    await connectToDatabase();
     const { userId, status, role } = await req.json();
-    const updated = await prisma.user.update({
-      where: { id: userId },
-      data: { status, role }
-    });
+    const updated = await User.findByIdAndUpdate(userId, { status, role }, { new: true });
+    
+    if (!updated) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     return NextResponse.json({ message: 'Identity node updated', user: updated });
   } catch (error) {
     return NextResponse.json({ error: 'Identity update failed' }, { status: 500 });
   }
 }
+

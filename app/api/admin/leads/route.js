@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import connectToDatabase from '@/utils/db';
+import Application from '@/models/Application';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
@@ -28,23 +29,14 @@ export async function GET(req) {
   const partnerCode = searchParams.get('partnerCode');
 
   try {
-    const submissions = await prisma.submission.findMany({
-      where: {
-        AND: [
-          status ? { status } : {},
-          partnerCode ? { partnerCode } : {}
-        ]
-      },
-      include: {
-        form: {
-           select: { name: true }
-        }
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 200
-    });
+    await connectToDatabase();
+    const query = {};
+    if (status) query.applicationStatus = status;
+    if (partnerCode) query.partnerCode = partnerCode;
 
-    return NextResponse.json(submissions);
+    const applications = await Application.find(query).sort({ createdAt: -1 }).limit(200);
+
+    return NextResponse.json(applications);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to retrieve mission stream' }, { status: 500 });
   }
@@ -56,13 +48,21 @@ export async function PATCH(req) {
   }
 
   try {
-    const { id, status } = await req.json();
-    const updated = await prisma.submission.update({
-      where: { id },
-      data: { status }
-    });
+    await connectToDatabase();
+    const { id, status, remarks } = await req.json();
+    const updated = await Application.findByIdAndUpdate(
+      id, 
+      { applicationStatus: status, adminRemarks: remarks }, 
+      { new: true }
+    );
+    
+    if (!updated) {
+       return NextResponse.json({ error: 'Application not found' }, { status: 404 });
+    }
+
     return NextResponse.json({ message: 'Mission node updated', submission: updated });
   } catch (error) {
     return NextResponse.json({ error: 'Mission update failed' }, { status: 500 });
   }
 }
+

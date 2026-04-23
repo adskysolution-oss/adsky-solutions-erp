@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import connectToDatabase from '@/utils/db';
+import Page from '@/models/Page';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
@@ -27,11 +28,12 @@ export async function GET(req) {
   const slug = searchParams.get('slug');
 
   try {
+     await connectToDatabase();
      if (slug) {
-        const page = await prisma.page.findUnique({ where: { slug } });
+        const page = await Page.findOne({ slug });
         return NextResponse.json(page);
      }
-     const pages = await prisma.page.findMany({ orderBy: { updatedAt: 'desc' } });
+     const pages = await Page.find().sort({ updatedAt: -1 });
      return NextResponse.json(pages);
   } catch (error) {
      return NextResponse.json({ error: 'Failed to retrieve CMS nodes' }, { status: 500 });
@@ -44,14 +46,18 @@ export async function POST(req) {
   }
 
   try {
+    await connectToDatabase();
     const { slug, title, layoutJson, published } = await req.json();
-    const updated = await prisma.page.upsert({
-      where: { slug },
-      update: { title, layoutJson, published, updatedAt: new Date() },
-      create: { slug, title, layoutJson, published }
-    });
+    
+    const updated = await Page.findOneAndUpdate(
+      { slug },
+      { title, layoutJson, published },
+      { upsert: true, new: true }
+    );
+    
     return NextResponse.json({ message: 'CMS node synchronized', page: updated });
   } catch (error) {
     return NextResponse.json({ error: 'CMS synchronization failed' }, { status: 500 });
   }
 }
+

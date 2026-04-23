@@ -9,23 +9,32 @@ export async function GET() {
   try {
     await connectToDatabase();
 
-    const [totalPartners, totalEmployees, totalFarmers, totalRevenue] = await Promise.all([
+    const [totalUsers, totalPartners, totalEmployees, totalApplications, totalRevenueResult, recentApplications] = await Promise.all([
+      User.countDocuments(),
       Partner.countDocuments(),
       Employee.countDocuments(),
       Application.countDocuments(),
       Application.aggregate([
         { $match: { paymentStatus: 'success' } },
         { $group: { _id: null, total: { $sum: 249 } } }
-      ])
+      ]),
+      Application.find().sort({ createdAt: -1 }).limit(10)
     ]);
 
     const stats = {
+      totalUsers,
       totalPartners,
       totalEmployees,
-      totalFarmers,
-      totalRevenue: totalRevenue[0]?.total || 0,
+      totalApplications,
+      totalRevenue: totalRevenueResult[0]?.total || 0,
       pendingApplications: await Application.countDocuments({ applicationStatus: 'submitted' }),
-      recentActivity: [] // Will populate later
+      recentApplications: recentApplications.map(app => ({
+        id: app._id,
+        user: app.farmerName,
+        amount: 249,
+        status: app.paymentStatus,
+        date: app.createdAt
+      }))
     };
 
     return NextResponse.json(stats);
@@ -33,3 +42,4 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+

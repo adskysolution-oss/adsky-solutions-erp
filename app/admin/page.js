@@ -21,7 +21,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const data = await adminAPI.getSummaryReport();
+        const data = await adminAPI.getStats();
         setReport(data);
       } catch (err) {
         console.error('Report Error:', err);
@@ -42,11 +42,12 @@ export default function DashboardPage() {
   }
 
   const stats = [
-    { label: 'TOTAL USERS', value: report?.stats?.totalUsers || '0', icon: Users, color: 'text-cyan-400' },
-    { label: 'TOTAL REVENUE', value: `₹${(report?.stats?.totalRevenue / 1000).toFixed(1)}k`, icon: TrendingUp, color: 'text-emerald-400' },
-    { label: 'ACTIVE MISSIONS', value: report?.stats?.activeLoans || '0', icon: Wallet, color: 'text-orange-400' },
-    { label: 'SECURITY ALERTS', value: '3', icon: ShieldAlert, color: 'text-rose-400' },
+    { label: 'TOTAL USERS', value: report?.totalUsers || '0', icon: Users, color: 'text-cyan-400' },
+    { label: 'TOTAL REVENUE', value: `₹${(report?.totalRevenue / 1000).toFixed(1)}k`, icon: TrendingUp, color: 'text-emerald-400' },
+    { label: 'APPLICATIONS', value: report?.totalApplications || '0', icon: Wallet, color: 'text-orange-400' },
+    { label: 'PENDING', value: report?.pendingApplications || '0', icon: ShieldAlert, color: 'text-rose-400' },
   ];
+
 
   return (
     <div className="space-y-12">
@@ -85,12 +86,13 @@ export default function DashboardPage() {
             { key: 'status', label: 'STATUS' },
             { key: 'date', label: 'TIMESTAMP' }
           ]} 
-          data={(report?.recentPayments || []).map(p => ({
-            user: p.userId?.name || 'Unknown',
-            amount: `₹${p.amount}`,
-            status: p.status,
-            date: new Date(p.createdAt).toLocaleTimeString()
+          data={(report?.recentApplications || []).map(app => ({
+            user: app.user || 'Unknown',
+            amount: `₹${app.amount}`,
+            status: app.status,
+            date: new Date(app.date).toLocaleTimeString()
           }))}
+
         />
       </div>
     </div>

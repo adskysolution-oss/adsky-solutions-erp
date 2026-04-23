@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import connectToDatabase from '@/utils/db';
+import WebsiteConfig from '@/models/WebsiteConfig';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
@@ -24,9 +25,8 @@ export async function GET() {
   }
 
   try {
-    const config = await prisma.websiteConfig.findUnique({
-      where: { id: 'global' }
-    });
+    await connectToDatabase();
+    const config = await WebsiteConfig.findOne();
     return NextResponse.json(config || {});
   } catch (error) {
     return NextResponse.json({ error: 'Failed to retrieve node configuration' }, { status: 500 });
@@ -39,14 +39,19 @@ export async function POST(req) {
   }
 
   try {
+    await connectToDatabase();
     const data = await req.json();
-    const updated = await prisma.websiteConfig.upsert({
-      where: { id: 'global' },
-      update: data,
-      create: { id: 'global', ...data }
-    });
+    
+    // We only ever have one config
+    const updated = await WebsiteConfig.findOneAndUpdate(
+      {},
+      data,
+      { upsert: true, new: true }
+    );
+    
     return NextResponse.json({ message: 'Configuration synchronized', config: updated });
   } catch (error) {
     return NextResponse.json({ error: 'Configuration sync failed' }, { status: 500 });
   }
 }
+
