@@ -9,8 +9,12 @@ export async function GET(req) {
   if (!auth.success) return rbacResponse(auth.error);
 
   try {
-    await connectToDatabase();
+    const conn = await connectToDatabase();
+    if (!conn) {
+      return NextResponse.json({ error: 'Database connection failed. Please check MONGODB_URI in Vercel.' }, { status: 500 });
+    }
     const { searchParams } = new URL(req.url);
+
     const search = searchParams.get('search') || '';
     const role = searchParams.get('role');
     const status = searchParams.get('status');
@@ -38,8 +42,12 @@ export async function POST(req) {
   if (!auth.success) return rbacResponse(auth.error);
 
   try {
-    await connectToDatabase();
+    const conn = await connectToDatabase();
+    if (!conn) {
+      return NextResponse.json({ error: 'Database connection failed. Please check MONGODB_URI in Vercel.' }, { status: 500 });
+    }
     const data = await req.json();
+
     const { email, password, name, role, phone, state } = data;
 
     // Check if user already exists
@@ -70,8 +78,12 @@ export async function PATCH(req) {
   if (!auth.success) return rbacResponse(auth.error);
 
   try {
-    await connectToDatabase();
+    const conn = await connectToDatabase();
+    if (!conn) {
+      return NextResponse.json({ error: 'Database connection failed. Please check MONGODB_URI in Vercel.' }, { status: 500 });
+    }
     const { userId, ...updateData } = await req.json();
+
     
     if (updateData.password) {
       updateData.password = await bcrypt.hash(updateData.password, 12);
@@ -94,8 +106,12 @@ export async function DELETE(req) {
   if (!auth.success) return rbacResponse(auth.error);
 
   try {
-    await connectToDatabase();
+    const conn = await connectToDatabase();
+    if (!conn) {
+      return NextResponse.json({ error: 'Database connection failed. Please check MONGODB_URI in Vercel.' }, { status: 500 });
+    }
     const { searchParams } = new URL(req.url);
+
     const userId = searchParams.get('id');
 
     if (!userId) {
