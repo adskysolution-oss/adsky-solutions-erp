@@ -24,29 +24,22 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState('white');
   const [config, setConfig] = useState(null);
 
-  // FETCH LIVE DATA FROM CMS
   useEffect(() => {
-    const fetchConfig = async () => {
-      try {
-        const res = await fetch('/api/public/config');
-        const data = await res.json();
-        if (data) setConfig(data);
-      } catch (err) {
-        console.log('CMS connection standby...');
-      }
-    };
-    fetchConfig();
+    fetch('/api/public/config')
+      .then(res => res.json())
+      .then(data => { if (data) setConfig(data); })
+      .catch(() => {});
   }, []);
 
-  // FALLBACKS (Pure Premium Content)
-  const hero = config?.homepage?.hero || {
-    title: "EMPOWERING FUTURE WORKFORCE",
-    subtitle: "Join India's leading AI-first strategic consultancy and operative node.",
-    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2670",
-    badge: "Operational Efficiency & Strategic Growth"
+  // --- STRICT PREMIUM FALLBACKS (DO NOT CHANGE) ---
+  const hero = {
+    title: config?.homepage?.hero?.title || "EMPOWERING FUTURE WORKFORCE",
+    subtitle: config?.homepage?.hero?.subtitle || "Join India's leading AI-first strategic consultancy and operative node.",
+    image: config?.homepage?.hero?.image || "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2670",
+    badge: config?.homepage?.hero?.badge || "Operational Efficiency & Strategic Growth"
   };
 
-  const stats = config?.homepage?.stats || [
+  const stats = (config?.homepage?.stats && config.homepage.stats.length > 0) ? config.homepage.stats : [
     { icon: CheckCircle, value: "10k+", label: "Tasks Completed" },
     { icon: Users, value: "500+", label: "Strong Workforce" },
     { icon: Globe, value: "50+", label: "Cities Covered" },
@@ -102,12 +95,12 @@ export default function HomePage() {
         <section className="py-32 px-6 border-y border-white/5 relative bg-white/5 backdrop-blur-3xl overflow-hidden">
           <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
             {stats.map((stat, i) => (
-              <StatCard key={i} icon={stat.icon || Trophy} value={stat.value} label={stat.label} />
+              <StatCard key={i} icon={CheckCircle} value={stat.value} label={stat.label} />
             ))}
           </div>
         </section>
 
-        {/* --- OFFERINGS SECTION (HARDCODED FOR SAFETY) --- */}
+        {/* --- OFFERINGS SECTION (HARDCODED FOR 100% DESIGN SAFETY) --- */}
         <section className="py-40 px-6 relative overflow-hidden">
           <div className="max-w-7xl mx-auto text-center mb-28 relative z-10">
             <p className="text-[#38bdf8] text-sm font-black uppercase tracking-[0.4em] italic mb-6">Our Offerings</p>
@@ -138,8 +131,6 @@ export default function HomePage() {
              </div>
           </div>
         </section>
-
-        {/* Rest of the sections restored similarly... */}
       </main>
 
       <Footer />
