@@ -5,6 +5,7 @@ const WebsiteConfigSchema = new mongoose.Schema({
   logo: String,
   contactEmail: String,
   contactPhone: String,
+  address: String,
   
   // Homepage CMS Data
   homepage: {
@@ -17,25 +18,43 @@ const WebsiteConfigSchema = new mongoose.Schema({
     stats: [{
       label: String,
       value: String,
-      iconName: String // CheckCircle, Users, etc.
+      iconName: String
     }],
     offerings: {
       title: String,
       subtitle: String,
       items: [{
         title: String,
-        description: String
+        description: String,
+        iconName: String
       }]
-    }
+    },
+    strategy: {
+      title: String,
+      description: String,
+      image: String,
+      buttonText: String,
+      price: String
+    },
+    testimonials: [{
+      name: String,
+      role: String,
+      content: String,
+      image: String
+    }]
   },
+  
   // About Page CMS Data
   about: {
     title: String,
     subtitle: String,
     description: String,
-    image: String
+    image: String,
+    vision: String,
+    mission: String
   },
-  // Services Page CMS Data
+
+  // Services Page Data
   services: {
     title: String,
     subtitle: String,
