@@ -33,7 +33,8 @@ const MENU_ITEMS = [
   { name: 'Wallet', icon: Wallet, path: '/admin/wallet' },
   { name: 'Commissions', icon: Coins, path: '/admin/commissions' },
   { name: 'Reports', icon: BarChart3, path: '/admin/reports' },
-  { name: 'CMS Builder', icon: Globe, path: '/admin/cms' },
+  { name: 'Home Architect', icon: Globe, path: '/admin/cms/homepage' },
+  { name: 'Page Builder', icon: LayoutDashboard, path: '/admin/cms/pages' },
   { name: 'Notifications', icon: Bell, path: '/admin/notifications' },
   { name: 'Settings', icon: Settings, path: '/admin/settings' },
 ];
