@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Target, Users, Zap, CheckCircle } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -18,7 +17,6 @@ export default function AboutPage() {
       });
   }, []);
 
-  // FALLBACKS (Pure Premium Content)
   const about = content || {
     title: "Driving Innovation Across Industries",
     subtitle: "About AdSky Solution",
@@ -43,7 +41,7 @@ export default function AboutPage() {
              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
           </div>
         </div>
-      </motion.div>
+      </main>
 
       <Footer />
     </div>
