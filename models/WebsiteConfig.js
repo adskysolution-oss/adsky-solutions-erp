@@ -1,19 +1,21 @@
 import mongoose from 'mongoose';
 
 const WebsiteConfigSchema = new mongoose.Schema({
-  // Global settings
-  logo: String,
-  contactEmail: String,
-  contactPhone: String,
-  address: String,
+  // Global visuals
+  logo: { type: String, default: "/logo(2).jpeg" },
+  contactEmail: { type: String, default: "info@adskysolution.com" },
+  contactPhone: { type: String, default: "8076611842" },
+  address: { type: String, default: "AD Sky Solution, 126 Satyam Enclave Sahibabad, Ghaziabad UP" },
   
   // Homepage CMS Data
   homepage: {
     hero: {
-      title: { type: String, default: "EMPOWERING FUTURE WORKFORCE" },
-      subtitle: { type: String, default: "Join India's leading AI-first strategic consultancy and operative node." },
-      image: { type: String, default: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2670" },
-      badge: { type: String, default: "Operational Efficiency & Strategic Growth" }
+      slides: [{
+        title: String,
+        subtitle: String,
+        image: String,
+        badge: String
+      }]
     },
     stats: [{
       label: String,
@@ -21,8 +23,8 @@ const WebsiteConfigSchema = new mongoose.Schema({
       iconName: String
     }],
     offerings: {
-      title: String,
-      subtitle: String,
+      title: { type: String, default: "Cognitive, Desk-based, Tech-centric" },
+      subtitle: { type: String, default: "Our Offerings" },
       items: [{
         title: String,
         description: String,
@@ -30,38 +32,32 @@ const WebsiteConfigSchema = new mongoose.Schema({
       }]
     },
     strategy: {
-      title: String,
-      description: String,
-      image: String,
-      buttonText: String,
-      price: String
+      title: { type: String, default: "Fuel Your Future With Expert Strategy." },
+      description: { type: String, default: "Website & App Strategy Consultation, CRM/HRMS Setup..." },
+      image: { type: String, default: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672" },
+      highlight: { type: String, default: "99% Success Rate" },
+      price: { type: String, default: "₹999" }
+    },
+    jobs: {
+      mainImage: { type: String, default: "/pointing-person.png" },
+      categories: [{
+        title: String,
+        tag: String,
+        count: String,
+        image: String
+      }]
     },
     testimonials: [{
       name: String,
       role: String,
       content: String,
       image: String
-    }]
-  },
-  
-  // About Page CMS Data
-  about: {
-    title: String,
-    subtitle: String,
-    description: String,
-    image: String,
-    vision: String,
-    mission: String
-  },
-
-  // Services Page Data
-  services: {
-    title: String,
-    subtitle: String,
-    items: [{
+    }],
+    blogs: [{
       title: String,
-      description: String,
-      icon: String
+      date: String,
+      image: String,
+      link: String
     }]
   }
 }, { timestamps: true });
