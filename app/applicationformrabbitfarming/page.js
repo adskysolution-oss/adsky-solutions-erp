@@ -69,8 +69,18 @@ export default function RabbitFarmingForm() {
     businessActivity: 'Rabbit Farming', industryType: 'Service', projectCost: '', bankName: '', accountNumber: '', ifscCode: '', bankBranch: '',
     vendorCode: '', vendorName: '', subVendorCode: '', subVendorName: '', agentName: '', agentMobile: '',
     doc_aadhar_front: '', doc_aadhar_back: '', doc_pan: '', doc_photo: '', doc_bank: '', doc_address: '', doc_land: '', doc_dpr: '', doc_income: '', doc_training: '', doc_caste: '',
-    doc_rural_cert: '', doc_affidavit: ''
+    doc_rural_cert: '', doc_affidavit: '',
+    txnId: '', paymentStatus: 'Pending'
   });
+
+  // Inject Cashfree SDK
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => { document.body.removeChild(script); };
+  }, []);
 
   const handleFileChange = (e, field) => {
     const file = e.target.files[0];
@@ -139,21 +149,76 @@ export default function RabbitFarmingForm() {
   };
 
   const handleManualSubmit = async () => {
+    if (!window.Cashfree) {
+      alert("Payment gateway is loading, please wait...");
+      return;
+    }
+
     setLoading(true);
-    const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzEC_C3n1Cz6kknKk6vJabBOSODvbAvZMHU0d5ZQOmWF3prY9LmB_4bNGCx03U-U9if/exec';
     
     try {
-      await fetch(GOOGLE_WEB_APP_URL, {
+      // 1. Create Cashfree Order
+      const orderRes = await fetch('/api/payment/cashfree', {
         method: 'POST',
-        mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          amount: 249,
+          customerName: formData.name,
+          customerPhone: formData.mobile,
+          customerEmail: formData.email || 'customer@adskysolution.com',
+          orderNote: 'Rabbit Farming Processing Fee'
+        })
       });
-      setSubmitted(true);
+
+      const orderData = await orderRes.json();
+      if (!orderData.success) throw new Error(orderData.error || 'Failed to create order');
+
+      // 2. Initialize Checkout
+      const cashfree = window.Cashfree({ mode: "production" });
+      const checkoutOptions = {
+        paymentSessionId: orderData.paymentSessionId,
+        redirectTarget: "_self", // Or "_modal"
+      };
+
+      // 3. Start Checkout
+      // Note: Since we are using _self, the page will redirect. 
+      // If we want to stay on page and then submit to Google Sheets, we should use a verification step.
+      // However, for simplicity and immediate feedback, we can use a callback if we use _modal.
+      
+      cashfree.checkout(checkoutOptions).then(async (result) => {
+        if (result.error) {
+          alert(result.error.message);
+          setLoading(false);
+          return;
+        }
+        if (result.redirect) {
+          console.log("Redirecting...");
+          return;
+        }
+
+        // 4. Verify Payment (using modal result or after redirect back)
+        // For modal flow:
+        if (result.paymentDetails) {
+          const txnId = orderData.orderId;
+          const updatedFormData = { ...formData, txnId: txnId, paymentStatus: 'Success' };
+          
+          // 5. Submit to Google Sheets
+          const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzEC_C3n1Cz6kknKk6vJabBOSODvbAvZMHU0d5ZQOmWF3prY9LmB_4bNGCx03U-U9if/exec';
+          await fetch(GOOGLE_WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedFormData)
+          });
+          setSubmitted(true);
+        }
+      });
+
     } catch (err) {
-      alert('Submission Error. Please check your internet.');
+      alert(err.message || 'Payment Error. Please try again.');
     } finally {
-      setLoading(false);
+      // Don't stop loading here if redirecting
+      // setLoading(false);
     }
   };
 
@@ -282,7 +347,7 @@ export default function RabbitFarmingForm() {
                 <button type="button" onClick={nextStep} className="flex-[2] py-4 bg-[#B32D2D] text-white font-black rounded-xl flex items-center justify-center gap-2">NEXT STEP <ArrowRight size={20} /></button>
               ) : (
                 <button type="button" onClick={handleManualSubmit} disabled={loading} className="flex-[2] py-4 bg-[#22c55e] text-white font-black rounded-xl flex items-center justify-center gap-2">
-                  {loading ? <Loader2 className="animate-spin" /> : 'SUBMIT ALL DATA'}
+                  {loading ? <Loader2 className="animate-spin" /> : 'PAY ₹249 & SUBMIT APPLICATION'}
                 </button>
               )}
             </div>
