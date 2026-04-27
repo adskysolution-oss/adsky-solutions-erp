@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useParams } from 'next/navigation';
 import { 
   ArrowRight, 
   CheckCircle2, 
@@ -12,8 +13,9 @@ import {
   Sparkles
 } from 'lucide-react';
 
-export default function PublicForm({ params }) {
-  const { slug } = params;
+export default function PublicForm() {
+  const params = useParams();
+  const slug = params?.slug;
   const [form, setForm] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
