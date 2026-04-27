@@ -476,8 +476,12 @@ function PreviewSection({ title, data, onEdit }) {
 
 function InputField({ label, name, value, onChange, type = "text", required = false, className = "", ...props }) {
   return (
-    <div className="space-y-1">
-      <label className="text-[10px] font-black text-gray-600 uppercase flex items-center gap-1">{label} {required && <span className="text-red-500">*</span>}</label>
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <div className="bg-[#B32D2D]/10 text-[#B32D2D] text-[9px] font-black px-3 py-1 rounded shadow-sm uppercase tracking-wider border-l-4 border-[#B32D2D]">
+          {label} {required && <span className="text-red-500">*</span>}
+        </div>
+      </div>
       <input type={type} name={name} value={value} onChange={onChange} className={`w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:border-[#B32D2D] focus:bg-white font-bold text-sm outline-none transition-all ${className}`} {...props} />
     </div>
   );
@@ -485,8 +489,12 @@ function InputField({ label, name, value, onChange, type = "text", required = fa
 
 function SelectField({ label, name, value, onChange, options, required = false }) {
   return (
-    <div className="space-y-1">
-      <label className="text-[10px] font-black text-gray-600 uppercase flex items-center gap-1">{label} {required && <span className="text-red-500">*</span>}</label>
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <div className="bg-[#B32D2D]/10 text-[#B32D2D] text-[9px] font-black px-3 py-1 rounded shadow-sm uppercase tracking-wider border-l-4 border-[#B32D2D]">
+          {label} {required && <span className="text-red-500">*</span>}
+        </div>
+      </div>
       <select name={name} value={value} onChange={onChange} className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:border-[#B32D2D] focus:bg-white font-bold text-sm outline-none transition-all appearance-none">
         <option value="">Select / चुनें</option>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
