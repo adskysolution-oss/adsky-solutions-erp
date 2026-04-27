@@ -8,18 +8,6 @@ import {
   FileText, CreditCard, GraduationCap
 } from 'lucide-react';
 
-const GEO_DATA = {
-  "Madhya Pradesh": ["Indore", "Bhopal", "Gwalior", "Jabalpur", "Ujjain", "Sagar", "Rewa", "Satna", "Ratlam"],
-  "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Agra", "Meerut", "Ghaziabad", "Prayagraj", "Bareilly"],
-  "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga", "Arrah"],
-  "Rajasthan": ["Jaipur", "Jodhpur", "Kota", "Bikaner", "Ajmer", "Udaipur", "Bhilwara"],
-  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik", "Aurangabad", "Solapur"],
-  "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda"],
-  "Haryana": ["Faridabad", "Gurugram", "Panipat", "Ambala", "Yamunanagar"],
-  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar"],
-  "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi"],
-};
-
 const STEPS = [
   { id: 1, title: 'Personal / व्यक्तिगत', icon: User },
   { id: 2, title: 'Qualification / योग्यता', icon: GraduationCap },
@@ -33,8 +21,11 @@ export default function RabbitFarmingForm() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
-  const [availableDistricts, setAvailableDistricts] = useState([]);
   
+  const [allStates, setAllStates] = useState([]);
+  const [allDistricts, setAllDistricts] = useState([]);
+  const [geoLoading, setGeoLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     aadhar: '', name: '', parentName: '', mobile: '', email: '', gender: '', dob: '', socialCategory: '', specialCategory: 'Not Applicable', pan: '',
     qualification: '', edpTraining: 'No', experience: 'No',
@@ -42,6 +33,34 @@ export default function RabbitFarmingForm() {
     businessActivity: 'Rabbit Farming', industryType: 'Service', projectCost: '', bankName: '', accountNumber: '', ifscCode: '', bankBranch: '',
     vendorCode: '', vendorName: '', subVendorCode: '', subVendorName: '', agentName: '', agentMobile: ''
   });
+
+  // Fetch States on Mount
+  useEffect(() => {
+    fetch('https://cdn-api.co-vin.in/api/v2/admin/location/states')
+      .then(res => res.json())
+      .then(data => setAllStates(data.states || []))
+      .catch(err => console.error("States API Error", err));
+  }, []);
+
+  // Fetch Districts when State changes
+  useEffect(() => {
+    if (formData.state) {
+      const stateId = allStates.find(s => s.state_name === formData.state)?.state_id;
+      if (stateId) {
+        setGeoLoading(true);
+        fetch(`https://cdn-api.co-vin.in/api/v2/admin/location/districts/${stateId}`)
+          .then(res => res.json())
+          .then(data => {
+            setAllDistricts(data.districts || []);
+            setGeoLoading(false);
+          })
+          .catch(err => {
+            console.error("Districts API Error", err);
+            setGeoLoading(false);
+          });
+      }
+    }
+  }, [formData.state, allStates]);
 
   // Pincode Auto-fill
   useEffect(() => {
@@ -66,17 +85,9 @@ export default function RabbitFarmingForm() {
           if (data && data.BANK) {
             setFormData(prev => ({ ...prev, bankName: data.BANK, bankBranch: data.BRANCH }));
           }
-        }).catch(err => console.error("IFSC API error", err));
+        }).catch(err => console.error(err));
     }
   }, [formData.ifscCode]);
-
-  useEffect(() => {
-    if (formData.state && GEO_DATA[formData.state]) {
-      setAvailableDistricts(GEO_DATA[formData.state]);
-    } else {
-      setAvailableDistricts([]);
-    }
-  }, [formData.state]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -186,8 +197,22 @@ export default function RabbitFarmingForm() {
               {currentStep === 3 && (
                 <motion.div key="s3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <InputField label="Pincode / पिनकोड (Auto-fill)" name="pincode" value={formData.pincode} onChange={handleChange} maxLength={6} required placeholder="Enter Pincode to auto-fill" />
-                  <SelectField label="State / राज्य" name="state" value={formData.state} onChange={handleChange} options={Object.keys(GEO_DATA)} required />
-                  <SelectField label="District / जिला" name="district" value={formData.district} onChange={handleChange} options={availableDistricts} required />
+                  <SelectField 
+                    label="State / राज्य" 
+                    name="state" 
+                    value={formData.state} 
+                    onChange={handleChange} 
+                    options={allStates.map(s => s.state_name)} 
+                    required 
+                  />
+                  <SelectField 
+                    label={geoLoading ? "Loading Districts..." : "District / जिला"} 
+                    name="district" 
+                    value={formData.district} 
+                    onChange={handleChange} 
+                    options={allDistricts.map(d => d.district_name)} 
+                    required 
+                  />
                   <InputField label="Taluka/Block" name="block" value={formData.block} onChange={handleChange} />
                   <div className="md:col-span-2"><InputField label="Full Address" name="address" value={formData.address} onChange={handleChange} /></div>
                   <SelectField label="Unit Location" name="unitLocation" value={formData.unitLocation} onChange={handleChange} options={['Rural', 'Urban']} />
