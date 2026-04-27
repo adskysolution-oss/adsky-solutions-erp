@@ -125,18 +125,15 @@ export default function RabbitFarmingForm() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] pb-20">
-      {/* PMEGP Styled Header */}
+      {/* Brand Header */}
       <div className="bg-white border-b-4 border-[#B32D2D] shadow-sm mb-8">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-center gap-6">
            <div className="flex items-center gap-4">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Emblem_of_India.svg/800px-Emblem_of_India.svg.png" className="h-14" alt="Emblem" />
-              <div>
-                 <h1 className="text-lg md:text-xl font-black text-[#B32D2D]">Online Application Form</h1>
-                 <p className="text-[10px] font-bold text-gray-500 uppercase">Rabbit Farming Entrepreneurship Development</p>
+              <img src="/logo.jpeg" className="h-16" alt="AdSky Logo" />
+              <div className="border-l-2 border-gray-200 pl-4">
+                 <h1 className="text-xl md:text-2xl font-black text-[#B32D2D]">Online Application Form</h1>
+                 <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Rabbit Farming Mission | ADSKY Solution</p>
               </div>
-           </div>
-           <div className="flex gap-4">
-              <img src="https://www.kviconline.gov.in/pmegpeportal/resources/images/pmegp-logo.png" className="h-10" alt="PMEGP" />
            </div>
         </div>
       </div>
