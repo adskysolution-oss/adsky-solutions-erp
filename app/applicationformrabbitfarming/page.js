@@ -369,16 +369,16 @@ function FileUploadField({ label, onChange, hasFile }) {
   return (
     <div className="space-y-3 group cursor-pointer relative">
       <div className="flex items-center gap-2">
-        <div className="bg-[#B32D2D] text-white text-[9px] font-black px-3 py-1 rounded-full shadow-sm uppercase tracking-widest border-b-2 border-[#8e2424]">
+        <div className="bg-[#B32D2D]/10 text-[#B32D2D] text-[10px] font-black px-4 py-1.5 rounded-lg shadow-sm uppercase tracking-wider border-l-4 border-[#B32D2D]">
           {label}
         </div>
-        <div className="h-[2px] flex-1 bg-gray-100 group-hover:bg-[#B32D2D]/20 transition-colors" />
+        <div className="h-[1px] flex-1 bg-gray-100 group-hover:bg-[#B32D2D]/10 transition-colors" />
       </div>
       
-      <div className={`relative border-2 border-dashed rounded-2xl p-5 transition-all duration-300 transform group-hover:scale-[1.01] ${
+      <div className={`relative border-2 border-dashed rounded-2xl p-5 transition-all duration-300 transform group-hover:translate-y-[-2px] ${
         hasFile 
         ? 'border-green-500 bg-green-50 shadow-lg shadow-green-100' 
-        : 'border-gray-200 bg-[#fafafa] hover:border-[#B32D2D] hover:bg-white hover:shadow-xl hover:shadow-[#B32D2D]/5'
+        : 'border-gray-200 bg-[#fafafa] hover:border-[#B32D2D]/30 hover:bg-white hover:shadow-xl hover:shadow-[#B32D2D]/5'
       }`}>
         <input type="file" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
         <div className="flex items-center gap-4">
