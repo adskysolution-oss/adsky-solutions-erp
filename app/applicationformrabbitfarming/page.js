@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, MapPin, Briefcase, Building2, ShieldCheck, 
   ArrowRight, ArrowLeft, CheckCircle2, AlertCircle, Loader2,
-  FileText, CreditCard, GraduationCap
+  FileText, CreditCard, GraduationCap, Upload, FileUp
 } from 'lucide-react';
 
 const INDIA_GEO_DATA = {
@@ -52,14 +52,14 @@ const STEPS = [
   { id: 2, title: 'Qualification / योग्यता', icon: GraduationCap },
   { id: 3, title: 'Address & Unit / पता और इकाई', icon: MapPin },
   { id: 4, title: 'Project & Bank / प्रोजेक्ट और बैंक', icon: CreditCard },
-  { id: 5, title: 'Vendor / वेंडर', icon: ShieldCheck }
+  { id: 5, title: 'Vendor / वेंडर', icon: ShieldCheck },
+  { id: 6, title: 'Documents / दस्तावेज', icon: FileUp }
 ];
 
 export default function RabbitFarmingForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState(null);
   const [availableDistricts, setAvailableDistricts] = useState([]);
   
   const [formData, setFormData] = useState({
@@ -67,10 +67,24 @@ export default function RabbitFarmingForm() {
     qualification: '', edpTraining: 'No', experience: 'No',
     address: '', state: '', district: '', block: '', pincode: '', unitLocation: 'Rural', unitAddress: '',
     businessActivity: 'Rabbit Farming', industryType: 'Service', projectCost: '', bankName: '', accountNumber: '', ifscCode: '', bankBranch: '',
-    vendorCode: '', vendorName: '', subVendorCode: '', subVendorName: '', agentName: '', agentMobile: ''
+    vendorCode: '', vendorName: '', subVendorCode: '', subVendorName: '', agentName: '', agentMobile: '',
+    // Document Base64 fields
+    doc_aadhar: '', doc_pan: '', doc_photo: '', doc_bank: '', doc_address: '', doc_land: '', doc_dpr: '', doc_income: '', doc_training: '', doc_caste: ''
   });
 
-  // Pincode Auto-fill Logic
+  // Handle File to Base64
+  const handleFileChange = (e, field) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, [field]: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Pincode Auto-fill
   useEffect(() => {
     if (formData.pincode.length === 6) {
       fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`)
@@ -79,19 +93,13 @@ export default function RabbitFarmingForm() {
           if (data[0].Status === "Success") {
             const postOffice = data[0].PostOffice[0];
             const foundState = Object.keys(INDIA_GEO_DATA).find(s => s.toLowerCase().includes(postOffice.State.toLowerCase()) || postOffice.State.toLowerCase().includes(s.toLowerCase()));
-            
-            setFormData(prev => ({ 
-              ...prev, 
-              state: foundState || postOffice.State, 
-              district: postOffice.District, 
-              block: postOffice.Block 
-            }));
+            setFormData(prev => ({ ...prev, state: foundState || postOffice.State, district: postOffice.District, block: postOffice.Block }));
           }
         }).catch(err => console.error(err));
     }
   }, [formData.pincode]);
 
-  // IFSC Auto-fill Logic
+  // IFSC Auto-fill
   useEffect(() => {
     if (formData.ifscCode.length === 11) {
       fetch(`https://ifsc.razorpay.com/${formData.ifscCode}`)
@@ -104,7 +112,6 @@ export default function RabbitFarmingForm() {
     }
   }, [formData.ifscCode]);
 
-  // Update Districts when State selection changes
   useEffect(() => {
     if (formData.state && INDIA_GEO_DATA[formData.state]) {
       setAvailableDistricts(INDIA_GEO_DATA[formData.state]);
@@ -125,13 +132,7 @@ export default function RabbitFarmingForm() {
         return;
       }
     }
-    if (currentStep === 3) {
-      if (!formData.state || !formData.district || !formData.pincode) {
-        alert('Please select State, District and Pincode');
-        return;
-      }
-    }
-    setCurrentStep(prev => Math.min(prev + 1, 5));
+    setCurrentStep(prev => Math.min(prev + 1, 6));
     window.scrollTo(0, 0);
   };
 
@@ -141,11 +142,6 @@ export default function RabbitFarmingForm() {
   };
 
   const handleManualSubmit = async () => {
-    if (!formData.vendorCode || !formData.vendorName || !formData.agentName || !formData.agentMobile) {
-      alert('Please fill all Vendor details before submitting.');
-      return;
-    }
-    
     setLoading(true);
     const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzEC_C3n1Cz6kknKk6vJabBOSODvbAvZMHU0d5ZQOmWF3prY9LmB_4bNGCx03U-U9if/exec';
     
@@ -164,20 +160,13 @@ export default function RabbitFarmingForm() {
     }
   };
 
-  // Prevent Form submission on Enter Key
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-    }
-  };
-
   if (submitted) {
     return (
       <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-6">
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-md w-full bg-white border-2 border-[#DEB887] rounded-3xl p-10 text-center shadow-2xl">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600"><CheckCircle2 size={48} /></div>
           <h2 className="text-3xl font-black text-[#B32D2D] mb-4">सफलतापूर्वक जमा!</h2>
-          <p className="text-gray-600 font-bold mb-8">आपका आवेदन सफलतापूर्वक जमा कर लिया गया है।</p>
+          <p className="text-gray-600 font-bold mb-8">आपका आवेदन और दस्तावेज सफलतापूर्वक जमा कर लिए गए हैं।</p>
           <button onClick={() => window.location.reload()} className="w-full py-4 bg-[#B32D2D] text-white font-black rounded-xl hover:bg-[#8e2424]">OK</button>
         </motion.div>
       </div>
@@ -213,7 +202,7 @@ export default function RabbitFarmingForm() {
         <div className="bg-white border-2 border-[#DEB887] rounded-3xl shadow-xl overflow-hidden">
           <div className="bg-[#DEB887] px-8 py-3"><h3 className="text-white font-black italic text-sm">{STEPS.find(s => s.id === currentStep).title}</h3></div>
 
-          <div onKeyDown={handleKeyDown} className="p-6 md:p-10 space-y-8">
+          <div className="p-6 md:p-10 space-y-8">
             <AnimatePresence mode="wait">
               {currentStep === 1 && (
                 <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -252,8 +241,8 @@ export default function RabbitFarmingForm() {
                   <InputField label="Business Activity" name="businessActivity" value={formData.businessActivity} disabled />
                   <InputField label="Estimated Project Cost (₹)" name="projectCost" value={formData.projectCost} onChange={handleChange} type="number" />
                   <InputField label="IFSC Code / आईएफएससी (Auto-fill)" name="ifscCode" value={formData.ifscCode} onChange={handleChange} maxLength={11} required placeholder="Enter IFSC to auto-fill bank" />
-                  <InputField label="Bank Name / बैंक का नाम" name="bankName" value={formData.bankName} onChange={handleChange} />
-                  <InputField label="Branch Name / शाखा" name="bankBranch" value={formData.bankBranch} onChange={handleChange} />
+                  <InputField label="Bank Name" name="bankName" value={formData.bankName} onChange={handleChange} />
+                  <InputField label="Branch Name" name="bankBranch" value={formData.bankBranch} onChange={handleChange} />
                   <InputField label="Account Number" name="accountNumber" value={formData.accountNumber} onChange={handleChange} />
                 </motion.div>
               )}
@@ -262,19 +251,42 @@ export default function RabbitFarmingForm() {
                 <motion.div key="s5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <InputField label="Vendor Code" name="vendorCode" value={formData.vendorCode} onChange={handleChange} required />
                   <InputField label="Vendor Name" name="vendorName" value={formData.vendorName} onChange={handleChange} required />
+                  <InputField label="Sub-Vendor Code" name="subVendorCode" value={formData.subVendorCode} onChange={handleChange} />
+                  <InputField label="Sub-Vendor Name" name="subVendorName" value={formData.subVendorName} onChange={handleChange} />
                   <InputField label="Agent Name" name="agentName" value={formData.agentName} onChange={handleChange} required />
                   <InputField label="Agent Mobile" name="agentMobile" value={formData.agentMobile} onChange={handleChange} required maxLength={10} />
+                </motion.div>
+              )}
+
+              {currentStep === 6 && (
+                <motion.div key="s6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                  <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-start gap-3 mb-6">
+                    <AlertCircle className="text-blue-500 shrink-0 mt-1" size={20} />
+                    <p className="text-sm text-blue-700 font-bold italic">Upload clear photos or scans of your documents. (Non-mandatory)</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <FileUploadField label="Aadhaar Card (Front/Back)" onChange={(e) => handleFileChange(e, 'doc_aadhar')} hasFile={!!formData.doc_aadhar} />
+                    <FileUploadField label="PAN Card" onChange={(e) => handleFileChange(e, 'doc_pan')} hasFile={!!formData.doc_pan} />
+                    <FileUploadField label="Passport Size Photo" onChange={(e) => handleFileChange(e, 'doc_photo')} hasFile={!!formData.doc_photo} />
+                    <FileUploadField label="Bank Passbook / Statement" onChange={(e) => handleFileChange(e, 'doc_bank')} hasFile={!!formData.doc_bank} />
+                    <FileUploadField label="Address Proof (Voter/DL)" onChange={(e) => handleFileChange(e, 'doc_address')} hasFile={!!formData.doc_address} />
+                    <FileUploadField label="Land Doc (Khasra/Khatauni)" onChange={(e) => handleFileChange(e, 'doc_land')} hasFile={!!formData.doc_land} />
+                    <FileUploadField label="Project Report (DPR)" onChange={(e) => handleFileChange(e, 'doc_dpr')} hasFile={!!formData.doc_dpr} />
+                    <FileUploadField label="Income Proof" onChange={(e) => handleFileChange(e, 'doc_income')} hasFile={!!formData.doc_income} />
+                    <FileUploadField label="Training Certificate" onChange={(e) => handleFileChange(e, 'doc_training')} hasFile={!!formData.doc_training} />
+                    <FileUploadField label="Caste Certificate" onChange={(e) => handleFileChange(e, 'doc_caste')} hasFile={!!formData.doc_caste} />
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
             <div className="flex flex-col md:flex-row gap-4 pt-6">
               {currentStep > 1 && <button type="button" onClick={prevStep} className="flex-1 py-4 border-2 border-[#B32D2D] text-[#B32D2D] font-black rounded-xl">BACK</button>}
-              {currentStep < 5 ? (
+              {currentStep < 6 ? (
                 <button type="button" onClick={nextStep} className="flex-[2] py-4 bg-[#B32D2D] text-white font-black rounded-xl flex items-center justify-center gap-2">NEXT STEP <ArrowRight size={20} /></button>
               ) : (
                 <button type="button" onClick={handleManualSubmit} disabled={loading} className="flex-[2] py-4 bg-[#22c55e] text-white font-black rounded-xl flex items-center justify-center gap-2">
-                  {loading ? <Loader2 className="animate-spin" /> : 'SUBMIT APPLICATION'}
+                  {loading ? <Loader2 className="animate-spin" /> : 'SUBMIT ALL DATA'}
                 </button>
               )}
             </div>
@@ -302,6 +314,26 @@ function SelectField({ label, name, value, onChange, options, required = false }
         <option value="">Select / चुनें</option>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
+    </div>
+  );
+}
+
+function FileUploadField({ label, onChange, hasFile }) {
+  return (
+    <div className="space-y-2">
+      <label className="text-[10px] font-black text-gray-600 uppercase">{label}</label>
+      <div className={`relative border-2 border-dashed rounded-xl p-4 transition-colors ${hasFile ? 'border-green-400 bg-green-50' : 'border-gray-200 hover:border-[#B32D2D]'}`}>
+        <input type="file" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+        <div className="flex items-center gap-3">
+          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${hasFile ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'}`}>
+            {hasFile ? <CheckCircle2 size={20} /> : <Upload size={20} />}
+          </div>
+          <div>
+            <p className="text-xs font-black text-gray-700">{hasFile ? 'File Selected' : 'Choose File'}</p>
+            <p className="text-[10px] text-gray-400">PDF, JPG, PNG (Max 5MB)</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
