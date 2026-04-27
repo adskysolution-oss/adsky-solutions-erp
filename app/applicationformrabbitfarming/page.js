@@ -8,8 +8,6 @@ import {
   FileText, CreditCard, GraduationCap
 } from 'lucide-react';
 
-// Simplified Geo Data (Major States & Districts)
-// In production, you might want to fetch this from an API
 const GEO_DATA = {
   "Madhya Pradesh": ["Indore", "Bhopal", "Gwalior", "Jabalpur", "Ujjain", "Sagar", "Rewa", "Satna", "Ratlam"],
   "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Agra", "Meerut", "Ghaziabad", "Prayagraj", "Bareilly"],
@@ -20,7 +18,6 @@ const GEO_DATA = {
   "Haryana": ["Faridabad", "Gurugram", "Panipat", "Ambala", "Yamunanagar"],
   "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar"],
   "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi"],
-  // Add more as needed
 };
 
 const STEPS = [
@@ -46,7 +43,7 @@ export default function RabbitFarmingForm() {
     vendorCode: '', vendorName: '', subVendorCode: '', subVendorName: '', agentName: '', agentMobile: ''
   });
 
-  // Handle Pincode Auto-fill
+  // Pincode Auto-fill
   useEffect(() => {
     if (formData.pincode.length === 6) {
       fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`)
@@ -54,19 +51,25 @@ export default function RabbitFarmingForm() {
         .then(data => {
           if (data[0].Status === "Success") {
             const postOffice = data[0].PostOffice[0];
-            setFormData(prev => ({
-              ...prev,
-              state: postOffice.State,
-              district: postOffice.District,
-              block: postOffice.Block
-            }));
+            setFormData(prev => ({ ...prev, state: postOffice.State, district: postOffice.District, block: postOffice.Block }));
           }
-        })
-        .catch(err => console.error("Pincode API error", err));
+        }).catch(err => console.error(err));
     }
   }, [formData.pincode]);
 
-  // Update Districts when State changes
+  // IFSC Auto-fill
+  useEffect(() => {
+    if (formData.ifscCode.length === 11) {
+      fetch(`https://ifsc.razorpay.com/${formData.ifscCode}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.BANK) {
+            setFormData(prev => ({ ...prev, bankName: data.BANK, bankBranch: data.BRANCH }));
+          }
+        }).catch(err => console.error("IFSC API error", err));
+    }
+  }, [formData.ifscCode]);
+
   useEffect(() => {
     if (formData.state && GEO_DATA[formData.state]) {
       setAvailableDistricts(GEO_DATA[formData.state]);
@@ -99,10 +102,7 @@ export default function RabbitFarmingForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
-
     const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzEC_C3n1Cz6kknKk6vJabBOSODvbAvZMHU0d5ZQOmWF3prY9LmB_4bNGCx03U-U9if/exec';
-
     try {
       await fetch(GOOGLE_WEB_APP_URL, {
         method: 'POST',
@@ -112,7 +112,7 @@ export default function RabbitFarmingForm() {
       });
       setSubmitted(true);
     } catch (err) {
-      setError('Submission failed. Check your connection.');
+      setError('Submission failed.');
     } finally {
       setLoading(false);
     }
@@ -198,10 +198,10 @@ export default function RabbitFarmingForm() {
                 <motion.div key="s4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <InputField label="Business Activity" name="businessActivity" value={formData.businessActivity} disabled />
                   <InputField label="Estimated Project Cost (₹)" name="projectCost" value={formData.projectCost} onChange={handleChange} type="number" />
-                  <InputField label="Bank Name" name="bankName" value={formData.bankName} onChange={handleChange} />
-                  <InputField label="IFSC Code" name="ifscCode" value={formData.ifscCode} onChange={handleChange} />
+                  <InputField label="IFSC Code / आईएफएससी (Auto-fill)" name="ifscCode" value={formData.ifscCode} onChange={handleChange} maxLength={11} required placeholder="Enter IFSC to auto-fill bank" />
+                  <InputField label="Bank Name / बैंक का नाम" name="bankName" value={formData.bankName} onChange={handleChange} />
+                  <InputField label="Branch Name / शाखा" name="bankBranch" value={formData.bankBranch} onChange={handleChange} />
                   <InputField label="Account Number" name="accountNumber" value={formData.accountNumber} onChange={handleChange} />
-                  <InputField label="Branch Name" name="bankBranch" value={formData.bankBranch} onChange={handleChange} />
                 </motion.div>
               )}
 
