@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Plus, Trash2, Save, Layout, CheckCircle2, Loader2, ListTodo,
   ArrowLeft, Settings, ShieldCheck, Type, Hash, FileUp,
-  ChevronDown, X, MoveUp, MoveDown, Eye, FileSpreadsheet, Download, Edit3
+  ChevronDown, X, MoveUp, MoveDown, Eye, FileSpreadsheet, Download, Edit3, Link2 as LinkIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -125,8 +125,21 @@ export default function FormBuilderPage() {
                        <input type="text" value={editingForm.formName} onChange={e => setEditingForm({...editingForm, formName: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-white font-black italic outline-none focus:border-blue-500 transition-all" />
                      </div>
                      <div className="space-y-2">
-                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2 italic">Description</label>
-                       <textarea rows={3} value={editingForm.description} onChange={e => setEditingForm({...editingForm, description: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-white font-medium italic outline-none focus:border-blue-500 transition-all text-sm" />
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2 italic">URL Slug</label>
+                        <div className="relative">
+                           <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 font-bold italic text-xs">/</div>
+                           <input 
+                              type="text" 
+                              value={editingForm.slug || ''} 
+                              placeholder="e.g. survey-2024"
+                              onChange={e => setEditingForm({...editingForm, slug: e.target.value.toLowerCase().replace(/\s+/g, '-')})} 
+                              className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 pl-10 pr-6 text-blue-500 font-black italic outline-none focus:border-blue-500 transition-all text-xs uppercase tracking-widest" 
+                           />
+                        </div>
+                     </div>
+                     <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2 italic">Description</label>
+                        <textarea rows={3} value={editingForm.description} onChange={e => setEditingForm({...editingForm, description: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-white font-medium italic outline-none focus:border-blue-500 transition-all text-sm" />
                      </div>
                    </div>
                 </div>
@@ -265,12 +278,24 @@ export default function FormBuilderPage() {
                      <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
                        <ListTodo size={28} />
                      </div>
-                     <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
+                        <button 
+                           onClick={() => {
+                              const url = `${window.location.origin}/${form.slug}`;
+                              navigator.clipboard.writeText(url);
+                              alert("Link Copied: " + url);
+                           }} 
+                           className="p-3 bg-white/5 text-slate-400 rounded-xl hover:bg-white/10 hover:text-white transition-all shadow-lg"
+                           title="Copy Public Link"
+                        >
+                           <LinkIcon size={18} />
+                        </button>
                         <button onClick={() => setEditingForm(form)} className="p-3 bg-blue-500/10 text-blue-500 rounded-xl hover:bg-blue-500 hover:text-white transition-all"><Edit size={18} /></button>
                         <Link href={`/admin/reports/forms/${form._id}`} className="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl hover:bg-emerald-500 hover:text-white transition-all"><FileSpreadsheet size={18} /></Link>
                      </div>
                   </div>
-                  <h3 className="text-2xl font-black text-white italic mb-2">{form.formName}</h3>
+                  <h3 className="text-2xl font-black text-white italic mb-1">{form.formName}</h3>
+                  <p className="text-blue-500 text-[10px] font-black uppercase tracking-widest italic mb-4">/{form.slug}</p>
                   <p className="text-slate-500 text-sm font-medium italic mb-10 line-clamp-2">{form.description}</p>
                   
                   <div className="mt-auto pt-8 border-t border-[#1f2937] flex items-center justify-between">
