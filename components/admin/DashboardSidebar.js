@@ -23,7 +23,8 @@ import {
   Activity,
   UserCheck,
   Monitor,
-  Flame
+  Flame,
+  Store
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
