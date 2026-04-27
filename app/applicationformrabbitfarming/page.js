@@ -320,10 +320,6 @@ export default function RabbitFarmingForm() {
               <p className="text-[9px] md:text-xs font-bold uppercase tracking-[0.1em] flex items-center gap-2">
                 <CheckCircle2 size={12} className="text-green-400" /> PAN India Project
               </p>
-              <div className="w-1 h-1 rounded-full bg-[#DEB887]"></div>
-              <p className="text-[9px] md:text-xs font-black text-orange-400 uppercase tracking-[0.1em]">
-                Limited Slots Left
-              </p>
             </div>
           </div>
 
