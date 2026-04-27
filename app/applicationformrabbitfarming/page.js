@@ -93,7 +93,7 @@ export default function RabbitFarmingForm() {
     setLoading(true);
     setError(null);
 
-    const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby-nsmf3rBBID78Hk2bwRfWKp2YAEbksfmobTdpBCYcWmmVL-8GvjA8NKHqYum3ZuT33/exec';
+    const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzEC_C3n1Cz6kknKk6vJabBOSODvbAvZMHU0d5ZQOmWF3prY9LmB_4bNGCx03U-U9if/exec';
 
     try {
       await fetch(GOOGLE_WEB_APP_URL, {
