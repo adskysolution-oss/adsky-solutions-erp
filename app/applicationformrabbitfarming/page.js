@@ -167,11 +167,34 @@ export default function RabbitFarmingForm() {
     return true;
   };
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (!validateStep(currentStep)) {
       alert("Please fill all required fields marked with *");
       return;
     }
+
+    // Duplicate Check on Step 1
+    if (currentStep === 1) {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/forms/rabbit-farming/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ aadhar: formData.aadhar, mobile: formData.mobile })
+        });
+        const data = await res.json();
+        if (data.isDuplicate) {
+          alert(data.message);
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.error("Duplicate check failed", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
     setCurrentStep(prev => Math.min(prev + 1, 7));
     window.scrollTo(0, 0);
   };
@@ -222,10 +245,18 @@ export default function RabbitFarmingForm() {
           const txnId = orderData.orderId;
           const updatedFormData = { ...formData, txnId: txnId, paymentStatus: 'Success' };
           
+          // 1. Save to Google Sheets
           const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzEC_C3n1Cz6kknKk6vJabBOSODvbAvZMHU0d5ZQOmWF3prY9LmB_4bNGCx03U-U9if/exec';
-          await fetch(GOOGLE_WEB_APP_URL, {
+          fetch(GOOGLE_WEB_APP_URL, {
             method: 'POST',
             mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedFormData)
+          });
+
+          // 2. Save to our MongoDB (for duplicate check)
+          await fetch('/api/forms/rabbit-farming/save', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updatedFormData)
           });
