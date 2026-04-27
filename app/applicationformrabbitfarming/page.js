@@ -298,32 +298,32 @@ export default function RabbitFarmingForm() {
   return (
     <div className="min-h-screen bg-[#FDFBF7] pb-20 font-sans">
       {/* Professional Header Section */}
-      <header className="sticky top-0 z-50 bg-[#0f172a] text-white shadow-xl border-b border-white/10">
+      <header className="sticky top-0 z-50 bg-[#B32D2D] text-white shadow-xl border-b-4 border-[#DEB887]">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between relative min-h-[80px]">
           {/* Left: Logo */}
           <div className="flex-shrink-0 z-10">
-            <div className="bg-white p-1.5 rounded-xl shadow-lg border border-gray-100">
+            <div className="bg-white p-1 rounded-lg shadow-lg">
               <img 
                 src="/logo.jpeg" 
                 alt="AdSky Logo" 
-                className="h-10 md:h-14 w-auto object-contain"
+                className="h-10 md:h-12 w-auto object-contain"
               />
             </div>
           </div>
 
-          {/* Center: Title & Subtitle (Absolute centered for perfection) */}
+          {/* Center: Title & Subtitle */}
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-20 text-center">
             <h1 className="text-xl md:text-3xl font-black uppercase tracking-tight text-white leading-none mb-1 pointer-events-auto">
               Rabbit Farming <span className="text-[#DEB887]">Application Form</span>
             </h1>
-            <div className="flex items-center justify-center gap-3 opacity-80 pointer-events-auto">
-              <p className="text-[9px] md:text-xs font-bold uppercase tracking-[0.1em]">
+            <div className="flex items-center justify-center gap-3 opacity-90 pointer-events-auto">
+              <p className="text-[9px] md:text-xs font-black uppercase tracking-[0.2em] text-[#DEB887]">
                 PAN India Project
               </p>
             </div>
           </div>
 
-          {/* Right: Empty spacer to maintain balance on desktop if needed, or mobile menu */}
+          {/* Right spacer */}
           <div className="hidden md:block w-[100px]"></div>
         </div>
       </header>
