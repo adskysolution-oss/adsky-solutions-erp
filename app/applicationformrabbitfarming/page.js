@@ -367,20 +367,40 @@ function SelectField({ label, name, value, onChange, options, required = false }
 
 function FileUploadField({ label, onChange, hasFile }) {
   return (
-    <div className="space-y-2">
-      <label className="text-[10px] font-black text-gray-600 uppercase">{label}</label>
-      <div className={`relative border-2 border-dashed rounded-xl p-4 transition-colors ${hasFile ? 'border-green-400 bg-green-50' : 'border-gray-200 hover:border-[#B32D2D]'}`}>
-        <input type="file" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-        <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${hasFile ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'}`}>
-            {hasFile ? <CheckCircle2 size={20} /> : <Upload size={20} />}
+    <div className="space-y-2 group cursor-pointer relative">
+      <label className="text-[10px] font-black text-gray-700 uppercase tracking-wider ml-1">{label}</label>
+      <div className={`relative border-2 border-dashed rounded-2xl p-5 transition-all duration-300 transform group-hover:scale-[1.02] ${
+        hasFile 
+        ? 'border-green-500 bg-green-50 shadow-lg shadow-green-100' 
+        : 'border-gray-200 bg-[#fafafa] hover:border-[#B32D2D] hover:bg-white hover:shadow-xl hover:shadow-[#B32D2D]/10'
+      }`}>
+        <input type="file" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+        <div className="flex items-center gap-4">
+          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${
+            hasFile 
+            ? 'bg-green-500 text-white rotate-12 shadow-lg' 
+            : 'bg-white text-[#B32D2D] border border-gray-100 shadow-sm group-hover:rotate-6'
+          }`}>
+            {hasFile ? <CheckCircle2 size={28} /> : <Upload size={28} />}
           </div>
-          <div>
-            <p className="text-xs font-black text-gray-700">{hasFile ? 'File Selected' : 'Choose File'}</p>
-            <p className="text-[10px] text-gray-400">PDF, JPG, PNG (Max 5MB)</p>
+          <div className="flex-1">
+            <p className={`text-xs font-black uppercase tracking-tight ${hasFile ? 'text-green-700' : 'text-gray-800'}`}>
+              {hasFile ? 'Document Uploaded' : 'Click to Upload'}
+            </p>
+            <p className="text-[9px] font-bold text-gray-400 mt-1 uppercase tracking-tighter italic">PDF, JPG, PNG (Max 5MB)</p>
           </div>
+          {!hasFile && (
+            <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-[#B32D2D] group-hover:text-white transition-colors">
+               <ArrowRight size={14} />
+            </div>
+          )}
         </div>
       </div>
+      {hasFile && (
+        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-1 -right-1 bg-green-500 text-white rounded-full p-1 shadow-lg border-2 border-white z-20">
+           <CheckCircle2 size={12} />
+        </motion.div>
+      )}
     </div>
   );
 }
