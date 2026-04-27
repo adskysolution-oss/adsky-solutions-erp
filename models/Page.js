@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import './Content'; 
 
 const PageSchema = new mongoose.Schema({
   title: { type: String, required: true },

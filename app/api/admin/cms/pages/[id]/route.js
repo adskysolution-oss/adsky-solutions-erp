@@ -9,8 +9,15 @@ export async function GET(req, { params }) {
   try {
     await connectToDatabase();
     const { id } = params;
-    const page = await Page.findById(id).populate('sections');
+    let page = await Page.findById(id).populate('sections').lean();
     if (!page) return NextResponse.json({ error: "Page not found" }, { status: 404 });
+
+    // Fallback: If population returned empty but sections array has IDs
+    if ((!page.sections || page.sections.length === 0) && page.sections?.length > 0) {
+      const sectionDocs = await Content.find({ _id: { $in: page.sections } }).sort({ order: 1 });
+      page.sections = sectionDocs;
+    }
+
     return NextResponse.json(page);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

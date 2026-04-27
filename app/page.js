@@ -24,12 +24,18 @@ export default function HomePage() {
         if (home) {
           console.log("Home Page ID:", home._id);
           const detailRes = await fetch(`/api/admin/cms/pages/${home._id}`, { cache: 'no-store' });
+          if (!detailRes.ok) {
+            throw new Error(`API returned ${detailRes.status}: ${detailRes.statusText}`);
+          }
           const detail = await detailRes.json();
-          if (detail && detail.sections) {
+          console.log("Full Detail received:", !!detail, "Section count:", detail?.sections?.length);
+          
+          if (detail && detail.sections && detail.sections.length > 0) {
             console.log("Sections found:", detail.sections.length);
             setDynamicPage(detail);
           } else {
-            setError("No sections found in database for Home Page.");
+            console.log("Sections missing or empty in detail:", detail?.sections);
+            setError(`No sections found for ID: ${home._id}. Please check DB sync.`);
           }
         } else {
           setError("Home Page record not found in database.");
