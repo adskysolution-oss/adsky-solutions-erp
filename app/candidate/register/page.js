@@ -1,11 +1,11 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Mail, Lock, Phone, ArrowLeft, Loader2, CheckCircle2, ChevronRight, Briefcase } from 'lucide-react';
+import { User, Mail, Lock, Phone, ArrowLeft, Loader2, CheckCircle2, ChevronRight, Briefcase, Tag } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CandidateRegister() {
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', password: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', password: '', referralCode: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -92,6 +92,14 @@ export default function CandidateRegister() {
               <div style={{ position: 'relative' }}>
                 <Lock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#475569' }} />
                 <input required type="password" placeholder="••••••••" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 12px 12px 36px', color: 'white', fontSize: '14px' }} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ fontSize: '12px', fontWeight: '700', color: '#64748b' }}>VENDOR / REFERRAL CODE (OPTIONAL)</label>
+              <div style={{ position: 'relative' }}>
+                <Tag size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#475569' }} />
+                <input placeholder="e.g. ADSKY-V001" value={formData.referralCode} onChange={e => setFormData({...formData, referralCode: e.target.value})} style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '12px 12px 12px 36px', color: 'white', fontSize: '14px' }} />
               </div>
             </div>
 
