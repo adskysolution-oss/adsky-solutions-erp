@@ -54,10 +54,10 @@ export default function PublicForm({ params }) {
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/forms/submit/${form._id}`, {
+      const res = await fetch(`/api/forms/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ responses: formData })
+        body: JSON.stringify({ slug, ...formData })
       });
       if (res.ok) {
         setSubmitted(true);

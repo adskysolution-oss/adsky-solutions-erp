@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Plus, Trash2, Save, Layout, CheckCircle2, Loader2, ListTodo,
   ArrowLeft, Settings, ShieldCheck, Type, Hash, FileUp,
-  ChevronDown, X, MoveUp, MoveDown, Eye, FileSpreadsheet, Download, Edit3, Link2 as LinkIcon
+  ChevronDown, X, MoveUp, MoveDown, Eye, FileSpreadsheet, Download, Edit3, Link2 as LinkIcon, Send
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -57,7 +57,7 @@ export default function FormBuilderPage() {
 
   const addField = () => {
     const updatedSteps = [...editingForm.steps];
-    updatedSteps[activeStepIdx].fields.push({ label: 'New Field', type: 'text', required: false });
+    updatedSteps[activeStepIdx].fields.push({ label: 'New Field', type: 'text', required: false, options: [] });
     setEditingForm({ ...editingForm, steps: updatedSteps });
   };
 
@@ -113,7 +113,7 @@ export default function FormBuilderPage() {
             {/* Steps & Config Sidebar */}
             <div className="lg:col-span-1 space-y-6">
               <div className="p-8 rounded-[3rem] bg-[#111827] border border-[#1f2937] space-y-8">
-                 <button onClick={() => setEditingForm(null)} className="flex items-center gap-2 text-xs font-black text-slate-500 hover:text-white uppercase tracking-widest italic">
+                 <button onClick={() => setEditingForm(null)} className="flex items-center gap-2 text-xs font-black text-slate-500 hover:text-white uppercase tracking-widest italic transition-all">
                     <ArrowLeft size={14} /> DISCARD CHANGES
                  </button>
                 
@@ -240,49 +240,52 @@ export default function FormBuilderPage() {
                                       }}
                                       className="bg-transparent text-[10px] font-black text-blue-500 uppercase tracking-widest outline-none cursor-pointer"
                                    >
-                                      <option value="text">Text Entry</option>
-                                      <option value="number">Numeric</option>
-                                      <option value="email">Email Addr</option>
-                                      <option value="file">File Upload</option>
-                                      <option value="textarea">Multi-line</option>
-                                      <option value="date">Date Picker</option>
-                                      <option value="select">Dropdown</option>
+                                       <option value="text">Short Answer</option>
+                                       <option value="textarea">Paragraph</option>
+                                       <option value="radio">Multiple Choice (Radio)</option>
+                                       <option value="checkbox">Checkboxes</option>
+                                       <option value="select">Dropdown</option>
+                                       <option value="date">Date Picker</option>
+                                       <option value="time">Time Picker</option>
+                                       <option value="rating">Star Rating</option>
+                                       <option value="number">Numeric Input</option>
+                                       <option value="file">File Upload</option>
                                    </select>
                                 </div>
                               </div>
-                           </div>
 
-                           {['select', 'radio', 'checkbox'].includes(field.type) && (
-                             <div className="space-y-4 ml-12 p-6 rounded-2xl bg-[#0b1220] border border-blue-500/10">
-                                <p className="text-[10px] font-black uppercase text-blue-500 italic mb-2">Manage Options</p>
-                                <div className="flex flex-wrap gap-2">
-                                   {field.options?.map((opt, oIdx) => (
-                                     <div key={oIdx} className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10 group/opt">
-                                        <span className="text-xs text-white font-medium italic">{opt}</span>
-                                        <button onClick={() => {
-                                           const updated = [...editingForm.steps];
-                                           updated[activeStepIdx].fields[fIdx].options.splice(oIdx, 1);
-                                           setEditingForm({...editingForm, steps: updated});
-                                        }} className="text-red-500 opacity-0 group-hover/opt:opacity-100 transition-opacity"><X size={12} /></button>
-                                     </div>
-                                   ))}
-                                   <button 
-                                     onClick={() => {
-                                       const val = prompt("Enter option name:");
-                                       if (val) {
-                                         const updated = [...editingForm.steps];
-                                         if (!updated[activeStepIdx].fields[fIdx].options) updated[activeStepIdx].fields[fIdx].options = [];
-                                         updated[activeStepIdx].fields[fIdx].options.push(val);
-                                         setEditingForm({...editingForm, steps: updated});
-                                       }
-                                     }}
-                                     className="px-4 py-2 bg-blue-500/10 text-blue-500 rounded-xl border border-blue-500/20 text-xs font-black italic hover:bg-blue-500 hover:text-white transition-all"
-                                   >
-                                     + ADD OPTION
-                                   </button>
+                              {['select', 'radio', 'checkbox'].includes(field.type) && (
+                                <div className="space-y-4 ml-12 p-6 rounded-2xl bg-[#0b1220] border border-blue-500/10">
+                                   <p className="text-[10px] font-black uppercase text-blue-500 italic mb-2">Manage Options</p>
+                                   <div className="flex flex-wrap gap-2">
+                                      {field.options?.map((opt, oIdx) => (
+                                        <div key={oIdx} className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10 group/opt">
+                                           <span className="text-xs text-white font-medium italic">{opt}</span>
+                                           <button onClick={() => {
+                                              const updated = [...editingForm.steps];
+                                              updated[activeStepIdx].fields[fIdx].options.splice(oIdx, 1);
+                                              setEditingForm({...editingForm, steps: updated});
+                                           }} className="text-red-500 opacity-0 group-hover/opt:opacity-100 transition-opacity"><X size={12} /></button>
+                                        </div>
+                                      ))}
+                                      <button 
+                                        onClick={() => {
+                                          const val = prompt("Enter option name:");
+                                          if (val) {
+                                            const updated = [...editingForm.steps];
+                                            if (!updated[activeStepIdx].fields[fIdx].options) updated[activeStepIdx].fields[fIdx].options = [];
+                                            updated[activeStepIdx].fields[fIdx].options.push(val);
+                                            setEditingForm({...editingForm, steps: updated});
+                                          }
+                                        }}
+                                        className="px-4 py-2 bg-blue-500/10 text-blue-500 rounded-xl border border-blue-500/20 text-xs font-black italic hover:bg-blue-500 hover:text-white transition-all"
+                                      >
+                                        + ADD OPTION
+                                      </button>
+                                   </div>
                                 </div>
-                             </div>
-                           )}
+                              )}
+                           </div>
 
                            <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all">
                               <button onClick={() => removeField(fIdx)} className="p-4 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-lg"><Trash2 size={18} /></button>
@@ -310,7 +313,7 @@ export default function FormBuilderPage() {
                      <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
                        <ListTodo size={28} />
                      </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                         <button 
                            onClick={() => window.open(`/${form.slug}`, '_blank')}
                            className="p-3 bg-white/5 text-slate-400 rounded-xl hover:bg-white/10 hover:text-white transition-all shadow-lg"
@@ -318,33 +321,67 @@ export default function FormBuilderPage() {
                         >
                            <Eye size={18} />
                         </button>
+                        <button onClick={() => setEditingForm(form)} className="p-3 bg-blue-500/10 text-blue-500 rounded-xl hover:bg-blue-500 hover:text-white transition-all" title="Edit Structure"><Edit size={18} /></button>
                         <button 
-                           onClick={() => {
-                              const url = `${window.location.origin}/${form.slug}`;
-                              navigator.clipboard.writeText(url);
-                              alert("Link Copied: " + url);
-                           }} 
-                           className="p-3 bg-white/5 text-slate-400 rounded-xl hover:bg-white/10 hover:text-white transition-all shadow-lg"
-                           title="Copy Public Link"
+                          onClick={() => window.location.href = `/admin/reports/forms/${form._id}`} 
+                          className="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl hover:bg-emerald-500 hover:text-white transition-all"
+                          title="View Leads & Export"
                         >
-                           <LinkIcon size={18} />
+                          <FileSpreadsheet size={18} />
                         </button>
-                        <button onClick={() => setEditingForm(form)} className="p-3 bg-blue-500/10 text-blue-500 rounded-xl hover:bg-blue-500 hover:text-white transition-all"><Edit size={18} /></button>
-                        <Link href={`/admin/reports/forms/${form._id}`} className="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl hover:bg-emerald-500 hover:text-white transition-all"><FileSpreadsheet size={18} /></Link>
                      </div>
                   </div>
-                  <h3 className="text-2xl font-black text-white italic mb-1">{form.formName}</h3>
-                  <p className="text-blue-500 text-[10px] font-black uppercase tracking-widest italic mb-4">/{form.slug}</p>
-                  <p className="text-slate-500 text-sm font-medium italic mb-10 line-clamp-2">{form.description}</p>
                   
-                  <div className="mt-auto pt-8 border-t border-[#1f2937] flex items-center justify-between">
+                  <div className="mb-6">
+                    <h3 className="text-2xl font-black text-white italic mb-1">{form.formName}</h3>
+                    <p className="text-slate-500 text-sm font-medium italic line-clamp-1">{form.description}</p>
+                  </div>
+
+                  <div className="space-y-4">
+                     <div className="p-4 rounded-2xl bg-[#0b1220] border border-[#1f2937] flex items-center justify-between gap-4 group/link">
+                        <div className="truncate text-[10px] font-black text-blue-400 italic">
+                           {typeof window !== 'undefined' ? `${window.location.origin}/${form.slug}` : `/${form.slug}`}
+                        </div>
+                        <div className="flex items-center gap-2">
+                           <button 
+                              onClick={() => {
+                                 const url = `${window.location.origin}/${form.slug}`;
+                                 navigator.clipboard.writeText(url);
+                                 alert("Link Copied!");
+                              }} 
+                              className="p-2 bg-white/5 text-slate-500 rounded-lg hover:text-white hover:bg-blue-500 transition-all"
+                              title="Copy Link"
+                           >
+                              <LinkIcon size={14} />
+                           </button>
+                           <button 
+                              onClick={() => {
+                                 if (navigator.share) {
+                                    navigator.share({
+                                       title: form.formName,
+                                       url: `${window.location.origin}/${form.slug}`
+                                    });
+                                 } else {
+                                    alert("Sharing not supported on this browser. Link copied instead.");
+                                 }
+                              }} 
+                              className="p-2 bg-white/5 text-slate-500 rounded-lg hover:text-white hover:bg-blue-500 transition-all"
+                              title="Share Link"
+                           >
+                              <Send size={14} />
+                           </button>
+                        </div>
+                     </div>
+                  </div>
+                  
+                  <div className="mt-8 pt-8 border-t border-[#1f2937] flex items-center justify-between">
                      <div>
                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Total Steps</p>
                         <p className="text-xl font-black text-white italic">{form.steps?.length || 1}</p>
                      </div>
                      <div className="text-right">
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Inventory</p>
-                        <p className="text-xl font-black text-blue-500 italic">{form.steps?.reduce((acc, s) => acc + (s.fields?.length || 0), 0)} Fields</p>
+                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Submissions</p>
+                        <p className="text-xl font-black text-emerald-500 italic">VIEW LEADS</p>
                      </div>
                   </div>
                 </div>
