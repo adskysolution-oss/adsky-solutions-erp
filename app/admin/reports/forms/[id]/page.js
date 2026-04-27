@@ -15,20 +15,32 @@ export default function FormLeadsPage() {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!id) return;
     const fetchData = async () => {
       try {
+        console.log(`[DASHBOARD] Fetching data for ID: ${id}`);
         const [formRes, leadsRes] = await Promise.all([
           fetch(`/api/admin/cms/forms/${id}`),
           fetch(`/api/admin/cms/forms/${id}/responses`)
         ]);
+        
+        if (!formRes.ok || !leadsRes.ok) {
+           throw new Error(`API Error: ${formRes.status} / ${leadsRes.status}`);
+        }
+
         const formData = await formRes.json();
         const leadsData = await leadsRes.json();
+        
+        console.log(`[DASHBOARD] Form: ${formData?.formName}, Leads: ${leadsData?.length}`);
+        
         setForm(formData);
-        setLeads(leadsData);
+        setLeads(Array.isArray(leadsData) ? leadsData : []);
       } catch (err) {
-        console.error(err);
+        console.error("[DASHBOARD ERROR]", err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -69,6 +81,18 @@ export default function FormLeadsPage() {
   };
 
   if (loading) return <div className="min-h-screen bg-[#020617] flex items-center justify-center"><Loader2 className="animate-spin text-blue-500" size={48} /></div>;
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#020617] flex flex-col items-center justify-center p-6">
+         <div className="max-w-md w-full p-12 rounded-[3rem] bg-white/5 border border-white/10 text-center">
+            <h1 className="text-4xl font-black text-white italic mb-4">ERROR</h1>
+            <p className="text-slate-400 italic mb-8">{error}</p>
+            <Link href="/admin/cms/forms" className="px-8 py-4 bg-white text-black font-black rounded-2xl italic uppercase text-xs inline-block">Back to Forms</Link>
+         </div>
+      </div>
+    );
+  }
 
   const filteredLeads = leads.filter(lead => {
     const searchStr = JSON.stringify(lead.data || {}).toLowerCase();
@@ -136,7 +160,7 @@ export default function FormLeadsPage() {
               <thead>
                 <tr className="border-b border-white/10 bg-white/[0.02]">
                   <th className="p-8 text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Submitted At</th>
-                  {form?.steps[0]?.fields.slice(0, 3).map((f, i) => (
+                  {form?.steps?.[0]?.fields?.slice(0, 3).map((f, i) => (
                     <th key={i} className="p-8 text-[10px] font-black text-slate-500 uppercase tracking-widest italic">{f.label}</th>
                   ))}
                   <th className="p-8 text-[10px] font-black text-slate-500 uppercase tracking-widest italic text-right">Actions</th>
@@ -149,7 +173,7 @@ export default function FormLeadsPage() {
                        <p className="font-black italic text-white text-sm">{new Date(lead.createdAt).toLocaleDateString()}</p>
                        <p className="text-[10px] font-black text-slate-600 italic">{new Date(lead.createdAt).toLocaleTimeString()}</p>
                     </td>
-                    {form?.steps[0]?.fields.slice(0, 3).map((f, i) => {
+                    {form?.steps?.[0]?.fields?.slice(0, 3).map((f, i) => {
                       const val = lead.data?.[`0-${i}`];
                       return (
                         <td key={i} className="p-8">
@@ -168,6 +192,7 @@ export default function FormLeadsPage() {
           {filteredLeads.length === 0 && (
             <div className="p-32 text-center">
                <p className="text-xl font-black text-slate-700 italic uppercase tracking-widest">No Intelligence Data Found</p>
+               <p className="text-slate-500 text-xs mt-2 italic">Captured leads will appear here automatically.</p>
             </div>
           )}
         </div>
