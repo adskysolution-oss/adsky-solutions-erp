@@ -1,60 +1,48 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { 
-  Settings as SettingsIcon, 
-  Save, 
-  IndianRupee, 
-  Percent, 
-  ShieldCheck, 
-  CreditCard, 
-  Briefcase,
-  AlertCircle,
-  Loader2,
-  CheckCircle2,
-  Zap,
-  Lock,
-  Globe,
-  Palette,
-  LayoutDashboard,
-  Monitor,
-  ArrowRight
+  Settings, Globe, Shield, Image as ImageIcon, 
+  Mail, Phone, MapPin, Save, Loader2, Share2, 
+  Search, CheckCircle
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
-export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState('branding');
+export default function AdminSettings() {
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [config, setConfig] = useState({
-    applicationFee: 249,
-    partnerCommission: 30,
-    employeeCommission: 50,
-    cashfreeAppId: '',
-    cashfreeSecretKey: '',
-    logo: '',
-    isLive: false
-  });
+  const [activeTab, setActiveTab] = useState('general');
+  const [config, setConfig] = useState(null);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
-    fetch('/api/admin/config')
-      .then(res => res.json())
-      .then(data => {
-        if (!data.error) setConfig(data);
-      });
+    fetchSettings();
   }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const res = await fetch('/api/admin/settings');
+      const data = await res.json();
+      setConfig(data);
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch('/api/admin/config', {
+      const res = await fetch('/api/admin/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(config)
       });
-      if (res.ok) {
-        setSuccess(true);
-        setTimeout(() => setSuccess(false), 3000);
+      const data = await res.json();
+      if (data.success) {
+        setMessage('Settings saved successfully!');
+        setTimeout(() => setMessage(''), 3000);
       }
     } catch (err) {
       console.error(err);
@@ -63,215 +51,139 @@ export default function SettingsPage() {
     }
   };
 
+  if (loading) return <div className="flex items-center justify-center min-h-screen bg-gray-50"><Loader2 className="animate-spin text-blue-600" size={48} /></div>;
+
   return (
-    <div className="space-y-12">
-      {/* Header Section */}
-      <motion.div 
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8"
-      >
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 rounded-lg bg-[#38bdf8]/10 flex items-center justify-center text-[#38bdf8]">
-              <SettingsIcon size={18} />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#38bdf8] italic">System Configuration</span>
+    <div className="min-h-screen bg-gray-50 p-6 md:p-10">
+      <div className="max-w-6xl mx-auto">
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+          <div>
+            <h1 className="text-3xl font-black text-gray-900 flex items-center gap-3">
+              <Settings className="text-blue-600" /> Website Settings
+            </h1>
+            <p className="text-gray-500 font-bold mt-1 uppercase text-xs tracking-widest">Global Configuration & SEO</p>
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-[#f3f4f6] tracking-tighter italic">Settings Hub.</h1>
-          <p className="text-[#9ca3af] font-medium italic mt-1">Configure global parameters, commission structures, and deployment state.</p>
-        </div>
-
-        <div className="flex bg-[#111827] p-1.5 rounded-2xl border border-[#1f2937]">
-          {[
-            { id: 'branding', icon: Palette, label: 'Identity' },
-            { id: 'commission', icon: Percent, label: 'Finance' },
-            { id: 'gateway', icon: CreditCard, label: 'Gateways' },
-          ].map((tab) => (
-            <button 
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2.5 py-3 px-6 rounded-xl text-[10px] font-black uppercase tracking-widest italic transition-all ${activeTab === tab.id ? 'bg-[#38bdf8] text-[#0b1220] shadow-lg shadow-[#38bdf8]/20' : 'text-[#6b7280] hover:text-[#f3f4f6]'}`}
-            >
-              <tab.icon size={14} /> {tab.label}
-            </button>
-          ))}
-        </div>
-      </motion.div>
-
-      <AnimatePresence mode="wait">
-        {activeTab === 'branding' && (
-          <motion.div 
-            key="branding" 
-            initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }}
-            className="space-y-10"
+          <button 
+            onClick={handleSave} 
+            disabled={saving}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-black flex items-center gap-2 shadow-lg shadow-blue-100 transition-all active:scale-95 disabled:opacity-50"
           >
-            <div className="p-12 bg-[#111827] border border-[#1f2937] rounded-[3.5rem] relative overflow-hidden group">
-               <div className="absolute top-0 right-0 w-80 h-80 bg-[#38bdf8]/5 rounded-full blur-[100px]"></div>
-               <h3 className="text-2xl font-black text-[#f3f4f6] italic mb-10 flex items-center gap-4">
-                  <Palette size={24} className="text-[#38bdf8]" /> Visual Identity
-               </h3>
-               
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                  <div className="space-y-6">
-                     <p className="text-slate-400 font-medium italic">Upload your platform logo. This will be visible on all administrative and public portals.</p>
-                     <div className="w-full aspect-video bg-[#0b1220] border-2 border-dashed border-[#1f2937] rounded-[2.5rem] flex flex-col items-center justify-center relative group cursor-pointer hover:border-[#38bdf8]/50 transition-all">
-                        {config.logo ? (
-                          <img src={config.logo} alt="Logo" className="max-h-24 object-contain opacity-80 group-hover:opacity-100 transition-opacity" />
-                        ) : (
-                          <div className="text-center space-y-3">
-                             <Monitor size={48} className="mx-auto text-[#1f2937] group-hover:text-[#38bdf8]/20" />
-                             <p className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic">Drop logo here</p>
-                          </div>
-                        )}
-                        <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" />
-                     </div>
+            {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
+            {saving ? 'Saving...' : 'SAVE ALL CHANGES'}
+          </button>
+        </header>
+
+        {message && (
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="bg-green-600 text-white p-4 rounded-xl mb-6 flex items-center gap-3 font-bold">
+            <CheckCircle size={20} /> {message}
+          </motion.div>
+        )}
+
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar Tabs */}
+          <div className="lg:w-64 space-y-2">
+            <TabButton active={activeTab === 'general'} onClick={() => setActiveTab('general')} icon={Globe} label="General" />
+            <TabButton active={activeTab === 'contact'} onClick={() => setActiveTab('contact')} icon={Mail} label="Contact Info" />
+            <TabButton active={activeTab === 'social'} onClick={() => setActiveTab('social')} icon={Share2} label="Social Links" />
+            <TabButton active={activeTab === 'seo'} onClick={() => setActiveTab('seo')} icon={Search} label="Global SEO" />
+            <TabButton active={activeTab === 'visuals'} onClick={() => setActiveTab('visuals')} icon={ImageIcon} label="Visual Assets" />
+          </div>
+
+          {/* Content Area */}
+          <div className="flex-1 bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+            {activeTab === 'general' && (
+              <div className="space-y-6">
+                <InputGroup label="Site Name" value={config.siteName} onChange={(v) => setConfig({...config, siteName: v})} />
+                <InputGroup label="Copyright Text" value={config.footer?.copyright} onChange={(v) => setConfig({...config, footer: {...config.footer, copyright: v}})} />
+                <TextAreaGroup label="About Text (Footer)" value={config.footer?.aboutText} onChange={(v) => setConfig({...config, footer: {...config.footer, aboutText: v}})} />
+              </div>
+            )}
+
+            {activeTab === 'contact' && (
+              <div className="space-y-6">
+                <InputGroup label="Support Email" icon={Mail} value={config.contactEmail} onChange={(v) => setConfig({...config, contactEmail: v})} />
+                <InputGroup label="Support Phone" icon={Phone} value={config.contactPhone} onChange={(v) => setConfig({...config, contactPhone: v})} />
+                <TextAreaGroup label="Office Address" icon={MapPin} value={config.address} onChange={(v) => setConfig({...config, address: v})} />
+              </div>
+            )}
+
+            {activeTab === 'social' && (
+              <div className="space-y-6">
+                <InputGroup label="Facebook URL" value={config.socialLinks?.facebook} onChange={(v) => setConfig({...config, socialLinks: {...config.socialLinks, facebook: v}})} />
+                <InputGroup label="Twitter URL" value={config.socialLinks?.twitter} onChange={(v) => setConfig({...config, socialLinks: {...config.socialLinks, twitter: v}})} />
+                <InputGroup label="LinkedIn URL" value={config.socialLinks?.linkedin} onChange={(v) => setConfig({...config, socialLinks: {...config.socialLinks, linkedin: v}})} />
+                <InputGroup label="Instagram URL" value={config.socialLinks?.instagram} onChange={(v) => setConfig({...config, socialLinks: {...config.socialLinks, instagram: v}})} />
+              </div>
+            )}
+
+            {activeTab === 'seo' && (
+              <div className="space-y-6">
+                <InputGroup label="Default SEO Title" value={config.globalSeo?.title} onChange={(v) => setConfig({...config, globalSeo: {...config.globalSeo, title: v}})} />
+                <TextAreaGroup label="Default Meta Description" value={config.globalSeo?.description} onChange={(v) => setConfig({...config, globalSeo: {...config.globalSeo, description: v}})} />
+                <InputGroup label="Default Keywords" value={config.globalSeo?.keywords} onChange={(v) => setConfig({...config, globalSeo: {...config.globalSeo, keywords: v}})} />
+              </div>
+            )}
+
+            {activeTab === 'visuals' && (
+              <div className="space-y-8">
+                <div>
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4 block">Site Logo</label>
+                  <div className="flex items-center gap-6 p-6 border-2 border-dashed border-gray-100 rounded-3xl bg-gray-50/50">
+                    <img src={config.logo} className="h-20 w-auto rounded-lg shadow-sm bg-white p-2" alt="Logo" />
+                    <input type="text" className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 ring-blue-500 outline-none font-bold" value={config.logo} onChange={(e) => setConfig({...config, logo: e.target.value})} placeholder="URL for logo" />
                   </div>
-
-                  <div className="space-y-8">
-                     <div>
-                        <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest mb-3 block italic pl-1">Site Title</label>
-                        <input type="text" className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl p-4 text-[#f3f4f6] font-bold italic outline-none focus:border-[#38bdf8] transition-all" value="ADSKY Solution" />
-                     </div>
-                     <div>
-                        <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest mb-3 block italic pl-1">Primary Accents</label>
-                        <div className="flex gap-4">
-                           {['#38bdf8', '#6366f1', '#ef4444', '#22c55e'].map(c => (
-                             <div key={c} className="w-12 h-12 rounded-xl border border-[#1f2937] cursor-pointer hover:scale-110 transition-transform shadow-lg" style={{ backgroundColor: c }}></div>
-                           ))}
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-          </motion.div>
-        )}
-
-        {activeTab === 'commission' && (
-          <motion.div 
-            key="commission"
-            initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-8"
-          >
-             <div className="p-12 bg-[#111827] border border-[#1f2937] rounded-[3.5rem] relative overflow-hidden">
-                <h3 className="text-2xl font-black text-[#f3f4f6] italic mb-10 flex items-center gap-4">
-                  <Percent size={24} className="text-[#22c55e]" /> Commission Engine
-                </h3>
-                <div className="space-y-8">
-                   {[
-                     { key: 'applicationFee', label: 'PLATFORM ACCESS FEE', icon: IndianRupee },
-                     { key: 'partnerCommission', label: 'PARTNER REVENUE SHARE (%)', icon: Percent },
-                     { key: 'employeeCommission', label: 'AGENT COMMISSION (₹)', icon: Briefcase },
-                   ].map(item => (
-                     <div key={item.key} className="space-y-4">
-                        <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic pl-1">{item.label}</label>
-                        <div className="relative group">
-                           <item.icon size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-[#6b7280] group-focus-within:text-[#38bdf8] transition-colors" />
-                           <input 
-                              type="number"
-                              value={config[item.key]}
-                              onChange={e => setConfig({...config, [item.key]: e.target.value})}
-                              className="w-full bg-[#0b1220] border border-[#1f2937] rounded-3xl py-5 pl-14 pr-6 text-2xl font-black text-[#f3f4f6] italic outline-none focus:border-[#38bdf8] transition-all"
-                           />
-                        </div>
-                     </div>
-                   ))}
                 </div>
-                <button onClick={handleSave} className="mt-10 w-full py-5 bg-[#38bdf8] text-[#0b1220] rounded-[2.5rem] font-black italic shadow-2xl hover:scale-[1.02] transition-all">
-                  SAVE FINANCIAL PROTOCOLS
-                </button>
-             </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-             <div className="p-12 bg-gradient-to-br from-[#111827] to-[#0b1220] border border-[#1f2937] rounded-[3.5rem] flex flex-col items-center justify-center text-center space-y-8 group">
-                <div className="w-24 h-24 bg-[#38bdf8]/10 rounded-3xl flex items-center justify-center text-[#38bdf8] mb-2 group-hover:scale-110 transition-transform">
-                   <Zap size={48} />
-                </div>
-                <h3 className="text-4xl font-black text-[#f3f4f6] italic leading-tight">Simulation <br /> Engine.</h3>
-                <p className="text-[#9ca3af] font-medium italic max-w-xs">Run a stress-test simulation against current commission rates to predict quarterly platform growth.</p>
-                <button className="px-12 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] italic text-[#f3f4f6] hover:bg-white/10 transition-all">Initialize Test</button>
-             </div>
-          </motion.div>
-        )}
+function TabButton({ active, onClick, icon: Icon, label }) {
+  return (
+    <button 
+      onClick={onClick}
+      className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-black transition-all ${
+        active 
+        ? 'bg-blue-600 text-white shadow-xl shadow-blue-100 translate-x-2' 
+        : 'text-gray-500 hover:bg-white hover:text-blue-600'
+      }`}
+    >
+      <Icon size={20} /> {label}
+    </button>
+  );
+}
 
-        {activeTab === 'gateway' && (
-          <motion.div 
-            key="gateway"
-            initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }}
-            className="space-y-8"
-          >
-             <div className="p-12 bg-[#111827] border border-[#1f2937] rounded-[3.5rem] relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-[#38bdf8]/5 rounded-full blur-[120px]"></div>
-                <h3 className="text-2xl font-black text-[#f3f4f6] italic mb-12 flex items-center gap-4">
-                  <CreditCard size={28} className="text-[#38bdf8]" /> Payment Gateway Node
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 relative z-10">
-                   <div className="space-y-4">
-                      <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic pl-1">Cashfree App ID</label>
-                      <div className="relative group">
-                         <Lock size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-[#1f2937] group-focus-within:text-[#38bdf8] transition-colors" />
-                         <input 
-                           type="text" 
-                           value={config.cashfreeAppId}
-                           onChange={e => setConfig({...config, cashfreeAppId: e.target.value})}
-                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-3xl py-5 pl-14 pr-6 text-[13px] font-mono text-[#f3f4f6] outline-none focus:border-[#38bdf8] transition-all"
-                         />
-                      </div>
-                   </div>
-                   <div className="space-y-4">
-                      <label className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic pl-1">Secret Key</label>
-                      <div className="relative group">
-                         <ShieldCheck size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-[#1f2937] group-focus-within:text-[#38bdf8] transition-colors" />
-                         <input 
-                           type="password" 
-                           value={config.cashfreeSecretKey}
-                           onChange={e => setConfig({...config, cashfreeSecretKey: e.target.value})}
-                           className="w-full bg-[#0b1220] border border-[#1f2937] rounded-3xl py-5 pl-14 pr-6 text-[13px] font-mono text-[#f3f4f6] outline-none focus:border-[#38bdf8] transition-all"
-                         />
-                      </div>
-                   </div>
-                </div>
+function InputGroup({ label, value, onChange, icon: Icon, ...props }) {
+  return (
+    <div className="space-y-2">
+      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+        {Icon && <Icon size={12} />} {label}
+      </label>
+      <input 
+        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-4 ring-blue-50 outline-none font-bold text-gray-800 transition-all"
+        value={value || ''}
+        onChange={(e) => onChange(e.target.value)}
+        {...props}
+      />
+    </div>
+  );
+}
 
-                <div className="mt-12 p-8 bg-[#0b1220] border border-[#1f2937] rounded-[2.5rem] flex items-center justify-between group-hover:border-[#38bdf8]/20 transition-all">
-                   <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${config.isLive ? 'bg-[#22c55e] text-[#0b1220] shadow-[0_0_20px_rgba(34,197,94,0.3)]' : 'bg-[#1f2937] text-[#6b7280]'}`}>
-                         <Globe size={24} />
-                      </div>
-                      <div>
-                         <p className="text-[13px] font-black text-[#f3f4f6] italic">Live Production Node</p>
-                         <p className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest mt-0.5">{config.isLive ? 'SYSTEM IS LIVE' : 'SYSTEM IS IN SANDBOX'}</p>
-                      </div>
-                   </div>
-                   <button 
-                     onClick={() => setConfig({...config, isLive: !config.isLive})}
-                     className={`w-14 h-8 rounded-full transition-all relative ${config.isLive ? 'bg-[#22c55e]' : 'bg-[#1f2937]'}`}
-                   >
-                      <motion.div 
-                        layout
-                        className={`absolute top-1 w-6 h-6 rounded-full bg-white shadow-xl ${config.isLive ? 'right-1' : 'left-1'}`} 
-                      />
-                   </button>
-                </div>
-
-                <button onClick={handleSave} className="mt-12 w-full py-5 bg-[#38bdf8] text-[#0b1220] rounded-[2.5rem] font-black italic shadow-2xl hover:scale-[1.02] transition-all">
-                  COMMIT GATEWAY CONFIGURATION
-                </button>
-             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Success Notification */}
-      {success && (
-        <motion.div 
-          initial={{ opacity: 0, y: 100 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 100 }}
-          className="fixed bottom-10 right-10 bg-[#22c55e] text-[#0b1220] px-8 py-4 rounded-2xl font-black italic shadow-2xl flex items-center gap-3 z-[100]"
-        >
-          <CheckCircle2 size={24} /> CONFIGURATION UPDATED SUCCESSFULLY
-        </motion.div>
-      )}
+function TextAreaGroup({ label, value, onChange, icon: Icon }) {
+  return (
+    <div className="space-y-2">
+      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+        {Icon && <Icon size={12} />} {label}
+      </label>
+      <textarea 
+        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-4 ring-blue-50 outline-none font-bold text-gray-800 transition-all min-h-[120px]"
+        value={value || ''}
+        onChange={(e) => onChange(e.target.value)}
+      />
     </div>
   );
 }

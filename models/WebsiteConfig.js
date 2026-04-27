@@ -1,13 +1,39 @@
 import mongoose from 'mongoose';
 
-const WebsiteConfigSchema = new mongoose.Schema({
-  // Global visuals
-  logo: { type: String, default: "/logo(2).jpeg" },
+  // Global visual settings
+  logo: { type: String, default: "/logo.jpeg" },
+  favicon: { type: String, default: "/favicon.ico" },
+  siteName: { type: String, default: "AD Sky Solution" },
+  
+  // Contact info
   contactEmail: { type: String, default: "info@adskysolution.com" },
   contactPhone: { type: String, default: "8076611842" },
   address: { type: String, default: "AD Sky Solution, 126 Satyam Enclave Sahibabad, Ghaziabad UP" },
   
-  // Homepage CMS Data
+  // Social Media Links
+  socialLinks: {
+    facebook: { type: String, default: "#" },
+    twitter: { type: String, default: "#" },
+    linkedin: { type: String, default: "#" },
+    instagram: { type: String, default: "#" },
+    youtube: { type: String, default: "#" }
+  },
+
+  // Global SEO Default Settings
+  globalSeo: {
+    title: { type: String, default: "AD Sky Solution - Innovative Tech & Growth" },
+    description: { type: String, default: "Leading provider of Tech, Strategy and Resource solutions." },
+    keywords: { type: String, default: "tech, business, strategy, rabbit farming, growth" },
+    ogImage: { type: String, default: "/og-image.jpg" }
+  },
+
+  // Footer Settings
+  footer: {
+    copyright: { type: String, default: "© 2024 AD Sky Solution. All Rights Reserved." },
+    aboutText: { type: String, default: "Empowering businesses through innovation and strategic growth." }
+  },
+  
+  // Homepage CMS Data (Existing)
   homepage: {
     hero: {
       slides: [{
