@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, MapPin, Briefcase, Building2, ShieldCheck, 
   ArrowRight, ArrowLeft, CheckCircle2, AlertCircle, Loader2,
-  FileText, CreditCard, GraduationCap, Upload, FileUp
+  FileText, CreditCard, GraduationCap, Upload, FileUp, Eye, X, Edit3
 } from 'lucide-react';
 
 const INDIA_GEO_DATA = {
@@ -48,12 +48,13 @@ const INDIA_GEO_DATA = {
 };
 
 const STEPS = [
-  { id: 1, title: 'Personal / व्यक्तिगत', icon: User },
-  { id: 2, title: 'Qualification / योग्यता', icon: GraduationCap },
-  { id: 3, title: 'Address & Unit / पता और इकाई', icon: MapPin },
-  { id: 4, title: 'Project & Bank / प्रोजेक्ट और बैंक', icon: CreditCard },
-  { id: 5, title: 'Agency/Vendor / एजेंसी/वेंडर', icon: ShieldCheck },
-  { id: 6, title: 'Documents / दस्तावेज', icon: FileUp }
+  { id: 1, title: 'Personal / व्यक्तिगत', icon: User, fields: ['aadhar', 'name', 'mobile'] },
+  { id: 2, title: 'Qualification / योग्यता', icon: GraduationCap, fields: ['qualification'] },
+  { id: 3, title: 'Address & Unit / पता और इकाई', icon: MapPin, fields: ['state', 'district', 'pincode'] },
+  { id: 4, title: 'Project & Bank / प्रोजेक्ट और बैंक', icon: CreditCard, fields: ['bankName', 'accountNumber', 'ifscCode'] },
+  { id: 5, title: 'Agency/Vendor / एजेंसी/वेंडर', icon: ShieldCheck, fields: ['vendorCode', 'vendorName', 'agentName', 'agentMobile'] },
+  { id: 6, title: 'Documents / दस्तावेज', icon: FileUp, fields: [] },
+  { id: 7, title: 'Review / समीक्षा', icon: Eye, fields: [] }
 ];
 
 export default function RabbitFarmingForm() {
@@ -61,6 +62,7 @@ export default function RabbitFarmingForm() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [availableDistricts, setAvailableDistricts] = useState([]);
+  const [previewImage, setPreviewImage] = useState(null);
   
   const [formData, setFormData] = useState({
     aadhar: '', name: '', parentName: '', mobile: '', email: '', gender: '', dob: '', socialCategory: '', specialCategory: 'Not Applicable', pan: '',
@@ -73,18 +75,40 @@ export default function RabbitFarmingForm() {
     txnId: '', paymentStatus: 'Pending'
   });
 
+  // Load from localStorage on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('rabbit_farming_draft');
+    if (savedData) {
+      try {
+        setFormData(JSON.parse(savedData));
+        const savedStep = localStorage.getItem('rabbit_farming_step');
+        if (savedStep) setCurrentStep(parseInt(savedStep));
+      } catch (e) { console.error("Error loading draft", e); }
+    }
+  }, []);
+
+  // Save to localStorage on change
+  useEffect(() => {
+    localStorage.setItem('rabbit_farming_draft', JSON.stringify(formData));
+    localStorage.setItem('rabbit_farming_step', currentStep.toString());
+  }, [formData, currentStep]);
+
   // Inject Cashfree SDK
   useEffect(() => {
     const script = document.createElement('script');
     script.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
     script.async = true;
     document.body.appendChild(script);
-    return () => { document.body.removeChild(script); };
+    return () => { if (document.body.contains(script)) document.body.removeChild(script); };
   }, []);
 
   const handleFileChange = (e, field) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File too large. Max 5MB allowed.");
+        return;
+      }
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData(prev => ({ ...prev, [field]: reader.result }));
@@ -132,14 +156,23 @@ export default function RabbitFarmingForm() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const nextStep = () => {
-    if (currentStep === 1) {
-      if (!formData.name || !formData.mobile || formData.mobile.length !== 10 || !formData.aadhar || formData.aadhar.length !== 12) {
-        alert('Please enter valid Name, 10-digit Mobile, and 12-digit Aadhar Number');
-        return;
+  const validateStep = (stepId) => {
+    const step = STEPS.find(s => s.id === stepId);
+    if (!step) return true;
+    for (const field of step.fields) {
+      if (!formData[field] || formData[field].toString().trim() === '') {
+        return false;
       }
     }
-    setCurrentStep(prev => Math.min(prev + 1, 6));
+    return true;
+  };
+
+  const nextStep = () => {
+    if (!validateStep(currentStep)) {
+      alert("Please fill all required fields marked with *");
+      return;
+    }
+    setCurrentStep(prev => Math.min(prev + 1, 7));
     window.scrollTo(0, 0);
   };
 
@@ -157,7 +190,6 @@ export default function RabbitFarmingForm() {
     setLoading(true);
     
     try {
-      // 1. Create Cashfree Order
       const orderRes = await fetch('/api/payment/cashfree', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -173,7 +205,6 @@ export default function RabbitFarmingForm() {
       const orderData = await orderRes.json();
       if (!orderData.success) throw new Error(orderData.error || 'Failed to create order');
 
-      // 2. Initialize Checkout
       const cashfree = window.Cashfree({ mode: "production" });
       const checkoutOptions = {
         paymentSessionId: orderData.paymentSessionId,
@@ -198,6 +229,10 @@ export default function RabbitFarmingForm() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updatedFormData)
           });
+          
+          // Clear Draft
+          localStorage.removeItem('rabbit_farming_draft');
+          localStorage.removeItem('rabbit_farming_step');
           setSubmitted(true);
         }
       });
@@ -231,24 +266,32 @@ export default function RabbitFarmingForm() {
       </div>
 
       <div className="max-w-5xl mx-auto px-4">
+        {/* Stepper */}
         <div className="flex justify-between mb-10 overflow-x-auto no-scrollbar py-2">
           {STEPS.map((step) => (
-            <div key={step.id} className="flex flex-col items-center flex-1 min-w-[120px]">
+            <div key={step.id} className="flex flex-col items-center flex-1 min-w-[100px]">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${currentStep >= step.id ? 'bg-[#B32D2D] border-[#B32D2D] text-white' : 'bg-white border-gray-300 text-gray-400'}`}>
                 {currentStep > step.id ? <CheckCircle2 size={20} /> : <step.icon size={20} />}
               </div>
-              <span className={`mt-2 text-[10px] font-black uppercase text-center ${currentStep >= step.id ? 'text-[#B32D2D]' : 'text-gray-400'}`}>{step.title}</span>
+              <span className={`mt-2 text-[8px] font-black uppercase text-center ${currentStep >= step.id ? 'text-[#B32D2D]' : 'text-gray-400'}`}>{step.title.split(' / ')[0]}</span>
             </div>
           ))}
         </div>
 
-        <div className="bg-white border-2 border-[#DEB887] rounded-3xl shadow-xl overflow-hidden">
-          <div className="bg-[#DEB887] px-8 py-3"><h3 className="text-white font-black italic text-sm">{STEPS.find(s => s.id === currentStep).title}</h3></div>
+        <div className="bg-white border-2 border-[#DEB887] rounded-3xl shadow-xl overflow-hidden mb-12">
+          <div className="bg-[#DEB887] px-8 py-3 flex justify-between items-center">
+            <h3 className="text-white font-black italic text-sm uppercase">{STEPS.find(s => s.id === currentStep).title}</h3>
+            {currentStep > 1 && currentStep < 7 && (
+              <button onClick={() => setCurrentStep(7)} className="text-[10px] bg-white/20 hover:bg-white/40 px-3 py-1 rounded-full text-white font-bold flex items-center gap-1">
+                <Eye size={12} /> JUMP TO PREVIEW
+              </button>
+            )}
+          </div>
 
           <div className="p-6 md:p-10 space-y-8">
             <AnimatePresence mode="wait">
               {currentStep === 1 && (
-                <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <motion.div key="s1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <InputField label="Aadhar Number / आधार नंबर" name="aadhar" value={formData.aadhar} onChange={handleChange} required maxLength={12} />
                   <InputField label="Applicant Name / आवेदक का नाम" name="name" value={formData.name} onChange={handleChange} required />
                   <InputField label="Father/Husband Name" name="parentName" value={formData.parentName} onChange={handleChange} />
@@ -262,16 +305,16 @@ export default function RabbitFarmingForm() {
               )}
 
               {currentStep === 2 && (
-                <motion.div key="s2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <SelectField label="Educational Qualification" name="qualification" value={formData.qualification} onChange={handleChange} options={['8th Pass', '10th Pass', '12th Pass', 'Graduate', 'Post Graduate', 'Diploma']} />
+                <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <SelectField label="Educational Qualification" name="qualification" value={formData.qualification} onChange={handleChange} options={['8th Pass', '10th Pass', '12th Pass', 'Graduate', 'Post Graduate', 'Diploma']} required />
                   <SelectField label="EDP Training Done?" name="edpTraining" value={formData.edpTraining} onChange={handleChange} options={['Yes', 'No']} />
                   <SelectField label="Prior Experience?" name="experience" value={formData.experience} onChange={handleChange} options={['Yes', 'No']} />
                 </motion.div>
               )}
 
               {currentStep === 3 && (
-                <motion.div key="s3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <InputField label="Pincode / पिनकोड (Auto-fill)" name="pincode" value={formData.pincode} onChange={handleChange} maxLength={6} required placeholder="Enter Pincode to auto-fill" />
+                <motion.div key="s3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <InputField label="Pincode / पिनकोड (Auto-fill)" name="pincode" value={formData.pincode} onChange={handleChange} maxLength={6} required placeholder="Enter Pincode" />
                   <SelectField label="State / राज्य" name="state" value={formData.state} onChange={handleChange} options={Object.keys(INDIA_GEO_DATA)} required />
                   <SelectField label="District / जिला" name="district" value={formData.district} onChange={handleChange} options={availableDistricts} required />
                   <InputField label="Taluka/Block" name="block" value={formData.block} onChange={handleChange} />
@@ -281,18 +324,18 @@ export default function RabbitFarmingForm() {
               )}
 
               {currentStep === 4 && (
-                <motion.div key="s4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <motion.div key="s4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <InputField label="Business Activity" name="businessActivity" value={formData.businessActivity} disabled className="bg-gray-50 border-gray-100" />
                   <InputField label="Estimated Project Cost (₹)" name="projectCost" value={formData.projectCost} onChange={handleChange} type="number" />
-                  <InputField label="IFSC Code / आईएफएससी (Auto-fill)" name="ifscCode" value={formData.ifscCode} onChange={handleChange} maxLength={11} required placeholder="Enter IFSC to auto-fill bank" />
-                  <InputField label="Bank Name" name="bankName" value={formData.bankName} onChange={handleChange} />
+                  <InputField label="IFSC Code / आईएफएससी (Auto-fill)" name="ifscCode" value={formData.ifscCode} onChange={handleChange} maxLength={11} required placeholder="Enter IFSC" />
+                  <InputField label="Bank Name" name="bankName" value={formData.bankName} onChange={handleChange} required />
                   <InputField label="Branch Name" name="bankBranch" value={formData.bankBranch} onChange={handleChange} />
-                  <InputField label="Account Number" name="accountNumber" value={formData.accountNumber} onChange={handleChange} />
+                  <InputField label="Account Number" name="accountNumber" value={formData.accountNumber} onChange={handleChange} required />
                 </motion.div>
               )}
 
               {currentStep === 5 && (
-                <motion.div key="s5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <motion.div key="s5" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <InputField label="Agency/Vendor Code" name="vendorCode" value={formData.vendorCode} onChange={handleChange} required />
                   <InputField label="Agency/Vendor Name" name="vendorName" value={formData.vendorName} onChange={handleChange} required />
                   <InputField label="Sub-Agency Code" name="subVendorCode" value={formData.subVendorCode} onChange={handleChange} />
@@ -303,42 +346,98 @@ export default function RabbitFarmingForm() {
               )}
 
               {currentStep === 6 && (
-                <motion.div key="s6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                <motion.div key="s6" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
                   <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-start gap-3 mb-6">
                     <AlertCircle className="text-blue-500 shrink-0 mt-1" size={20} />
-                    <p className="text-sm text-blue-700 font-bold italic">Upload clear photos or scans of your documents. (Non-mandatory)</p>
+                    <p className="text-sm text-blue-700 font-bold italic">Upload clear photos. You can preview and re-upload before final submission.</p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <FileUploadField label="Aadhaar Card (Front Side)" onChange={(e) => handleFileChange(e, 'doc_aadhar_front')} hasFile={!!formData.doc_aadhar_front} />
-                    <FileUploadField label="Aadhaar Card (Back Side)" onChange={(e) => handleFileChange(e, 'doc_aadhar_back')} hasFile={!!formData.doc_aadhar_back} />
-                    <FileUploadField label="PAN Card" onChange={(e) => handleFileChange(e, 'doc_pan')} hasFile={!!formData.doc_pan} />
-                    <FileUploadField label="Passport Size Photo" onChange={(e) => handleFileChange(e, 'doc_photo')} hasFile={!!formData.doc_photo} />
-                    <FileUploadField label="Bank Passbook / Statement" onChange={(e) => handleFileChange(e, 'doc_bank')} hasFile={!!formData.doc_bank} />
-                    <FileUploadField label="Address Proof (Voter/DL)" onChange={(e) => handleFileChange(e, 'doc_address')} hasFile={!!formData.doc_address} />
-                    <FileUploadField label="Rural Praman Patr (ग्रामीण प्रमाण पत्र)" onChange={(e) => handleFileChange(e, 'doc_rural_cert')} hasFile={!!formData.doc_rural_cert} />
-                    <FileUploadField label="PMEGP Rabbit Farming Affidavit" onChange={(e) => handleFileChange(e, 'doc_affidavit')} hasFile={!!formData.doc_affidavit} />
-                    <FileUploadField label="Land Doc (Khasra/Khatauni)" onChange={(e) => handleFileChange(e, 'doc_land')} hasFile={!!formData.doc_land} />
-                    <FileUploadField label="Project Report (DPR)" onChange={(e) => handleFileChange(e, 'doc_dpr')} hasFile={!!formData.doc_dpr} />
-                    <FileUploadField label="Income Proof" onChange={(e) => handleFileChange(e, 'doc_income')} hasFile={!!formData.doc_income} />
-                    <FileUploadField label="Training Certificate" onChange={(e) => handleFileChange(e, 'doc_training')} hasFile={!!formData.doc_training} />
-                    <FileUploadField label="Caste Certificate" onChange={(e) => handleFileChange(e, 'doc_caste')} hasFile={!!formData.doc_caste} />
+                    <FileUploadField label="Aadhaar Card (Front)" name="doc_aadhar_front" value={formData.doc_aadhar_front} onChange={(e) => handleFileChange(e, 'doc_aadhar_front')} onPreview={() => setPreviewImage(formData.doc_aadhar_front)} onClear={() => setFormData(p => ({...p, doc_aadhar_front: ''}))} />
+                    <FileUploadField label="Aadhaar Card (Back)" name="doc_aadhar_back" value={formData.doc_aadhar_back} onChange={(e) => handleFileChange(e, 'doc_aadhar_back')} onPreview={() => setPreviewImage(formData.doc_aadhar_back)} onClear={() => setFormData(p => ({...p, doc_aadhar_back: ''}))} />
+                    <FileUploadField label="PAN Card" name="doc_pan" value={formData.doc_pan} onChange={(e) => handleFileChange(e, 'doc_pan')} onPreview={() => setPreviewImage(formData.doc_pan)} onClear={() => setFormData(p => ({...p, doc_pan: ''}))} />
+                    <FileUploadField label="Passport Photo" name="doc_photo" value={formData.doc_photo} onChange={(e) => handleFileChange(e, 'doc_photo')} onPreview={() => setPreviewImage(formData.doc_photo)} onClear={() => setFormData(p => ({...p, doc_photo: ''}))} />
+                    <FileUploadField label="Bank Passbook" name="doc_bank" value={formData.doc_bank} onChange={(e) => handleFileChange(e, 'doc_bank')} onPreview={() => setPreviewImage(formData.doc_bank)} onClear={() => setFormData(p => ({...p, doc_bank: ''}))} />
+                    <FileUploadField label="Address Proof" name="doc_address" value={formData.doc_address} onChange={(e) => handleFileChange(e, 'doc_address')} onPreview={() => setPreviewImage(formData.doc_address)} onClear={() => setFormData(p => ({...p, doc_address: ''}))} />
+                    <FileUploadField label="Rural Certificate" name="doc_rural_cert" value={formData.doc_rural_cert} onChange={(e) => handleFileChange(e, 'doc_rural_cert')} onPreview={() => setPreviewImage(formData.doc_rural_cert)} onClear={() => setFormData(p => ({...p, doc_rural_cert: ''}))} />
+                    <FileUploadField label="Affidavit" name="doc_affidavit" value={formData.doc_affidavit} onChange={(e) => handleFileChange(e, 'doc_affidavit')} onPreview={() => setPreviewImage(formData.doc_affidavit)} onClear={() => setFormData(p => ({...p, doc_affidavit: ''}))} />
+                  </div>
+                </motion.div>
+              )}
+
+              {currentStep === 7 && (
+                <motion.div key="s7" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-8">
+                  <div className="bg-amber-50 border-2 border-amber-200 p-6 rounded-2xl">
+                     <h4 className="text-[#B32D2D] font-black uppercase flex items-center gap-2 mb-4"><Eye /> Review Your Application</h4>
+                     <p className="text-sm font-bold text-amber-800">Please check all details carefully. Click 'Edit' icon to change any section.</p>
+                  </div>
+                  
+                  <div className="space-y-6">
+                    <PreviewSection title="Personal Details" data={{'Name': formData.name, 'Aadhar': formData.aadhar, 'Mobile': formData.mobile, 'Email': formData.email}} onEdit={() => setCurrentStep(1)} />
+                    <PreviewSection title="Address Details" data={{'State': formData.state, 'District': formData.district, 'Pincode': formData.pincode, 'Full Address': formData.address}} onEdit={() => setCurrentStep(3)} />
+                    <PreviewSection title="Bank Details" data={{'Bank': formData.bankName, 'A/C Number': formData.accountNumber, 'IFSC': formData.ifscCode}} onEdit={() => setCurrentStep(4)} />
+                    <PreviewSection title="Agency Details" data={{'Agency': formData.vendorName, 'Code': formData.vendorCode, 'Agent': formData.agentName}} onEdit={() => setCurrentStep(5)} />
+                    
+                    <div className="p-5 border-2 border-gray-100 rounded-2xl">
+                       <div className="flex justify-between items-center mb-4">
+                          <h5 className="font-black text-gray-800 uppercase text-xs">Uploaded Documents</h5>
+                          <button onClick={() => setCurrentStep(6)} className="text-[#B32D2D]"><Edit3 size={16} /></button>
+                       </div>
+                       <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
+                          {['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_rural_cert', 'doc_affidavit'].map(doc => (
+                            formData[doc] && (
+                              <div key={doc} onClick={() => setPreviewImage(formData[doc])} className="aspect-square border-2 border-gray-100 rounded-lg overflow-hidden cursor-pointer hover:border-[#B32D2D]">
+                                <img src={formData[doc]} className="w-full h-full object-cover" alt="doc" />
+                              </div>
+                            )
+                          ))}
+                       </div>
+                    </div>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
             <div className="flex flex-col md:flex-row gap-4 pt-6">
-              {currentStep > 1 && <button type="button" onClick={prevStep} className="flex-1 py-4 border-2 border-[#B32D2D] text-[#B32D2D] font-black rounded-xl">BACK</button>}
-              {currentStep < 6 ? (
-                <button type="button" onClick={nextStep} className="flex-[2] py-4 bg-[#B32D2D] text-white font-black rounded-xl flex items-center justify-center gap-2">NEXT STEP <ArrowRight size={20} /></button>
+              {currentStep > 1 && <button type="button" onClick={prevStep} className="flex-1 py-4 border-2 border-[#B32D2D] text-[#B32D2D] font-black rounded-xl hover:bg-red-50">BACK</button>}
+              {currentStep < 7 ? (
+                <button type="button" onClick={nextStep} className="flex-[2] py-4 bg-[#B32D2D] text-white font-black rounded-xl flex items-center justify-center gap-2 hover:bg-red-800 shadow-lg shadow-red-100 transition-all">
+                  {currentStep === 6 ? 'REVIEW APPLICATION' : 'NEXT STEP'} <ArrowRight size={20} />
+                </button>
               ) : (
-                <button type="button" onClick={handleManualSubmit} disabled={loading} className="flex-[2] py-4 bg-[#22c55e] text-white font-black rounded-xl flex items-center justify-center gap-2">
-                  {loading ? <Loader2 className="animate-spin" /> : 'PAY ₹249 & SUBMIT APPLICATION'}
+                <button type="button" onClick={handleManualSubmit} disabled={loading} className="flex-[2] py-4 bg-[#22c55e] text-white font-black rounded-xl flex items-center justify-center gap-2 hover:bg-green-700 shadow-xl shadow-green-100 transition-all active:scale-[0.98]">
+                  {loading ? <Loader2 className="animate-spin" /> : 'CONFIRM & PAY ₹249'}
                 </button>
               )}
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4">
+           <button onClick={() => setPreviewImage(null)} className="absolute top-6 right-6 text-white hover:text-red-500"><X size={32} /></button>
+           <img src={previewImage} className="max-w-full max-h-full rounded-xl shadow-2xl" alt="Preview" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PreviewSection({ title, data, onEdit }) {
+  return (
+    <div className="p-5 border-2 border-gray-100 rounded-2xl group hover:border-[#DEB887] transition-colors">
+      <div className="flex justify-between items-center mb-3">
+        <h5 className="font-black text-[#B32D2D] uppercase text-xs tracking-widest">{title}</h5>
+        <button onClick={onEdit} className="p-2 text-gray-400 hover:text-[#B32D2D] transition-colors"><Edit3 size={16} /></button>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        {Object.entries(data).map(([key, val]) => (
+          <div key={key}>
+            <p className="text-[9px] font-black text-gray-400 uppercase">{key}</p>
+            <p className="text-xs font-bold text-gray-800 break-all">{val || '---'}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -347,8 +446,8 @@ export default function RabbitFarmingForm() {
 function InputField({ label, name, value, onChange, type = "text", required = false, className = "", ...props }) {
   return (
     <div className="space-y-1">
-      <label className="text-[10px] font-black text-gray-600 uppercase">{label} {required && '*'}</label>
-      <input type={type} name={name} value={value} onChange={onChange} className={`w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#B32D2D] font-bold text-sm outline-none ${className}`} {...props} />
+      <label className="text-[10px] font-black text-gray-600 uppercase flex items-center gap-1">{label} {required && <span className="text-red-500">*</span>}</label>
+      <input type={type} name={name} value={value} onChange={onChange} className={`w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:border-[#B32D2D] focus:bg-white font-bold text-sm outline-none transition-all ${className}`} {...props} />
     </div>
   );
 }
@@ -356,8 +455,8 @@ function InputField({ label, name, value, onChange, type = "text", required = fa
 function SelectField({ label, name, value, onChange, options, required = false }) {
   return (
     <div className="space-y-1">
-      <label className="text-[10px] font-black text-gray-600 uppercase">{label} {required && '*'}</label>
-      <select name={name} value={value} onChange={onChange} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#B32D2D] font-bold text-sm outline-none">
+      <label className="text-[10px] font-black text-gray-600 uppercase flex items-center gap-1">{label} {required && <span className="text-red-500">*</span>}</label>
+      <select name={name} value={value} onChange={onChange} className="w-full px-4 py-3 border-2 border-gray-100 rounded-xl focus:border-[#B32D2D] focus:bg-white font-bold text-sm outline-none transition-all appearance-none">
         <option value="">Select / चुनें</option>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
@@ -365,48 +464,51 @@ function SelectField({ label, name, value, onChange, options, required = false }
   );
 }
 
-function FileUploadField({ label, onChange, hasFile }) {
+function FileUploadField({ label, value, onChange, onPreview, onClear }) {
   return (
     <div className="space-y-3 group cursor-pointer relative">
       <div className="flex items-center gap-2">
-        <div className="bg-[#B32D2D]/10 text-[#B32D2D] text-[10px] font-black px-4 py-1.5 rounded-lg shadow-sm uppercase tracking-wider border-l-4 border-[#B32D2D]">
+        <div className={`text-[10px] font-black px-4 py-1.5 rounded-lg shadow-sm uppercase tracking-wider border-l-4 transition-all ${value ? 'bg-green-50 text-green-600 border-green-600' : 'bg-[#B32D2D]/10 text-[#B32D2D] border-[#B32D2D]'}`}>
           {label}
         </div>
-        <div className="h-[1px] flex-1 bg-gray-100 group-hover:bg-[#B32D2D]/10 transition-colors" />
+        <div className="h-[1px] flex-1 bg-gray-100" />
       </div>
       
-      <div className={`relative border-2 border-dashed rounded-2xl p-5 transition-all duration-300 transform group-hover:translate-y-[-2px] ${
-        hasFile 
-        ? 'border-green-500 bg-green-50 shadow-lg shadow-green-100' 
-        : 'border-gray-200 bg-[#fafafa] hover:border-[#B32D2D]/30 hover:bg-white hover:shadow-xl hover:shadow-[#B32D2D]/5'
+      <div className={`relative border-2 border-dashed rounded-2xl p-5 transition-all duration-300 transform ${
+        value 
+        ? 'border-green-500 bg-green-50/30' 
+        : 'border-gray-200 bg-[#fafafa] hover:border-[#B32D2D]/30 hover:bg-white'
       }`}>
-        <input type="file" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-        <div className="flex items-center gap-4">
-          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${
-            hasFile 
-            ? 'bg-green-500 text-white rotate-12 shadow-lg' 
-            : 'bg-white text-[#B32D2D] border border-gray-100 shadow-sm group-hover:rotate-6'
-          }`}>
-            {hasFile ? <CheckCircle2 size={28} /> : <Upload size={28} />}
-          </div>
-          <div className="flex-1">
-            <p className={`text-xs font-black uppercase tracking-tight ${hasFile ? 'text-green-700' : 'text-gray-800'}`}>
-              {hasFile ? 'Document Uploaded' : 'Click to Upload'}
-            </p>
-            <p className="text-[9px] font-bold text-gray-400 mt-1 uppercase tracking-tighter italic">PDF, JPG, PNG (Max 5MB)</p>
-          </div>
-          {!hasFile && (
-            <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-[#B32D2D] group-hover:text-white transition-colors">
-               <ArrowRight size={14} />
+        {!value ? (
+          <>
+            <input type="file" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-white text-[#B32D2D] border border-gray-100 shadow-sm rounded-2xl flex items-center justify-center">
+                <Upload size={28} />
+              </div>
+              <div>
+                <p className="text-xs font-black uppercase text-gray-800">Click to Upload</p>
+                <p className="text-[9px] font-bold text-gray-400 mt-1 uppercase italic tracking-tighter">PDF, JPG, PNG (Max 5MB)</p>
+              </div>
             </div>
-          )}
-        </div>
+          </>
+        ) : (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div onClick={onPreview} className="w-14 h-14 rounded-xl overflow-hidden border-2 border-white shadow-md cursor-zoom-in">
+                 <img src={value} className="w-full h-full object-cover" alt="thumb" />
+              </div>
+              <div>
+                <p className="text-xs font-black uppercase text-green-700">Uploaded Successfully</p>
+                <button onClick={onPreview} className="text-[10px] font-bold text-blue-600 underline uppercase mt-1">View Full Size</button>
+              </div>
+            </div>
+            <button onClick={onClear} className="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center hover:bg-red-600 hover:text-white transition-all">
+              <X size={20} />
+            </button>
+          </div>
+        )}
       </div>
-      {hasFile && (
-        <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-1 -right-1 bg-green-500 text-white rounded-full p-1 shadow-lg border-2 border-white z-20">
-           <CheckCircle2 size={12} />
-        </motion.div>
-      )}
     </div>
   );
 }
