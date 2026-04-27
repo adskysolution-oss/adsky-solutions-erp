@@ -29,40 +29,28 @@ import { motion } from 'framer-motion';
 
 const MENU_GROUPS = [
   {
-    title: 'Intelligence',
+    title: 'AdSky Command Center',
     items: [
       { name: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
-      { name: 'Analytics', icon: BarChart3, path: '/admin/analytics' },
+      { name: 'CMS Builder', icon: Layers, path: '/admin/cms' },
+      { name: 'Form Pro', icon: FileText, path: '/admin/cms/forms' },
+      { name: 'Vendors Panel', icon: Store, path: '/admin/vendors' },
+      { name: 'Branding', icon: Sparkles, path: '/admin/settings' },
     ]
   },
   {
     title: 'Operations (CRM)',
     items: [
       { name: 'User Control', icon: Users, path: '/admin/users' },
-      { name: 'Partners', icon: Briefcase, path: '/admin/partners' },
+      { name: 'Partners Hub', icon: Briefcase, path: '/admin/partners' },
       { name: 'Mission Queue', icon: Zap, path: '/admin/leads' },
     ]
   },
   {
-    title: 'Treasury & Wallets',
+    title: 'Treasury & Finances',
     items: [
-      { name: 'Finances', icon: IndianRupee, path: '/admin/financials' },
       { name: 'Settlements', icon: Wallet, path: '/admin/payouts' },
-    ]
-  },
-  {
-    title: 'Web & CMS V2',
-    items: [
-      { name: 'CMS Builder', icon: Layers, path: '/admin/cms' },
-      { name: 'Form Pro', icon: FileText, path: '/admin/cms/forms' },
-      { name: 'Branding', icon: Sparkles, path: '/admin/settings' },
-    ]
-  },
-  {
-    title: 'System Security',
-    items: [
       { name: 'Audit Logs', icon: Database, path: '/admin/security' },
-      { name: 'Fraud Node', icon: ShieldCheck, path: '/admin/fraud' },
     ]
   }
 ];

@@ -18,25 +18,26 @@ import {
   Bell, 
   Settings,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  FileText
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const MENU_ITEMS = [
   { name: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
-  { name: 'Users', icon: Users, path: '/admin/users' },
+  { name: 'CMS Builder', icon: Globe, path: '/admin/cms' },
+  { name: 'Form Pro', icon: FileText, path: '/admin/cms/forms' },
+  { name: 'Vendors Matrix', icon: Store, path: '/admin/vendors' },
+  { name: 'User Control', icon: Users, path: '/admin/users' },
   { name: 'Farmers', icon: Sprout, path: '/admin/farmers' },
   { name: 'Partners', icon: Handshake, path: '/admin/partners' },
   { name: 'Employees', icon: Briefcase, path: '/admin/employees' },
-  { name: 'Vendors', icon: Store, path: '/admin/vendors' },
   { name: 'Payments', icon: CreditCard, path: '/admin/payments' },
   { name: 'Wallet', icon: Wallet, path: '/admin/wallet' },
   { name: 'Commissions', icon: Coins, path: '/admin/commissions' },
   { name: 'Reports', icon: BarChart3, path: '/admin/reports' },
-  { name: 'Home Architect', icon: Globe, path: '/admin/cms/homepage' },
-  { name: 'Page Builder', icon: LayoutDashboard, path: '/admin/cms/pages' },
   { name: 'Notifications', icon: Bell, path: '/admin/notifications' },
-  { name: 'Settings', icon: Settings, path: '/admin/settings' },
+  { name: 'Branding', icon: Settings, path: '/admin/settings' },
 ];
 
 export default function Sidebar() {
