@@ -6,10 +6,11 @@ import {
   Download, Calendar, User, Mail, Phone, ExternalLink, Trash2, Loader2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
-export default function FormLeadsPage({ params }) {
-  const { id } = params;
+export default function FormLeadsPage() {
+  const params = useParams();
+  const id = params?.id;
   const [form, setForm] = useState(null);
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
