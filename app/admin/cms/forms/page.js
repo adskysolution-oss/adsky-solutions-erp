@@ -125,17 +125,21 @@ export default function FormBuilderPage() {
                        <input type="text" value={editingForm.formName} onChange={e => setEditingForm({...editingForm, formName: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-white font-black italic outline-none focus:border-blue-500 transition-all" />
                      </div>
                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2 italic">URL Slug</label>
-                        <div className="relative">
-                           <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-600 font-bold italic text-xs">/</div>
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2 italic">Custom Link (Slug)</label>
+                        <div className="relative group/slug">
+                           <div className="absolute left-6 top-1/2 -translate-y-1/2 text-blue-500/50 font-bold italic text-xs">adskysolution.com/</div>
                            <input 
                               type="text" 
                               value={editingForm.slug || ''} 
-                              placeholder="e.g. survey-2024"
-                              onChange={e => setEditingForm({...editingForm, slug: e.target.value.toLowerCase().replace(/\s+/g, '-')})} 
-                              className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 pl-10 pr-6 text-blue-500 font-black italic outline-none focus:border-blue-500 transition-all text-xs uppercase tracking-widest" 
+                              placeholder="e.g. my-custom-form"
+                              onChange={e => {
+                                 const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
+                                 setEditingForm({...editingForm, slug: val});
+                              }} 
+                              className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-5 pl-[8.5rem] pr-6 text-blue-500 font-black italic outline-none focus:border-blue-500 transition-all text-xs uppercase tracking-widest" 
                            />
                         </div>
+                        <p className="text-[8px] text-slate-600 italic px-2">Type your desired link name above. Only letters, numbers and dashes allowed.</p>
                      </div>
                      <div className="space-y-2">
                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2 italic">Description</label>
