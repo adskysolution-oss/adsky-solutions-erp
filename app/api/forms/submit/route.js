@@ -8,7 +8,11 @@ export async function POST(req) {
     await connectToDatabase();
     const { slug, ...data } = await req.json();
 
-    const form = await CustomForm.findOne({ slug });
+    // Flexible slug search (case-insensitive, optional leading slash)
+    const form = await CustomForm.findOne({ 
+      slug: { $regex: new RegExp(`^/?${slug.trim()}$`, 'i') } 
+    });
+    
     if (!form) {
       return NextResponse.json({ error: 'Form structure not found in the dynamic engine.' }, { status: 404 });
     }

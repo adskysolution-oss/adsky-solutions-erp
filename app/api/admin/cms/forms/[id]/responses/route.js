@@ -5,8 +5,9 @@ import FormResponse from '@/models/FormResponse';
 export async function GET(req, { params }) {
   try {
     await connectToDatabase();
-    const { id } = params;
-    const responses = await FormResponse.find({ formId: id }).sort({ createdAt: -1 });
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
+    const responses = await FormResponse.find({ form: id }).sort({ createdAt: -1 });
     return NextResponse.json(responses);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
