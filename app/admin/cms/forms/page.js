@@ -255,33 +255,42 @@ export default function FormBuilderPage() {
                               </div>
 
                               {['select', 'radio', 'checkbox'].includes(field.type) && (
-                                <div className="space-y-4 ml-12 p-6 rounded-2xl bg-[#0b1220] border border-blue-500/10">
-                                   <p className="text-[10px] font-black uppercase text-blue-500 italic mb-2">Manage Options</p>
-                                   <div className="flex flex-wrap gap-2">
+                                <div className="space-y-4 ml-12 p-6 rounded-[2rem] bg-[#0b1220] border border-blue-500/10 mt-4">
+                                   <div className="flex items-center justify-between mb-2">
+                                      <p className="text-[10px] font-black uppercase text-blue-500 italic tracking-widest">Configure Options</p>
+                                      <button 
+                                        onClick={() => {
+                                          const updated = [...editingForm.steps];
+                                          if (!updated[activeStepIdx].fields[fIdx].options) updated[activeStepIdx].fields[fIdx].options = [];
+                                          updated[activeStepIdx].fields[fIdx].options.push(`New Option`);
+                                          setEditingForm({...editingForm, steps: updated});
+                                        }}
+                                        className="text-[10px] font-black text-blue-400 hover:text-white uppercase italic transition-all"
+                                      >
+                                        + ADD CHOICE
+                                      </button>
+                                   </div>
+                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                       {field.options?.map((opt, oIdx) => (
-                                        <div key={oIdx} className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10 group/opt">
-                                           <span className="text-xs text-white font-medium italic">{opt}</span>
+                                        <div key={oIdx} className="flex items-center gap-3 px-4 py-2 bg-white/5 rounded-xl border border-white/10 focus-within:border-blue-500/50 transition-all">
+                                           <div className="w-1 h-1 rounded-full bg-blue-500" />
+                                           <input 
+                                             value={opt}
+                                             onChange={(e) => {
+                                                const updated = [...editingForm.steps];
+                                                updated[activeStepIdx].fields[fIdx].options[oIdx] = e.target.value;
+                                                setEditingForm({...editingForm, steps: updated});
+                                             }}
+                                             className="bg-transparent text-xs text-white font-medium italic outline-none flex-grow"
+                                             placeholder="Option Label"
+                                           />
                                            <button onClick={() => {
                                               const updated = [...editingForm.steps];
                                               updated[activeStepIdx].fields[fIdx].options.splice(oIdx, 1);
                                               setEditingForm({...editingForm, steps: updated});
-                                           }} className="text-red-500 opacity-0 group-hover/opt:opacity-100 transition-opacity"><X size={12} /></button>
+                                           }} className="text-red-500/50 hover:text-red-500 transition-colors"><X size={12} /></button>
                                         </div>
                                       ))}
-                                      <button 
-                                        onClick={() => {
-                                          const val = prompt("Enter option name:");
-                                          if (val) {
-                                            const updated = [...editingForm.steps];
-                                            if (!updated[activeStepIdx].fields[fIdx].options) updated[activeStepIdx].fields[fIdx].options = [];
-                                            updated[activeStepIdx].fields[fIdx].options.push(val);
-                                            setEditingForm({...editingForm, steps: updated});
-                                          }
-                                        }}
-                                        className="px-4 py-2 bg-blue-500/10 text-blue-500 rounded-xl border border-blue-500/20 text-xs font-black italic hover:bg-blue-500 hover:text-white transition-all"
-                                      >
-                                        + ADD OPTION
-                                      </button>
                                    </div>
                                 </div>
                               )}
