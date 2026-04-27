@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,9 +27,46 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import SectionRenderer from '@/components/SectionRenderer';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('white');
+  const [dynamicPage, setDynamicPage] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHome = async () => {
+      try {
+        const res = await fetch('/api/admin/cms/pages');
+        const pages = await res.json();
+        const home = pages.find(p => p.slug === '/');
+        if (home && home.isActive) {
+          const detailRes = await fetch(`/api/admin/cms/pages/${home._id}`);
+          const detail = await detailRes.json();
+          setDynamicPage(detail);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHome();
+  }, []);
+
+  if (!loading && dynamicPage && dynamicPage.sections?.length > 0) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#020617] text-white">
+        <Navbar />
+        <main className="flex-grow">
+          {dynamicPage.sections.map((section, idx) => (
+            <SectionRenderer key={section._id || idx} section={section} />
+          ))}
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#020617] text-white">
