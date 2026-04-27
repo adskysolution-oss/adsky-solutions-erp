@@ -19,7 +19,9 @@ import {
   Settings,
   X,
   Upload,
-  Sparkles
+  Sparkles,
+  List as ListIcon,
+  PlusCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -65,7 +67,8 @@ export default function SectionEditor({ params }) {
       title: `New ${type.charAt(0).toUpperCase() + type.slice(1)} Block`,
       description: 'Enter your content description here...',
       isActive: true,
-      order: sections.length
+      order: sections.length,
+      items: []
     };
 
     try {
@@ -136,7 +139,7 @@ export default function SectionEditor({ params }) {
     }
   };
 
-  const handleFileUpload = async (e) => {
+  const handleFileUpload = async (e, itemIndex = null) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -151,13 +154,35 @@ export default function SectionEditor({ params }) {
       });
       const data = await res.json();
       if (data.url) {
-        setEditingSection({ ...editingSection, image: data.url });
+        if (itemIndex !== null) {
+          const newItems = [...editingSection.items];
+          newItems[itemIndex].image = data.url;
+          setEditingSection({ ...editingSection, items: newItems });
+        } else {
+          setEditingSection({ ...editingSection, image: data.url });
+        }
       }
     } catch (err) {
       console.error('Upload failed:', err);
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleAddItem = () => {
+    const newItem = { title: 'New Item', subtitle: 'Subtitle', description: 'Description', count: '', image: '' };
+    setEditingSection({ ...editingSection, items: [...(editingSection.items || []), newItem] });
+  };
+
+  const handleUpdateItem = (index, field, value) => {
+    const newItems = [...editingSection.items];
+    newItems[index][field] = value;
+    setEditingSection({ ...editingSection, items: newItems });
+  };
+
+  const handleRemoveItem = (index) => {
+    const newItems = editingSection.items.filter((_, i) => i !== index);
+    setEditingSection({ ...editingSection, items: newItems });
   };
 
   const moveSection = async (index, direction) => {
@@ -205,79 +230,56 @@ export default function SectionEditor({ params }) {
         </div>
       </div>
 
-      {/* Page Info */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter uppercase">Edit <span className="text-blue-500">{page?.title}</span></h1>
         <p className="text-slate-400 mt-2 uppercase text-[10px] font-black tracking-[0.4em] italic opacity-50">Content Block Management & Orchestration</p>
       </motion.div>
 
-      {/* Editor Main */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         
         {/* Left: Section List */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="bg-[#111827] border border-[#1f2937] rounded-[3rem] p-10 shadow-3xl">
-            <div className="flex items-center justify-between mb-12">
+        <div className="lg:col-span-1 space-y-4">
+          <div className="bg-[#111827] border border-[#1f2937] rounded-[3rem] p-8 shadow-3xl">
+            <div className="flex items-center justify-between mb-8">
                <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] italic">Section Hierarchy</h3>
-               <span className="px-4 py-1 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-black italic border border-blue-500/20">{sections.length} NODES CONFIGURED</span>
             </div>
             
-            <div className="space-y-6">
-              {sections.length === 0 ? (
-                <div className="text-center py-24 border-2 border-dashed border-[#1f2937] rounded-[3rem] group hover:border-blue-500/20 transition-all cursor-pointer">
-                  <Layout size={48} className="mx-auto text-slate-800 group-hover:text-blue-500 transition-colors mb-6" />
-                  <p className="text-white font-black italic uppercase tracking-widest text-sm">HIERARCHY IS VACANT</p>
-                  <p className="text-slate-600 text-xs mt-2 italic font-medium">Inject a content block to initiate deployment.</p>
-                </div>
-              ) : (
-                sections.map((section, index) => (
-                  <motion.div 
-                    layout
-                    key={section._id}
-                    className={`p-8 rounded-[2rem] bg-[#0b1220] border transition-all flex items-center justify-between group ${editingSection?._id === section._id ? 'border-blue-500 ring-4 ring-blue-500/10 shadow-2xl scale-[1.01]' : 'border-[#1f2937] hover:border-white/10'}`}
-                  >
-                    <div className="flex items-center gap-6">
-                      <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-slate-500 font-black italic text-xl border border-white/5 group-hover:bg-blue-500 group-hover:text-white transition-all relative">
-                        {index + 1}
-                        {!section.isActive && (
-                           <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-[#0b1220]"></div>
-                        )}
-                      </div>
-                      <div className="cursor-pointer" onClick={() => setEditingSection(section)}>
-                        <h4 className="text-white font-black italic text-lg tracking-tight mb-1 group-hover:text-blue-400 transition-colors">{section.title}</h4>
-                        <div className="flex items-center gap-3">
-                           <span className="text-[9px] font-black uppercase text-blue-500 tracking-widest italic px-2 py-0.5 bg-blue-500/10 rounded-md">{section.sectionType}</span>
-                           <span className={`text-[9px] font-black uppercase tracking-widest italic ${section.isActive ? 'text-emerald-500' : 'text-red-500'}`}>
-                             {section.isActive ? 'Live' : 'Hidden'}
-                           </span>
-                        </div>
+            <div className="space-y-4">
+              {sections.map((section, index) => (
+                <motion.div 
+                  layout
+                  key={section._id}
+                  onClick={() => setEditingSection(section)}
+                  className={`p-6 rounded-[2rem] bg-[#0b1220] border transition-all flex items-center justify-between group cursor-pointer ${editingSection?._id === section._id ? 'border-blue-500 ring-4 ring-blue-500/10 shadow-2xl scale-[1.02]' : 'border-[#1f2937] hover:border-white/10'}`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-slate-500 font-black italic text-sm border border-white/5 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                      {index + 1}
+                    </div>
+                    <div>
+                      <h4 className="text-white font-black italic text-sm tracking-tight group-hover:text-blue-400 transition-colors">{section.title}</h4>
+                      <div className="flex items-center gap-2">
+                         <span className="text-[8px] font-black uppercase text-blue-500 tracking-widest italic px-2 py-0.5 bg-blue-500/10 rounded-md">{section.sectionType}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 opacity-40 group-hover:opacity-100 transition-all">
-                       <button onClick={() => toggleVisibility(section)} title={section.isActive ? 'Hide Section' : 'Show Section'} className={`p-3 rounded-xl transition-all shadow-xl ${section.isActive ? 'bg-white/5 text-slate-400 hover:text-white' : 'bg-red-500/10 text-red-500'}`}>
-                          {section.isActive ? <Eye size={18} /> : <EyeOff size={18} />}
-                       </button>
-                       <button onClick={() => setEditingSection(section)} className="p-3 bg-white/5 hover:bg-blue-500 text-slate-400 hover:text-white rounded-xl transition-all shadow-xl"><Settings size={18} /></button>
-                       <div className="flex flex-col gap-1 mx-2">
-                         <button onClick={() => moveSection(index, 'up')} className="p-1.5 bg-white/5 hover:bg-white/10 text-slate-600 hover:text-white rounded-lg transition-all"><ChevronUp size={16} /></button>
-                         <button onClick={() => moveSection(index, 'down')} className="p-1.5 bg-white/5 hover:bg-white/10 text-slate-600 hover:text-white rounded-lg transition-all"><ChevronDown size={16} /></button>
-                       </div>
-                       <button onClick={() => handleDeleteSection(section._id)} className="p-3 bg-white/5 hover:bg-red-500 text-slate-400 hover:text-white rounded-xl transition-all shadow-xl"><Trash2 size={18} /></button>
-                    </div>
-                  </motion.div>
-                ))
-              )}
+                  </div>
+                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                     <button onClick={(e) => { e.stopPropagation(); toggleVisibility(section); }} className={`p-2 rounded-lg transition-all ${section.isActive ? 'text-slate-400 hover:text-white' : 'text-red-500'}`}>
+                        {section.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
+                     </button>
+                  </div>
+                </motion.div>
+              ))}
             </div>
 
-            <div className="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 pt-12 border-t border-[#1f2937]">
-              {['hero', 'services', 'stats', 'cta', 'latest-blogs', 'testimonials'].map(type => (
+            <div className="mt-8 grid grid-cols-2 gap-3 pt-8 border-t border-[#1f2937]">
+              {['hero', 'stats', 'services', 'job-grid', 'steps', 'strategy', 'cta'].map(type => (
                 <button 
                   key={type}
                   onClick={() => handleAddSection(type)}
-                  disabled={saving}
-                  className="py-4 px-2 bg-[#0b1220] border border-[#1f2937] text-slate-500 hover:border-blue-500 hover:text-white hover:bg-blue-600/10 rounded-2xl text-[8px] font-black uppercase tracking-widest transition-all italic flex flex-col items-center gap-2 group"
+                  className="py-3 bg-[#0b1220] border border-[#1f2937] text-slate-500 hover:border-blue-500 hover:text-white hover:bg-blue-600/10 rounded-xl text-[7px] font-black uppercase tracking-widest transition-all italic flex flex-col items-center gap-1 group"
                 >
-                  <Plus size={14} className="group-hover:scale-125 transition-transform" />
+                  <Plus size={12} />
                   {type}
                 </button>
               ))}
@@ -285,96 +287,123 @@ export default function SectionEditor({ params }) {
           </div>
         </div>
 
-        {/* Right: Section Editor Control */}
-        <div className="lg:col-span-1">
+        {/* Middle/Right: Section Editor Control */}
+        <div className="lg:col-span-2">
           <AnimatePresence mode="wait">
             {editingSection ? (
               <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="bg-[#111827] border border-blue-500/30 rounded-[3rem] p-10 h-fit sticky top-8 shadow-4xl"
+                className="bg-[#111827] border border-blue-500/30 rounded-[3rem] p-10 shadow-4xl"
               >
                 <div className="flex items-center justify-between mb-10 pb-8 border-b border-[#1f2937]">
                    <div>
-                      <h3 className="text-xl font-black text-white italic tracking-tight">Modify <span className="text-blue-500">Block.</span></h3>
-                      <p className="text-[9px] font-black uppercase text-slate-600 tracking-widest italic mt-1">Refining Content Metadata</p>
+                      <h3 className="text-xl font-black text-white italic tracking-tight">Configuration Hub <span className="text-blue-500">({editingSection.sectionType}).</span></h3>
                    </div>
-                   <button onClick={() => setEditingSection(null)} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-500 hover:text-white hover:bg-red-500/10 transition-all"><X size={20} /></button>
+                   <div className="flex gap-3">
+                      <button onClick={() => handleDeleteSection(editingSection._id)} className="px-5 py-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all text-[10px] font-black uppercase italic">Delete Node</button>
+                      <button onClick={() => setEditingSection(null)} className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-500 hover:text-white transition-all"><X size={20} /></button>
+                   </div>
                 </div>
 
-                <div className="space-y-8">
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-2 italic">Main Headline</label>
-                    <input 
-                      type="text" 
-                      value={editingSection.title} 
-                      onChange={e => setEditingSection({...editingSection, title: e.target.value})}
-                      className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-5 px-6 text-white focus:border-blue-500 outline-none transition-all placeholder:text-slate-700 font-black italic text-lg"
-                    />
-                  </div>
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-2 italic">Sub-Description</label>
-                    <textarea 
-                      rows={6}
-                      value={editingSection.description} 
-                      onChange={e => setEditingSection({...editingSection, description: e.target.value})}
-                      className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-5 px-6 text-white focus:border-blue-500 outline-none transition-all placeholder:text-slate-700 font-medium italic leading-relaxed text-sm"
-                    />
-                  </div>
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-2 italic">Visual Media</label>
-                    
-                    {editingSection.image && (
-                       <div className="relative aspect-video rounded-2xl overflow-hidden border border-[#1f2937] mb-4 group">
-                          <img src={editingSection.image} alt="Preview" className="w-full h-full object-cover" />
-                          <button onClick={() => setEditingSection({...editingSection, image: ''})} className="absolute top-3 right-3 w-8 h-8 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center shadow-2xl"><X size={16} /></button>
-                       </div>
-                    )}
-
-                    <div className="flex gap-2">
-                       <button 
-                         onClick={() => fileInputRef.current.click()}
-                         disabled={uploading}
-                         className="flex-grow py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-black italic uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 hover:bg-white/10 transition-all"
-                       >
-                         {uploading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
-                         {uploading ? 'Uploading...' : 'Upload Media'}
-                       </button>
-                    </div>
-                    <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept="image/*" />
-                    
-                    <div className="relative mt-2">
-                      <ImageIcon className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700" size={16} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2 italic">Main Header</label>
                       <input 
                         type="text" 
+                        value={editingSection.title} 
+                        onChange={e => setEditingSection({...editingSection, title: e.target.value})}
+                        className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-white focus:border-blue-500 outline-none transition-all font-black italic"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2 italic">Detailed Narrative</label>
+                      <textarea 
+                        rows={4}
+                        value={editingSection.description} 
+                        onChange={e => setEditingSection({...editingSection, description: e.target.value})}
+                        className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-white focus:border-blue-500 outline-none transition-all font-medium italic text-sm"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2 italic">Global Media Asset</label>
+                      <div className="flex gap-4">
+                         <button onClick={() => fileInputRef.current.click()} className="px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-black italic uppercase text-[9px] flex items-center gap-2 hover:bg-blue-500 transition-all flex-grow">
+                           <Upload size={14} /> Upload Image
+                         </button>
+                      </div>
+                      <input type="file" ref={fileInputRef} onChange={(e) => handleFileUpload(e)} className="hidden" />
+                      <input 
+                        type="text" 
+                        placeholder="Or direct asset URL..."
                         value={editingSection.image || ''} 
                         onChange={e => setEditingSection({...editingSection, image: e.target.value})}
-                        className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 pl-14 pr-6 text-white focus:border-blue-500 outline-none transition-all placeholder:text-slate-700 font-mono text-[10px]"
-                        placeholder="Or paste image URL..."
+                        className="w-full bg-[#0b1220] border border-[#1f2937] rounded-xl py-3 px-6 text-white text-[10px] font-mono mt-2"
                       />
                     </div>
                   </div>
 
-                  <button 
-                    onClick={() => handleUpdateSection(editingSection)}
-                    disabled={saving}
-                    className="w-full py-6 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-black uppercase tracking-[0.3em] rounded-3xl transition-all shadow-3xl shadow-blue-600/20 flex items-center justify-center gap-4 mt-8 italic text-xs active:scale-95"
-                  >
-                    {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
-                    Authorize Changes
-                  </button>
+                  <div className="space-y-6">
+                     <div className="flex items-center justify-between">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-2 italic">Node Items (Lists)</label>
+                        <button onClick={handleAddItem} className="px-4 py-2 bg-blue-500 text-white rounded-lg text-[9px] font-black uppercase italic flex items-center gap-2"><PlusCircle size={14} /> Add Item</button>
+                     </div>
+                     
+                     <div className="space-y-4 max-h-[500px] overflow-y-auto pr-4 custom-scrollbar">
+                        {editingSection.items?.map((item, idx) => (
+                          <div key={idx} className="p-6 rounded-2xl bg-[#0b1220] border border-[#1f2937] space-y-4 relative group">
+                             <button onClick={() => handleRemoveItem(idx)} className="absolute top-4 right-4 text-slate-700 hover:text-red-500 transition-all"><Trash2 size={14} /></button>
+                             <input 
+                               type="text" 
+                               value={item.title} 
+                               placeholder="Item Title"
+                               onChange={e => handleUpdateItem(idx, 'title', e.target.value)}
+                               className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-white font-black italic text-xs"
+                             />
+                             <textarea 
+                               placeholder="Item Description"
+                               value={item.description} 
+                               onChange={e => handleUpdateItem(idx, 'description', e.target.value)}
+                               className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-white italic text-xs"
+                             />
+                             <div className="flex gap-2">
+                                <input 
+                                  type="text" 
+                                  placeholder="Tag/Count"
+                                  value={item.subtitle || item.count || ''} 
+                                  onChange={e => handleUpdateItem(idx, 'subtitle', e.target.value)}
+                                  className="w-1/2 bg-white/5 border border-white/10 rounded-xl py-2 px-4 text-white text-[10px] font-black italic"
+                                />
+                                <button onClick={() => {
+                                  const inp = document.createElement('input');
+                                  inp.type = 'file';
+                                  inp.onchange = (e) => handleFileUpload(e, idx);
+                                  inp.click();
+                                }} className="w-1/2 py-2 bg-white/5 border border-white/10 rounded-xl text-slate-400 hover:text-white transition-all text-[9px] font-black uppercase italic flex items-center justify-center gap-2"><Upload size={12} /> Asset</button>
+                             </div>
+                          </div>
+                        ))}
+                     </div>
+                  </div>
                 </div>
+
+                <button 
+                  onClick={() => handleUpdateSection(editingSection)}
+                  disabled={saving}
+                  className="w-full py-6 bg-blue-600 hover:bg-blue-700 text-white font-black uppercase tracking-[0.3em] rounded-3xl transition-all shadow-3xl shadow-blue-600/20 flex items-center justify-center gap-4 mt-12 italic text-xs"
+                >
+                  {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
+                  Commit Changes to Ledger
+                </button>
               </motion.div>
             ) : (
-              <div className="bg-[#111827] border border-[#1f2937] border-dashed rounded-[3rem] p-16 text-center flex flex-col items-center justify-center gap-6 opacity-30 h-[500px]">
+              <div className="bg-[#111827] border border-[#1f2937] border-dashed rounded-[3rem] p-16 text-center flex flex-col items-center justify-center gap-6 opacity-30 h-full">
                 <div className="w-24 h-24 rounded-[2rem] bg-white/5 flex items-center justify-center text-slate-800">
                   <Sparkles size={48} />
                 </div>
-                <div>
-                  <p className="text-white font-black italic uppercase tracking-widest text-xs mb-2">Editor Dormant</p>
-                  <p className="text-slate-600 font-medium italic text-[11px] leading-relaxed max-w-[200px] mx-auto">Select a content block from the hierarchy to initiate customization.</p>
-                </div>
+                <p className="text-white font-black italic uppercase tracking-widest text-xs">Select a segment to initiate reconfiguration.</p>
               </div>
             )}
           </AnimatePresence>

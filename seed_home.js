@@ -83,35 +83,88 @@ async function seedHomeSections() {
         isActive: true
       },
       {
-        sectionType: 'services',
-        title: 'Explore Job Categories',
-        subtitle: 'OPPORTUNITIES',
-        description: 'Find the right career path with our diverse job offerings.',
-        items: [
-          { title: 'Delivery Partner Jobs', description: '7 Jobs', subtitle: 'Field Work' },
-          { title: 'Exam Invigilator Jobs', description: '2 Jobs', subtitle: 'Field Work' },
-          { title: 'Digital Gigs Jobs', description: '1 Job', subtitle: 'Work From Home' }
-        ],
+        sectionType: 'strategy',
+        title: 'Fuel Your Future With Expert Strategy.',
+        description: 'Website & App Strategy Consultation, CRM/HRMS Setup, and Business Process Automation guidance.',
+        image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672',
         order: 3,
         isActive: true
       },
       {
-        sectionType: 'testimonials',
+        sectionType: 'job-grid',
+        title: 'Job Categories',
+        items: [
+          { title: 'Delivery Partner Jobs', count: '7 Jobs', subtitle: 'FIELD WORK', image: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837' },
+          { title: 'Exam Invigilator Jobs', count: '2 Jobs', subtitle: 'FIELD WORK', image: 'https://images.unsplash.com/photo-1434039319359-ef800d9b8fd2' },
+          { title: 'Digital Gigs Jobs', count: '1 Job', subtitle: 'WORK FROM HOME', image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643' },
+          { title: 'Audit Jobs', count: 'Coming Soon', subtitle: 'FIELD WORK', image: 'https://images.unsplash.com/photo-1454165833767-027ffea9e77b' },
+          { title: 'Telecalling Jobs', count: 'Coming Soon', subtitle: 'WORK FROM HOME', image: 'https://images.unsplash.com/photo-1549923155-4422ead50223' },
+          { title: 'Recruitment Jobs', count: 'Coming Soon', subtitle: 'WORK FROM HOME', image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902' }
+        ],
+        order: 4,
+        isActive: true
+      },
+      {
+        sectionType: 'why-us',
         title: 'Why work with us?',
-        description: 'Take your skills to the next level with AdSky Solution\'s resources.',
+        description: 'Take your skills to the next level with AdSky Solution\'s resources and top-tier job opportunities.',
         items: [
           { title: 'Fast Tracking', description: 'Growth Roadmap' },
           { title: 'Certified', description: 'Official Badge' },
-          { title: 'Community', description: 'Global Network' }
+          { title: 'Community', description: 'Global Network' },
+          { title: 'Remote', description: 'Work Anywhere' }
         ],
-        order: 4,
+        order: 5,
+        isActive: true
+      },
+      {
+        sectionType: 'steps',
+        title: 'How It Works',
+        description: 'We ensure reliable execution of your core business operations. Here\'s how we do it:',
+        items: [
+          { title: 'Project Configuration', description: 'We\'ll configure your task on our platform within 24 hours.' },
+          { title: 'Task Allocation', description: 'Our automated system allocates tasks to the workforce in 10ms.' },
+          { title: 'Payment Completion', description: 'Our native app offers payment capability, paid every 7 days.' }
+        ],
+        order: 6,
+        isActive: true
+      },
+      {
+        sectionType: 'featured-testimonial',
+        title: 'What People Say',
+        subtitle: 'Ashwin Malani',
+        description: 'I am proud of the person I am today! From my first internship in the Customer Acquisition role to virtually leading a 90-member team, I have recorded 10,000 tasks with AdSky Solution to date.',
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2574',
+        order: 7,
+        isActive: true
+      },
+      {
+        sectionType: 'blogs',
+        title: 'Blogs',
+        items: [
+          { title: 'How to Introduce Yourself Professionally in a Job Interview?', date: 'Jan 15, 2026', image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902' },
+          { title: 'Important Documents Required For Joining A Company', date: 'Dec 26, 2024', image: 'https://images.unsplash.com/photo-1454165833767-027ffea9e77b' },
+          { title: 'How To Answer \'Why Should We Hire You?\'', date: 'Nov 26, 2024', image: 'https://images.unsplash.com/photo-1549923155-4422ead50223' }
+        ],
+        order: 8,
+        isActive: true
+      },
+      {
+        sectionType: 'registration',
+        title: 'Partner With AdSky',
+        description: 'Choose an account type to get started on your journey.',
+        items: [
+          { title: 'I am a Candidate', description: 'Create a profile to apply for jobs and track applications.' },
+          { title: 'I am an Employer', description: 'Post jobs, manage hiring, and consult with our experts.' }
+        ],
+        order: 9,
         isActive: true
       },
       {
         sectionType: 'cta',
         title: 'Ready to transform your vision into reality?',
         description: 'Join hundreds of successful partners who have trusted AD Sky Solution with their strategic management and growth.',
-        order: 5,
+        order: 10,
         isActive: true
       }
     ];
@@ -122,7 +175,7 @@ async function seedHomeSections() {
     }
 
     await homePage.save();
-    console.log('Complete Home hierarchy seeded successfully!');
+    console.log('COMPLETE Homepage with Testimonials & Blogs successfully seeded!');
     process.exit();
   } catch (err) {
     console.error('Seed error:', err);
