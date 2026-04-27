@@ -296,53 +296,49 @@ export default function RabbitFarmingForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] pb-20">
+    <div className="min-h-screen bg-[#FDFBF7] pb-20 font-sans">
       {/* Top Urgency Strip */}
-      <div className="bg-gradient-to-r from-red-600 to-orange-600 text-white py-2 px-4 text-center overflow-hidden relative">
-        <motion.p 
-          animate={{ x: [0, -10, 0] }} 
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="text-[10px] md:text-sm font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2"
-        >
-          <AlertCircle size={14} className="animate-pulse" /> ⚠️ Limited Seats Available – Apply Now before they close!
-        </motion.p>
+      <div className="bg-red-600 text-white py-1.5 px-4 text-center relative z-[60]">
+        <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3">
+          <AlertCircle size={14} className="animate-pulse" /> 
+          <span>Limited Seats Available – Apply Now before they close!</span>
+          <AlertCircle size={14} className="animate-pulse" />
+        </p>
       </div>
 
       {/* Professional Header Section */}
-      <header className="sticky top-0 z-50 bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#064e3b] text-white shadow-2xl border-b-2 border-[#DEB887]/30">
-        <div className="max-w-7xl mx-auto px-4 py-4 md:py-6 flex flex-col md:flex-row items-center justify-between gap-6">
+      <header className="sticky top-0 z-50 bg-[#0f172a] text-white shadow-xl border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-10">
           {/* Left: Logo */}
-          <div className="flex items-center gap-4 group">
-            <div className="bg-white p-2 rounded-2xl shadow-xl transition-transform group-hover:rotate-6">
+          <div className="flex-shrink-0">
+            <div className="bg-white p-1.5 rounded-xl shadow-lg border border-gray-100">
               <img 
-                src="https://www.adskysolution.com/_next/image?url=%2Flogo.png&w=256&q=75" 
+                src="/logo.jpeg" 
                 alt="AdSky Logo" 
-                className="h-10 md:h-14 w-auto object-contain"
-                onError={(e) => { e.target.src = 'https://via.placeholder.com/150?text=AdSky+Solution' }}
+                className="h-10 md:h-16 w-auto object-contain"
               />
             </div>
-            <div className="hidden md:block h-12 w-[1px] bg-white/20"></div>
           </div>
 
-          {/* Center: Title & Subtitle */}
-          <div className="text-center md:text-right flex-1">
-            <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tight leading-tight mb-1">
+          {/* Right: Title & Subtitle */}
+          <div className="text-center md:text-right">
+            <h1 className="text-xl md:text-3xl font-black uppercase tracking-tight text-white leading-none mb-1">
               Rabbit Farming <span className="text-[#DEB887]">Application Form</span>
             </h1>
-            <div className="flex flex-col md:flex-row items-center justify-end gap-2 md:gap-4">
-              <p className="text-[10px] md:text-sm font-bold text-gray-300 uppercase tracking-widest flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-green-400" /> Apply for PAN India Project
+            <div className="flex flex-col md:flex-row items-center justify-end gap-2 md:gap-4 opacity-80">
+              <p className="text-[9px] md:text-xs font-bold uppercase tracking-[0.1em] flex items-center gap-2">
+                <CheckCircle2 size={12} className="text-green-400" /> PAN India Project
               </p>
-              <div className="hidden md:block w-2 h-2 rounded-full bg-[#DEB887]"></div>
-              <p className="text-[10px] md:text-sm font-black text-orange-400 uppercase tracking-widest animate-pulse">
-                Limited Seats Available
+              <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-[#DEB887]"></div>
+              <p className="text-[9px] md:text-xs font-black text-orange-400 uppercase tracking-[0.1em]">
+                Limited Slots Left
               </p>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto px-4 mt-12">
+      <div className="max-w-5xl mx-auto px-4 mt-8">
         {/* Stepper */}
         <div className="flex justify-between mb-10 overflow-x-auto no-scrollbar py-2">
           {STEPS.map((step) => (
