@@ -3,6 +3,8 @@ import connectToDatabase from '@/utils/db';
 import Page from '@/models/Page';
 import Content from '@/models/Content';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req, { params }) {
   try {
     await connectToDatabase();

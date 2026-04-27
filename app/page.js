@@ -39,14 +39,16 @@ export default function HomePage() {
       try {
         const res = await fetch('/api/admin/cms/pages', { cache: 'no-store' });
         const pages = await res.json();
-        const home = pages.find(p => p.slug === 'home');
-        if (home && home.isActive) {
+        const home = pages.find(p => p.slug === 'home' || p.slug === '/');
+        if (home) {
           const detailRes = await fetch(`/api/admin/cms/pages/${home._id}`, { cache: 'no-store' });
           const detail = await detailRes.json();
-          setDynamicPage(detail);
+          if (detail && detail.sections) {
+            setDynamicPage(detail);
+          }
         }
       } catch (err) {
-        console.error(err);
+        console.error("Home Fetch Error:", err);
       } finally {
         setLoading(false);
       }
@@ -54,7 +56,7 @@ export default function HomePage() {
     fetchHome();
   }, []);
 
-  if (!loading && dynamicPage && dynamicPage.sections?.length > 0) {
+  if (dynamicPage && dynamicPage.sections?.length > 0) {
     const activeSections = dynamicPage.sections.filter(s => s.isActive);
     
     return (
