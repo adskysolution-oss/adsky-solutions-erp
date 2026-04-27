@@ -37,11 +37,11 @@ export default function HomePage() {
   useEffect(() => {
     const fetchHome = async () => {
       try {
-        const res = await fetch('/api/admin/cms/pages');
+        const res = await fetch('/api/admin/cms/pages', { cache: 'no-store' });
         const pages = await res.json();
         const home = pages.find(p => p.slug === 'home');
         if (home && home.isActive) {
-          const detailRes = await fetch(`/api/admin/cms/pages/${home._id}`);
+          const detailRes = await fetch(`/api/admin/cms/pages/${home._id}`, { cache: 'no-store' });
           const detail = await detailRes.json();
           setDynamicPage(detail);
         }
