@@ -69,12 +69,16 @@ export default function SectionRenderer({ section }) {
       );
 
     case 'stats':
+      const statIcons = [<CheckCircle2 />, <Users />, <Globe />, <Zap />];
       return (
         <section className="py-24 bg-[#020617] relative">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
               {items?.map((item, idx) => (
                 <div key={idx} className="text-center group">
+                  <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-400 mx-auto mb-6 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                    {statIcons[idx % 4]}
+                  </div>
                   <div className="text-5xl md:text-7xl font-black text-white mb-2 italic tracking-tighter group-hover:text-blue-500 transition-colors">
                     {item.title}
                   </div>
