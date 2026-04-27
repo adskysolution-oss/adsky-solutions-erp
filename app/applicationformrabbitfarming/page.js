@@ -48,11 +48,11 @@ const INDIA_GEO_DATA = {
 };
 
 const STEPS = [
-  { id: 1, title: 'Personal / व्यक्तिगत', icon: User, fields: ['aadhar', 'name', 'mobile'] },
+  { id: 1, title: 'Personal / व्यक्तिगत', icon: User, fields: ['aadhar', 'name', 'parentName', 'mobile', 'gender', 'dob'] },
   { id: 2, title: 'Qualification / योग्यता', icon: GraduationCap, fields: ['qualification'] },
-  { id: 3, title: 'Address & Unit / पता और इकाई', icon: MapPin, fields: ['state', 'district', 'pincode'] },
-  { id: 4, title: 'Project & Bank / प्रोजेक्ट और बैंक', icon: CreditCard, fields: ['bankName', 'accountNumber', 'ifscCode'] },
-  { id: 5, title: 'Agency/Vendor / एजेंसी/वेंडर', icon: ShieldCheck, fields: ['vendorCode', 'vendorName', 'agentName', 'agentMobile'] },
+  { id: 3, title: 'Address & Unit / पता और इकाई', icon: MapPin, fields: ['state', 'district', 'pincode', 'address'] },
+  { id: 4, title: 'Project & Bank / प्रोजेक्ट और बैंक', icon: CreditCard, fields: ['projectCost', 'bankName', 'accountNumber', 'ifscCode'] },
+  { id: 5, title: 'Agency/Vendor / एजेंसी/वender', icon: ShieldCheck, fields: ['vendorCode', 'vendorName', 'agentName', 'agentMobile'] },
   { id: 6, title: 'Documents / दस्तावेज', icon: FileUp, fields: [] },
   { id: 7, title: 'Review / समीक्षा', icon: Eye, fields: [] }
 ];
