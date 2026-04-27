@@ -22,6 +22,10 @@ const UserSchema = new mongoose.Schema({
   village: { type: String },
   profileImage: { type: String },
   lastLogin: { type: Date },
+  // Vendor/Agent Tracking
+  vendorCode: { type: String, unique: true, sparse: true }, // Unique code for vendors
+  referredBy: { type: String }, // Code of the vendor/agent who referred this user
+  vendorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Parent vendor for agents
 }, { timestamps: true });
 
 
