@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, MapPin, Briefcase, Building2, ShieldCheck, 
   ArrowRight, ArrowLeft, CheckCircle2, AlertCircle, Loader2,
-  FileText, CreditCard, GraduationCap, Upload, FileUp, Info
+  FileText, CreditCard, GraduationCap, Upload, FileUp
 } from 'lucide-react';
 
 const INDIA_GEO_DATA = {
@@ -48,12 +48,12 @@ const INDIA_GEO_DATA = {
 };
 
 const STEPS = [
-  { id: 1, title: 'Personal', sub: 'व्यक्तिगत', icon: User },
-  { id: 2, title: 'Qualification', sub: 'योग्यता', icon: GraduationCap },
-  { id: 3, title: 'Address', sub: 'पता', icon: MapPin },
-  { id: 4, title: 'Project', sub: 'प्रोजेक्ट', icon: CreditCard },
-  { id: 5, title: 'Agency', sub: 'एजेंसी', icon: ShieldCheck },
-  { id: 6, title: 'Documents', sub: 'दस्तावेज', icon: FileUp }
+  { id: 1, title: 'Personal / व्यक्तिगत', icon: User },
+  { id: 2, title: 'Qualification / योग्यता', icon: GraduationCap },
+  { id: 3, title: 'Address & Unit / पता और इकाई', icon: MapPin },
+  { id: 4, title: 'Project & Bank / प्रोजेक्ट और बैंक', icon: CreditCard },
+  { id: 5, title: 'Agency/Vendor / एजेंसी/वेंडर', icon: ShieldCheck },
+  { id: 6, title: 'Documents / दस्तावेज', icon: FileUp }
 ];
 
 export default function RabbitFarmingForm() {
@@ -73,6 +73,7 @@ export default function RabbitFarmingForm() {
     txnId: '', paymentStatus: 'Pending'
   });
 
+  // Inject Cashfree SDK
   useEffect(() => {
     const script = document.createElement('script');
     script.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
@@ -84,10 +85,6 @@ export default function RabbitFarmingForm() {
   const handleFileChange = (e, field) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert('File size too large (Max 5MB)');
-        return;
-      }
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData(prev => ({ ...prev, [field]: reader.result }));
@@ -143,12 +140,12 @@ export default function RabbitFarmingForm() {
       }
     }
     setCurrentStep(prev => Math.min(prev + 1, 6));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo(0, 0);
   };
 
   const prevStep = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo(0, 0);
   };
 
   const handleManualSubmit = async () => {
@@ -160,6 +157,7 @@ export default function RabbitFarmingForm() {
     setLoading(true);
     
     try {
+      // 1. Create Cashfree Order
       const orderRes = await fetch('/api/payment/cashfree', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -175,12 +173,14 @@ export default function RabbitFarmingForm() {
       const orderData = await orderRes.json();
       if (!orderData.success) throw new Error(orderData.error || 'Failed to create order');
 
+      // 2. Initialize Checkout
       const cashfree = window.Cashfree({ mode: "production" });
-      
-      cashfree.checkout({
+      const checkoutOptions = {
         paymentSessionId: orderData.paymentSessionId,
-        redirectTarget: "_modal",
-      }).then(async (result) => {
+        redirectTarget: "_modal", 
+      };
+
+      cashfree.checkout(checkoutOptions).then(async (result) => {
         if (result.error) {
           alert(result.error.message);
           setLoading(false);
@@ -210,75 +210,59 @@ export default function RabbitFarmingForm() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 font-sans">
-        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-md w-full bg-white rounded-3xl p-10 text-center shadow-2xl border border-slate-100">
-          <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500 shadow-inner"><CheckCircle2 size={40} /></div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">आवेदन सफल!</h2>
-          <p className="text-slate-500 mb-8 text-sm">आपका आवेदन सफलतापूर्वक जमा कर लिया गया है। हम जल्द ही आपसे संपर्क करेंगे।</p>
-          <button onClick={() => window.location.reload()} className="w-full py-4 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-[0.98]">Done</button>
+      <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-6">
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-md w-full bg-white border-2 border-[#DEB887] rounded-3xl p-10 text-center shadow-2xl">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600"><CheckCircle2 size={48} /></div>
+          <h2 className="text-3xl font-black text-[#B32D2D] mb-4">सफलतापूर्वक जमा!</h2>
+          <p className="text-gray-600 font-bold mb-8">आपका आवेदन सफलतापूर्वक जमा कर लिया गया है।</p>
+          <button onClick={() => window.location.reload()} className="w-full py-4 bg-[#B32D2D] text-white font-black rounded-xl hover:bg-[#8e2424]">OK</button>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] pb-20 font-sans text-slate-900 overflow-x-hidden">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-           <div className="flex flex-col">
-             <h1 className="text-lg md:text-xl font-extrabold text-slate-900 leading-none">Application Form</h1>
-             <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest mt-1">Rabbit Farming Mission</p>
-           </div>
-           <div className="bg-indigo-50 px-3 py-1.5 rounded-full border border-indigo-100 flex items-center gap-2">
-              <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></span>
-              <span className="text-[9px] font-bold text-indigo-700 uppercase tracking-tighter">Live Registration Portal</span>
-           </div>
+    <div className="min-h-screen bg-[#FDFBF7] pb-20">
+      <div className="bg-white border-b-4 border-[#B32D2D] shadow-sm mb-8">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col items-center justify-center gap-2 text-center">
+           <h1 className="text-2xl md:text-3xl font-black text-[#B32D2D]">Online Application Form</h1>
+           <p className="text-[10px] md:text-xs font-bold text-gray-600 uppercase tracking-widest">Rabbit Farming Mission | Entrepreneurship Development</p>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 mt-10">
-        {/* Modern Progress Bar */}
-        <div className="mb-12">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Step {currentStep} of 6</span>
-            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">{STEPS[currentStep-1].title}</span>
-          </div>
-          <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-             <motion.div initial={{ width: 0 }} animate={{ width: `${(currentStep / 6) * 100}%` }} className="h-full bg-indigo-600 rounded-full" />
-          </div>
+      <div className="max-w-5xl mx-auto px-4">
+        <div className="flex justify-between mb-10 overflow-x-auto no-scrollbar py-2">
+          {STEPS.map((step) => (
+            <div key={step.id} className="flex flex-col items-center flex-1 min-w-[120px]">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${currentStep >= step.id ? 'bg-[#B32D2D] border-[#B32D2D] text-white' : 'bg-white border-gray-300 text-gray-400'}`}>
+                {currentStep > step.id ? <CheckCircle2 size={20} /> : <step.icon size={20} />}
+              </div>
+              <span className={`mt-2 text-[10px] font-black uppercase text-center ${currentStep >= step.id ? 'text-[#B32D2D]' : 'text-gray-400'}`}>{step.title}</span>
+            </div>
+          ))}
         </div>
 
-        <div className="bg-white rounded-[2rem] shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-          {/* Form Banner */}
-          <div className="bg-indigo-600 px-8 py-4 flex items-center justify-between">
-             <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center text-white backdrop-blur-md">
-                   {React.createElement(STEPS[currentStep-1].icon, { size: 18 })}
-                </div>
-                <h3 className="text-white font-bold text-sm tracking-tight uppercase">{STEPS[currentStep-1].title} Details</h3>
-             </div>
-             <span className="text-indigo-200 text-[10px] font-bold uppercase tracking-widest">{STEPS[currentStep-1].sub}</span>
-          </div>
+        <div className="bg-white border-2 border-[#DEB887] rounded-3xl shadow-xl overflow-hidden">
+          <div className="bg-[#DEB887] px-8 py-3"><h3 className="text-white font-black italic text-sm">{STEPS.find(s => s.id === currentStep).title}</h3></div>
 
-          <div className="p-8 md:p-12">
+          <div className="p-6 md:p-10 space-y-8">
             <AnimatePresence mode="wait">
               {currentStep === 1 && (
-                <motion.div key="s1" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                  <InputField label="Aadhar Number" name="aadhar" value={formData.aadhar} onChange={handleChange} required maxLength={12} placeholder="0000 0000 0000" />
-                  <InputField label="Applicant Name" name="name" value={formData.name} onChange={handleChange} required placeholder="Full Name" />
-                  <InputField label="Father/Husband Name" name="parentName" value={formData.parentName} onChange={handleChange} placeholder="Guardian Name" />
-                  <InputField label="Mobile Number" name="mobile" value={formData.mobile} onChange={handleChange} required maxLength={10} placeholder="10-digit number" />
-                  <InputField label="Email ID (Optional)" name="email" value={formData.email} onChange={handleChange} type="email" placeholder="example@gmail.com" />
+                <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <InputField label="Aadhar Number / आधार नंबर" name="aadhar" value={formData.aadhar} onChange={handleChange} required maxLength={12} />
+                  <InputField label="Applicant Name / आवेदक का नाम" name="name" value={formData.name} onChange={handleChange} required />
+                  <InputField label="Father/Husband Name" name="parentName" value={formData.parentName} onChange={handleChange} />
+                  <InputField label="Mobile Number" name="mobile" value={formData.mobile} onChange={handleChange} required maxLength={10} />
+                  <InputField label="Email ID / ईमेल" name="email" value={formData.email} onChange={handleChange} type="email" placeholder="example@gmail.com" />
                   <SelectField label="Social Category" name="socialCategory" value={formData.socialCategory} onChange={handleChange} options={['General', 'SC', 'ST', 'OBC', 'Minority']} />
                   <SelectField label="Gender" name="gender" value={formData.gender} onChange={handleChange} options={['Male', 'Female', 'Other']} />
                   <InputField label="Date of Birth" name="dob" value={formData.dob} onChange={handleChange} type="date" />
-                  <InputField label="PAN Card Number" name="pan" value={formData.pan} onChange={handleChange} maxLength={10} placeholder="ABCDE1234F" />
+                  <InputField label="PAN Card Number" name="pan" value={formData.pan} onChange={handleChange} maxLength={10} />
                 </motion.div>
               )}
 
               {currentStep === 2 && (
-                <motion.div key="s2" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <motion.div key="s2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <SelectField label="Educational Qualification" name="qualification" value={formData.qualification} onChange={handleChange} options={['8th Pass', '10th Pass', '12th Pass', 'Graduate', 'Post Graduate', 'Diploma']} />
                   <SelectField label="EDP Training Done?" name="edpTraining" value={formData.edpTraining} onChange={handleChange} options={['Yes', 'No']} />
                   <SelectField label="Prior Experience?" name="experience" value={formData.experience} onChange={handleChange} options={['Yes', 'No']} />
@@ -286,29 +270,29 @@ export default function RabbitFarmingForm() {
               )}
 
               {currentStep === 3 && (
-                <motion.div key="s3" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                  <InputField label="Pincode (Auto-fill)" name="pincode" value={formData.pincode} onChange={handleChange} maxLength={6} required placeholder="Enter 6-digit Pincode" />
+                <motion.div key="s3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <InputField label="Pincode / पिनकोड (Auto-fill)" name="pincode" value={formData.pincode} onChange={handleChange} maxLength={6} required placeholder="Enter Pincode to auto-fill" />
                   <SelectField label="State / राज्य" name="state" value={formData.state} onChange={handleChange} options={Object.keys(INDIA_GEO_DATA)} required />
                   <SelectField label="District / जिला" name="district" value={formData.district} onChange={handleChange} options={availableDistricts} required />
                   <InputField label="Taluka/Block" name="block" value={formData.block} onChange={handleChange} />
-                  <div className="md:col-span-2"><InputField label="Full Address" name="address" value={formData.address} onChange={handleChange} placeholder="House No, Landmark, Village" /></div>
+                  <div className="md:col-span-2"><InputField label="Full Address" name="address" value={formData.address} onChange={handleChange} /></div>
                   <SelectField label="Unit Location" name="unitLocation" value={formData.unitLocation} onChange={handleChange} options={['Rural', 'Urban']} />
                 </motion.div>
               )}
 
               {currentStep === 4 && (
-                <motion.div key="s4" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                  <InputField label="Business Activity" name="businessActivity" value={formData.businessActivity} disabled className="bg-slate-50 border-slate-100" />
-                  <InputField label="Estimated Project Cost (₹)" name="projectCost" value={formData.projectCost} onChange={handleChange} type="number" placeholder="Enter Amount" />
-                  <InputField label="IFSC Code (Auto-fill)" name="ifscCode" value={formData.ifscCode} onChange={handleChange} maxLength={11} required placeholder="e.g. SBIN0001234" />
+                <motion.div key="s4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <InputField label="Business Activity" name="businessActivity" value={formData.businessActivity} disabled className="bg-gray-50 border-gray-100" />
+                  <InputField label="Estimated Project Cost (₹)" name="projectCost" value={formData.projectCost} onChange={handleChange} type="number" />
+                  <InputField label="IFSC Code / आईएफएससी (Auto-fill)" name="ifscCode" value={formData.ifscCode} onChange={handleChange} maxLength={11} required placeholder="Enter IFSC to auto-fill bank" />
                   <InputField label="Bank Name" name="bankName" value={formData.bankName} onChange={handleChange} />
                   <InputField label="Branch Name" name="bankBranch" value={formData.bankBranch} onChange={handleChange} />
-                  <InputField label="Account Number" name="accountNumber" value={formData.accountNumber} onChange={handleChange} placeholder="Enter Account Number" />
+                  <InputField label="Account Number" name="accountNumber" value={formData.accountNumber} onChange={handleChange} />
                 </motion.div>
               )}
 
               {currentStep === 5 && (
-                <motion.div key="s5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <motion.div key="s5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <InputField label="Agency/Vendor Code" name="vendorCode" value={formData.vendorCode} onChange={handleChange} required />
                   <InputField label="Agency/Vendor Name" name="vendorName" value={formData.vendorName} onChange={handleChange} required />
                   <InputField label="Sub-Agency Code" name="subVendorCode" value={formData.subVendorCode} onChange={handleChange} />
@@ -319,46 +303,42 @@ export default function RabbitFarmingForm() {
               )}
 
               {currentStep === 6 && (
-                <motion.div key="s6" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
-                  <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 flex items-start gap-4">
-                     <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 shrink-0"><Info size={20} /></div>
-                     <p className="text-xs font-semibold text-slate-600 leading-relaxed uppercase tracking-tighter">Upload high-quality scans of your documents. Non-mandatory but recommended for faster processing. (Max 5MB each)</p>
+                <motion.div key="s6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                  <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-start gap-3 mb-6">
+                    <AlertCircle className="text-blue-500 shrink-0 mt-1" size={20} />
+                    <p className="text-sm text-blue-700 font-bold italic">Upload clear photos or scans of your documents. (Non-mandatory)</p>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FileUploadField label="Aadhaar Front" onChange={(e) => handleFileChange(e, 'doc_aadhar_front')} hasFile={!!formData.doc_aadhar_front} />
-                    <FileUploadField label="Aadhaar Back" onChange={(e) => handleFileChange(e, 'doc_aadhar_back')} hasFile={!!formData.doc_aadhar_back} />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <FileUploadField label="Aadhaar Card (Front Side)" onChange={(e) => handleFileChange(e, 'doc_aadhar_front')} hasFile={!!formData.doc_aadhar_front} />
+                    <FileUploadField label="Aadhaar Card (Back Side)" onChange={(e) => handleFileChange(e, 'doc_aadhar_back')} hasFile={!!formData.doc_aadhar_back} />
                     <FileUploadField label="PAN Card" onChange={(e) => handleFileChange(e, 'doc_pan')} hasFile={!!formData.doc_pan} />
-                    <FileUploadField label="Passport Photo" onChange={(e) => handleFileChange(e, 'doc_photo')} hasFile={!!formData.doc_photo} />
-                    <FileUploadField label="Bank Passbook" onChange={(e) => handleFileChange(e, 'doc_bank')} hasFile={!!formData.doc_bank} />
-                    <FileUploadField label="Address Proof" onChange={(e) => handleFileChange(e, 'doc_address')} hasFile={!!formData.doc_address} />
-                    <FileUploadField label="Rural Certificate" onChange={(e) => handleFileChange(e, 'doc_rural_cert')} hasFile={!!formData.doc_rural_cert} />
-                    <FileUploadField label="Affidavit" onChange={(e) => handleFileChange(e, 'doc_affidavit')} hasFile={!!formData.doc_affidavit} />
+                    <FileUploadField label="Passport Size Photo" onChange={(e) => handleFileChange(e, 'doc_photo')} hasFile={!!formData.doc_photo} />
+                    <FileUploadField label="Bank Passbook / Statement" onChange={(e) => handleFileChange(e, 'doc_bank')} hasFile={!!formData.doc_bank} />
+                    <FileUploadField label="Address Proof (Voter/DL)" onChange={(e) => handleFileChange(e, 'doc_address')} hasFile={!!formData.doc_address} />
+                    <FileUploadField label="Rural Praman Patr (ग्रामीण प्रमाण पत्र)" onChange={(e) => handleFileChange(e, 'doc_rural_cert')} hasFile={!!formData.doc_rural_cert} />
+                    <FileUploadField label="PMEGP Rabbit Farming Affidavit" onChange={(e) => handleFileChange(e, 'doc_affidavit')} hasFile={!!formData.doc_affidavit} />
+                    <FileUploadField label="Land Doc (Khasra/Khatauni)" onChange={(e) => handleFileChange(e, 'doc_land')} hasFile={!!formData.doc_land} />
+                    <FileUploadField label="Project Report (DPR)" onChange={(e) => handleFileChange(e, 'doc_dpr')} hasFile={!!formData.doc_dpr} />
+                    <FileUploadField label="Income Proof" onChange={(e) => handleFileChange(e, 'doc_income')} hasFile={!!formData.doc_income} />
+                    <FileUploadField label="Training Certificate" onChange={(e) => handleFileChange(e, 'doc_training')} hasFile={!!formData.doc_training} />
+                    <FileUploadField label="Caste Certificate" onChange={(e) => handleFileChange(e, 'doc_caste')} hasFile={!!formData.doc_caste} />
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Actions */}
-            <div className="flex flex-col md:flex-row gap-4 mt-12">
-              {currentStep > 1 && (
-                <button type="button" onClick={prevStep} className="flex-1 py-4 px-6 border-2 border-slate-100 text-slate-500 font-bold rounded-2xl hover:bg-slate-50 transition-all flex items-center justify-center gap-2 active:scale-95">
-                  <ArrowLeft size={18} /> Back
-                </button>
-              )}
+            <div className="flex flex-col md:flex-row gap-4 pt-6">
+              {currentStep > 1 && <button type="button" onClick={prevStep} className="flex-1 py-4 border-2 border-[#B32D2D] text-[#B32D2D] font-black rounded-xl">BACK</button>}
               {currentStep < 6 ? (
-                <button type="button" onClick={nextStep} className="flex-[2] py-4 px-6 bg-indigo-600 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 active:scale-95">
-                  Continue <ArrowRight size={18} />
-                </button>
+                <button type="button" onClick={nextStep} className="flex-[2] py-4 bg-[#B32D2D] text-white font-black rounded-xl flex items-center justify-center gap-2">NEXT STEP <ArrowRight size={20} /></button>
               ) : (
-                <button type="button" onClick={handleManualSubmit} disabled={loading} className="flex-[2] py-4 px-6 bg-emerald-600 text-white font-bold rounded-2xl shadow-xl shadow-emerald-100 hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 active:scale-95">
-                  {loading ? <Loader2 className="animate-spin" /> : 'Pay ₹249 & Final Submit'}
+                <button type="button" onClick={handleManualSubmit} disabled={loading} className="flex-[2] py-4 bg-[#22c55e] text-white font-black rounded-xl flex items-center justify-center gap-2">
+                  {loading ? <Loader2 className="animate-spin" /> : 'PAY ₹249 & SUBMIT APPLICATION'}
                 </button>
               )}
             </div>
           </div>
         </div>
-        
-        <p className="text-center mt-8 text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">Secured by Cashfree Payments & SSL Encryption</p>
       </div>
     </div>
   );
@@ -366,30 +346,19 @@ export default function RabbitFarmingForm() {
 
 function InputField({ label, name, value, onChange, type = "text", required = false, className = "", ...props }) {
   return (
-    <div className="space-y-2">
-      <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest flex items-center gap-1.5 ml-1">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <input 
-        type={type} name={name} value={value} onChange={onChange} 
-        className={`w-full px-5 py-4 bg-slate-50/50 border border-slate-200 rounded-2xl focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-50 transition-all font-bold text-sm outline-none placeholder:text-slate-300 ${className}`} 
-        {...props} 
-      />
+    <div className="space-y-1">
+      <label className="text-[10px] font-black text-gray-600 uppercase">{label} {required && '*'}</label>
+      <input type={type} name={name} value={value} onChange={onChange} className={`w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#B32D2D] font-bold text-sm outline-none ${className}`} {...props} />
     </div>
   );
 }
 
 function SelectField({ label, name, value, onChange, options, required = false }) {
   return (
-    <div className="space-y-2">
-      <label className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest flex items-center gap-1.5 ml-1">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <select 
-        name={name} value={value} onChange={onChange} 
-        className="w-full px-5 py-4 bg-slate-50/50 border border-slate-200 rounded-2xl focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-50 transition-all font-bold text-sm outline-none appearance-none"
-      >
-        <option value="">Select Option</option>
+    <div className="space-y-1">
+      <label className="text-[10px] font-black text-gray-600 uppercase">{label} {required && '*'}</label>
+      <select name={name} value={value} onChange={onChange} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#B32D2D] font-bold text-sm outline-none">
+        <option value="">Select / चुनें</option>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
     </div>
@@ -398,16 +367,17 @@ function SelectField({ label, name, value, onChange, options, required = false }
 
 function FileUploadField({ label, onChange, hasFile }) {
   return (
-    <div className="relative group cursor-pointer">
-      <div className={`p-4 rounded-2xl border-2 border-dashed transition-all duration-300 ${hasFile ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200 group-hover:border-indigo-400 group-hover:bg-indigo-50'}`}>
-        <input type="file" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-        <div className="flex items-center gap-4">
-          <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${hasFile ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200' : 'bg-white text-slate-400 shadow-sm border border-slate-100'}`}>
-            {hasFile ? <CheckCircle2 size={18} /> : <Upload size={18} />}
+    <div className="space-y-2">
+      <label className="text-[10px] font-black text-gray-600 uppercase">{label}</label>
+      <div className={`relative border-2 border-dashed rounded-xl p-4 transition-colors ${hasFile ? 'border-green-400 bg-green-50' : 'border-gray-200 hover:border-[#B32D2D]'}`}>
+        <input type="file" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+        <div className="flex items-center gap-3">
+          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${hasFile ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'}`}>
+            {hasFile ? <CheckCircle2 size={20} /> : <Upload size={20} />}
           </div>
           <div>
-            <p className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">{label}</p>
-            <p className={`text-[9px] font-bold mt-0.5 ${hasFile ? 'text-emerald-600' : 'text-slate-400'}`}>{hasFile ? 'Document Selected' : 'Choose File'}</p>
+            <p className="text-xs font-black text-gray-700">{hasFile ? 'File Selected' : 'Choose File'}</p>
+            <p className="text-[10px] text-gray-400">PDF, JPG, PNG (Max 5MB)</p>
           </div>
         </div>
       </div>
