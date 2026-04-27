@@ -8,7 +8,6 @@ import {
   FileText, CreditCard, GraduationCap
 } from 'lucide-react';
 
-// COMPREHENSIVE STATIC DATA FOR ALL INDIAN STATES & DISTRICTS
 const INDIA_GEO_DATA = {
   "Andaman and Nicobar Islands": ["Nicobar", "North and Middle Andaman", "South Andaman"],
   "Andhra Pradesh": ["Anantapur", "Chittoor", "East Godavari", "Guntur", "Krishna", "Kurnool", "Nellore", "Prakasam", "Srikakulam", "Visakhapatnam", "Vizianagaram", "West Godavari", "YSR Kadapa"],
@@ -126,6 +125,12 @@ export default function RabbitFarmingForm() {
         return;
       }
     }
+    if (currentStep === 3) {
+      if (!formData.state || !formData.district || !formData.pincode) {
+        alert('Please select State, District and Pincode');
+        return;
+      }
+    }
     setCurrentStep(prev => Math.min(prev + 1, 5));
     window.scrollTo(0, 0);
   };
@@ -135,10 +140,15 @@ export default function RabbitFarmingForm() {
     window.scrollTo(0, 0);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleManualSubmit = async () => {
+    if (!formData.vendorCode || !formData.vendorName || !formData.agentName || !formData.agentMobile) {
+      alert('Please fill all Vendor details before submitting.');
+      return;
+    }
+    
     setLoading(true);
     const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzEC_C3n1Cz6kknKk6vJabBOSODvbAvZMHU0d5ZQOmWF3prY9LmB_4bNGCx03U-U9if/exec';
+    
     try {
       await fetch(GOOGLE_WEB_APP_URL, {
         method: 'POST',
@@ -148,9 +158,16 @@ export default function RabbitFarmingForm() {
       });
       setSubmitted(true);
     } catch (err) {
-      setError('Submission failed.');
+      alert('Submission Error. Please check your internet.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Prevent Form submission on Enter Key
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
     }
   };
 
@@ -196,7 +213,7 @@ export default function RabbitFarmingForm() {
         <div className="bg-white border-2 border-[#DEB887] rounded-3xl shadow-xl overflow-hidden">
           <div className="bg-[#DEB887] px-8 py-3"><h3 className="text-white font-black italic text-sm">{STEPS.find(s => s.id === currentStep).title}</h3></div>
 
-          <form onSubmit={handleSubmit} className="p-6 md:p-10 space-y-8">
+          <div onKeyDown={handleKeyDown} className="p-6 md:p-10 space-y-8">
             <AnimatePresence mode="wait">
               {currentStep === 1 && (
                 <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -256,12 +273,12 @@ export default function RabbitFarmingForm() {
               {currentStep < 5 ? (
                 <button type="button" onClick={nextStep} className="flex-[2] py-4 bg-[#B32D2D] text-white font-black rounded-xl flex items-center justify-center gap-2">NEXT STEP <ArrowRight size={20} /></button>
               ) : (
-                <button type="submit" disabled={loading} className="flex-[2] py-4 bg-[#22c55e] text-white font-black rounded-xl flex items-center justify-center gap-2">
+                <button type="button" onClick={handleManualSubmit} disabled={loading} className="flex-[2] py-4 bg-[#22c55e] text-white font-black rounded-xl flex items-center justify-center gap-2">
                   {loading ? <Loader2 className="animate-spin" /> : 'SUBMIT APPLICATION'}
                 </button>
               )}
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
