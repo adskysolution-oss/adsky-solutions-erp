@@ -21,6 +21,9 @@ export async function POST(req) {
     
     if (!data.slug) {
       data.slug = data.formName.toLowerCase().replace(/\s+/g, '-');
+    } else {
+      // Clean slug: remove leading/trailing slashes and spaces
+      data.slug = data.slug.replace(/^\/+|\/+$/g, '').trim();
     }
     
     let form;

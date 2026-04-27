@@ -8,8 +8,9 @@ export async function GET(req, { params }) {
   try {
     await connectToDatabase();
     const { slug } = params;
+    // Look for slug with or without leading slash, case-insensitive
     const form = await CustomForm.findOne({ 
-      slug: { $regex: new RegExp(`^${slug}$`, 'i') } 
+      slug: { $regex: new RegExp(`^/?${slug.trim()}$`, 'i') } 
     });
     
     if (!form) {
