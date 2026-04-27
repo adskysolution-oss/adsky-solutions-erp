@@ -252,6 +252,39 @@ export default function FormBuilderPage() {
                               </div>
                            </div>
 
+                              {['select', 'radio', 'checkbox'].includes(field.type) && (
+                                <div className="space-y-4 ml-12 p-6 rounded-2xl bg-[#0b1220] border border-blue-500/10">
+                                   <p className="text-[10px] font-black uppercase text-blue-500 italic mb-2">Manage Options</p>
+                                   <div className="flex flex-wrap gap-2">
+                                      {field.options?.map((opt, oIdx) => (
+                                        <div key={oIdx} className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10 group/opt">
+                                           <span className="text-xs text-white font-medium italic">{opt}</span>
+                                           <button onClick={() => {
+                                              const updated = [...editingForm.steps];
+                                              updated[activeStepIdx].fields[fIdx].options.splice(oIdx, 1);
+                                              setEditingForm({...editingForm, steps: updated});
+                                           }} className="text-red-500 opacity-0 group-hover/opt:opacity-100 transition-opacity"><X size={12} /></button>
+                                        </div>
+                                      ))}
+                                      <button 
+                                        onClick={() => {
+                                          const val = prompt("Enter option name:");
+                                          if (val) {
+                                            const updated = [...editingForm.steps];
+                                            if (!updated[activeStepIdx].fields[fIdx].options) updated[activeStepIdx].fields[fIdx].options = [];
+                                            updated[activeStepIdx].fields[fIdx].options.push(val);
+                                            setEditingForm({...editingForm, steps: updated});
+                                          }
+                                        }}
+                                        className="px-4 py-2 bg-blue-500/10 text-blue-500 rounded-xl border border-blue-500/20 text-xs font-black italic hover:bg-blue-500 hover:text-white transition-all"
+                                      >
+                                        + ADD OPTION
+                                      </button>
+                                   </div>
+                                </div>
+                              )}
+                           </div>
+
                            <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all">
                               <button onClick={() => removeField(fIdx)} className="p-4 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-lg"><Trash2 size={18} /></button>
                            </div>
@@ -279,6 +312,13 @@ export default function FormBuilderPage() {
                        <ListTodo size={28} />
                      </div>
                     <div className="flex items-center gap-2">
+                        <button 
+                           onClick={() => window.open(`/${form.slug}`, '_blank')}
+                           className="p-3 bg-white/5 text-slate-400 rounded-xl hover:bg-white/10 hover:text-white transition-all shadow-lg"
+                           title="Preview Live"
+                        >
+                           <Eye size={18} />
+                        </button>
                         <button 
                            onClick={() => {
                               const url = `${window.location.origin}/${form.slug}`;

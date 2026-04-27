@@ -11,7 +11,6 @@ import {
   Send,
   Sparkles
 } from 'lucide-react';
-import connectToDatabase from '@/utils/db';
 
 export default function PublicForm({ params }) {
   const { slug } = params;
