@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import DataTable from '@/components/admin/DataTable';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Globe, Layers, Plus, FileText, Eye, Edit3, 
@@ -64,6 +65,16 @@ export default function CMSManagement() {
       </span>
     )},
     { key: 'updatedAt', label: 'LAST REVISION', render: (val) => new Date(val).toLocaleDateString() },
+    { key: 'actions', label: 'ACTIONS', render: (_, row) => (
+      <div className="flex items-center gap-3">
+        <Link href={`/admin/cms/edit/${row._id}`} className="p-2.5 bg-blue-500/10 text-blue-400 rounded-xl hover:bg-blue-500 hover:text-white transition-all">
+          <Edit3 size={16} />
+        </Link>
+        <Link href={`/${row.slug === 'home' ? '' : row.slug}`} target="_blank" className="p-2.5 bg-white/5 text-slate-400 rounded-xl hover:text-white transition-all">
+          <Eye size={16} />
+        </Link>
+      </div>
+    )},
   ];
 
   return (

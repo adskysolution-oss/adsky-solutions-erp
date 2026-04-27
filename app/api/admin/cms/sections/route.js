@@ -41,3 +41,22 @@ export async function POST(req) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+// Delete section
+export async function DELETE(req) {
+  try {
+    await connectToDatabase();
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+    
+    if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
+
+    await Content.findByIdAndDelete(id);
+    // Also remove reference from Page
+    await Page.updateMany({}, { $pull: { sections: id } });
+
+    return NextResponse.json({ success: true, message: 'Section deleted' });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
