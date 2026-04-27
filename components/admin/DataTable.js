@@ -1,23 +1,17 @@
 'use client';
 
 import React from 'react';
-import { ChevronLeft, ChevronRight, MoreHorizontal, Download, Filter as FilterIcon, XCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MoreHorizontal, Download, Filter as FilterIcon, XCircle, Edit3, Eye } from 'lucide-react';
 
-
-export default function DataTable({ title, columns, data, onFilter, onExport, onEdit, onDelete }) {
+export default function DataTable({ title, columns, data, onFilter, onExport, onEdit, onDelete, actionLabel = "Actions" }) {
   const handleExportCSV = () => {
-
     if (!data || data.length === 0) return;
     
-    // Extract headers from columns
     const headers = columns.map(col => col.label).join(',');
-    
-    // Extract rows
     const rows = data.map(row => 
       columns.map(col => {
         const val = row[col.key];
-        // If it's a React element (like status tag), extract text or use raw status
-        if (React.isValidElement(val)) return row.status_raw || 'Unknown';
+        if (React.isValidElement(val)) return 'Element';
         return `"${String(val).replace(/"/g, '""')}"`;
       }).join(',')
     ).join('\n');
@@ -57,8 +51,6 @@ export default function DataTable({ title, columns, data, onFilter, onExport, on
         </div>
       </div>
 
-
-
       {/* Table Content */}
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
@@ -69,9 +61,6 @@ export default function DataTable({ title, columns, data, onFilter, onExport, on
                   {col.label}
                 </th>
               ))}
-              <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-[#6b7280] italic border-b border-[#1f2937] text-right">
-                Actions
-              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#1f2937]">
@@ -80,31 +69,10 @@ export default function DataTable({ title, columns, data, onFilter, onExport, on
                 {columns.map((col) => (
                   <td key={col.key} className="px-8 py-5">
                     <div className="text-[13px] font-bold text-[#f3f4f6] italic">
-                      {row[col.key]}
+                      {col.render ? col.render(row[col.key], row) : row[col.key]}
                     </div>
                   </td>
                 ))}
-                <td className="px-8 py-5 text-right">
-                  <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                    <button 
-                      onClick={() => onEdit && onEdit(row)}
-                      className="p-2 rounded-lg bg-[#1f2937] text-[#6b7280] hover:text-[#38bdf8] hover:bg-[#38bdf8]/10 transition-all"
-                    >
-                      <MoreHorizontal size={18} />
-                    </button>
-                    <button 
-                      onClick={() => {
-                        if (window.confirm('Terminate this identity node?')) {
-                          onDelete && onDelete(row);
-                        }
-                      }}
-                      className="p-2 rounded-lg bg-[#ef4444]/5 text-[#ef4444]/50 hover:text-[#ef4444] hover:bg-[#ef4444]/10 transition-all"
-                    >
-                      <XCircle size={18} />
-                    </button>
-                  </div>
-                </td>
-
               </tr>
             ))}
           </tbody>
@@ -113,14 +81,13 @@ export default function DataTable({ title, columns, data, onFilter, onExport, on
 
       {/* Pagination */}
       <div className="p-6 border-t border-[#1f2937] flex items-center justify-between bg-[#0b1220]/30">
-        <p className="text-[11px] font-black italic text-[#6b7280]">Showing 1 to 10 of {data?.length || 0} entries</p>
+        <p className="text-[11px] font-black italic text-[#6b7280]">Showing entries</p>
         <div className="flex items-center gap-2">
           <button className="p-2 rounded-lg border border-[#1f2937] text-[#6b7280] hover:bg-[#1f2937] transition-all">
             <ChevronLeft size={18} />
           </button>
           <div className="flex gap-1">
             <button className="w-8 h-8 rounded-lg bg-[#38bdf8] text-[#0b1220] text-xs font-black italic">1</button>
-            <button className="w-8 h-8 rounded-lg border border-[#1f2937] text-[#6b7280] hover:bg-[#1f2937] text-xs font-black italic transition-all">2</button>
           </div>
           <button className="p-2 rounded-lg border border-[#1f2937] text-[#6b7280] hover:bg-[#1f2937] transition-all">
             <ChevronRight size={18} />
