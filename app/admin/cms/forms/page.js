@@ -412,10 +412,10 @@ export default function FormBuilderPage() {
                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Total Steps</p>
                         <p className="text-xl font-black text-white italic">{form.steps?.length || 1}</p>
                      </div>
-                     <div className="text-right">
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Submissions</p>
-                        <p className="text-xl font-black text-emerald-500 italic">VIEW LEADS</p>
-                     </div>
+                     <Link href={`/admin/reports/forms/${form._id}`} className="text-right group/view">
+                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic group-hover/view:text-blue-500 transition-all">Submissions</p>
+                         <p className="text-xl font-black text-emerald-500 italic group-hover/view:text-emerald-400 transition-all cursor-pointer underline underline-offset-4 decoration-emerald-500/0 group-hover/view:decoration-emerald-500/50">VIEW LEADS</p>
+                     </Link>
                   </div>
                 </div>
               </motion.div>
