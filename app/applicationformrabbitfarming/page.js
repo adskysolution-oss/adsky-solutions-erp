@@ -68,7 +68,8 @@ export default function RabbitFarmingForm() {
     address: '', state: '', district: '', block: '', pincode: '', unitLocation: 'Rural', unitAddress: '',
     businessActivity: 'Rabbit Farming', industryType: 'Service', projectCost: '', bankName: '', accountNumber: '', ifscCode: '', bankBranch: '',
     vendorCode: '', vendorName: '', subVendorCode: '', subVendorName: '', agentName: '', agentMobile: '',
-    doc_aadhar_front: '', doc_aadhar_back: '', doc_pan: '', doc_photo: '', doc_bank: '', doc_address: '', doc_land: '', doc_dpr: '', doc_income: '', doc_training: '', doc_caste: ''
+    doc_aadhar_front: '', doc_aadhar_back: '', doc_pan: '', doc_photo: '', doc_bank: '', doc_address: '', doc_land: '', doc_dpr: '', doc_income: '', doc_training: '', doc_caste: '',
+    doc_rural_cert: '', doc_affidavit: ''
   });
 
   const handleFileChange = (e, field) => {
@@ -268,6 +269,8 @@ export default function RabbitFarmingForm() {
                     <FileUploadField label="Income Proof" onChange={(e) => handleFileChange(e, 'doc_income')} hasFile={!!formData.doc_income} />
                     <FileUploadField label="Training Certificate" onChange={(e) => handleFileChange(e, 'doc_training')} hasFile={!!formData.doc_training} />
                     <FileUploadField label="Caste Certificate" onChange={(e) => handleFileChange(e, 'doc_caste')} hasFile={!!formData.doc_caste} />
+                    <FileUploadField label="Rural Praman Patr (ग्रामीण प्रमाण पत्र)" onChange={(e) => handleFileChange(e, 'doc_rural_cert')} hasFile={!!formData.doc_rural_cert} />
+                    <FileUploadField label="PMEGP Rabbit Farming Affidavit" onChange={(e) => handleFileChange(e, 'doc_affidavit')} hasFile={!!formData.doc_affidavit} />
                   </div>
                 </motion.div>
               )}
