@@ -1,29 +1,18 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/utils/db';
-import { Cashfree, CFEnvironment } from 'cashfree-pg';
-import WebsiteConfig from '@/models/WebsiteConfig';
 
-// Initialize based on DB/ENV config
-function getCashfreeInstance() {
-  const clientId = process.env.CASHFREE_CLIENT_ID;
-  const clientSecret = process.env.CASHFREE_CLIENT_SECRET;
-  const isProduction = process.env.CASHFREE_ENV === 'production';
-  
-  if (!clientId || !clientSecret) {
-    throw new Error('Cashfree API Keys are missing in .env.local');
-  }
-
-  // Explicitly using string constants as per some v5 documentation variants
-  const environment = isProduction ? 'PRODUCTION' : 'SANDBOX';
-
-  return new Cashfree(environment, clientId, clientSecret);
-}
-
-// POST: Create a generic payment order for ANY product/service
+// POST: Create a generic payment order using Direct API Call (more reliable than SDK)
 export async function POST(req) {
   try {
     await connectToDatabase();
-    const cashfree = getCashfreeInstance();
+
+    const clientId = process.env.CASHFREE_CLIENT_ID;
+    const clientSecret = process.env.CASHFREE_CLIENT_SECRET;
+    const isProduction = process.env.CASHFREE_ENV === 'production';
+    
+    if (!clientId || !clientSecret) {
+      return NextResponse.json({ error: 'Cashfree API Keys are missing' }, { status: 500 });
+    }
 
     const body = await req.json();
     const {
@@ -38,13 +27,13 @@ export async function POST(req) {
       orderNote
     } = body;
 
-    if (!amount || !customerPhone) {
-      return NextResponse.json({ error: 'Amount and phone are required' }, { status: 400 });
-    }
-
     const generatedOrderId = orderId || `adsky_${Date.now()}_${Math.floor(Math.random() * 9999)}`;
 
-    const request = {
+    const url = isProduction 
+      ? 'https://api.cashfree.com/pg/orders' 
+      : 'https://sandbox.cashfree.com/pg/orders';
+
+    const payload = {
       order_amount: parseFloat(amount),
       order_currency: currency,
       order_id: generatedOrderId,
@@ -61,32 +50,62 @@ export async function POST(req) {
       }
     };
 
-    const response = await cashfree.PGCreateOrder(request);
-    const orderData = response.data;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-client-id': clientId,
+        'x-client-secret': clientSecret,
+        'x-api-version': '2023-08-01'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Cashfree API Error Response:', data);
+      throw new Error(data.message || 'Authentication Failed at Cashfree');
+    }
 
     return NextResponse.json({
       success: true,
-      orderId: orderData.order_id,
-      paymentSessionId: orderData.payment_session_id,
-      orderStatus: orderData.order_status
+      orderId: data.order_id,
+      paymentSessionId: data.payment_session_id,
+      orderStatus: data.order_status
     });
+
   } catch (error) {
-    console.error('Cashfree Create Order Error:', error?.response?.data || error.message);
-    return NextResponse.json({ error: error?.response?.data?.message || error.message }, { status: 500 });
+    console.error('Cashfree Fetch Error:', error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-// GET: Verify payment status
+// GET: Verify order status using Direct API
 export async function GET(req) {
   try {
-    const cashfree = getCashfreeInstance();
     const { searchParams } = new URL(req.url);
     const orderId = searchParams.get('order_id');
+    const isProduction = process.env.CASHFREE_ENV === 'production';
 
     if (!orderId) return NextResponse.json({ error: 'order_id required' }, { status: 400 });
 
-    const response = await cashfree.PGFetchOrder(orderId);
-    return NextResponse.json({ success: true, order: response.data });
+    const url = isProduction 
+      ? `https://api.cashfree.com/pg/orders/${orderId}` 
+      : `https://sandbox.cashfree.com/pg/orders/${orderId}`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'x-client-id': process.env.CASHFREE_CLIENT_ID,
+        'x-client-secret': process.env.CASHFREE_CLIENT_SECRET,
+        'x-api-version': '2023-08-01'
+      }
+    });
+
+    const data = await response.json();
+    return NextResponse.json({ success: true, order: data });
+
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
