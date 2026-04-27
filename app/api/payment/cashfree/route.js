@@ -9,7 +9,12 @@ function getCashfreeInstance() {
   const clientSecret = process.env.CASHFREE_CLIENT_SECRET;
   const isProduction = process.env.CASHFREE_ENV === 'production';
   
-  const environment = isProduction ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX;
+  if (!clientId || !clientSecret) {
+    throw new Error('Cashfree API Keys are missing in .env.local');
+  }
+
+  // Explicitly using string constants as per some v5 documentation variants
+  const environment = isProduction ? 'PRODUCTION' : 'SANDBOX';
 
   return new Cashfree(environment, clientId, clientSecret);
 }
