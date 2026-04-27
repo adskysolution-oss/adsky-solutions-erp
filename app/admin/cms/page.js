@@ -1,56 +1,90 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import DataTable from '@/components/admin/DataTable';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Globe, 
-  Layers, 
-  Plus, 
-  FileText, 
-  Eye, 
-  Edit3, 
-  Sparkles,
-  ArrowRight,
-  Database
+  Globe, Layers, Plus, FileText, Eye, Edit3, 
+  Sparkles, ArrowRight, Database, X, Save, Loader2
 } from 'lucide-react';
 
-const pageData = [
-  { name: 'Home Landing', slug: '/', status: 'Published', lastMod: '12 Apr 2026', views: '24.2K' },
-  { name: 'Careers Console', slug: '/careers', status: 'Published', lastMod: '18 Apr 2026', views: '1.2K' },
-  { name: 'Project Portfolio', slug: '/projects', status: 'Published', lastMod: '18 Apr 2026', views: '840' },
-  { name: 'Services Matrix', slug: '/services', status: 'Draft', lastMod: '10 Apr 2026', views: '0' },
-];
-
-const columns = [
-  { key: 'name', label: 'PAGE IDENTITY' },
-  { key: 'slug', label: 'URL ENDPOINT' },
-  { key: 'status', label: 'LIFECYCLE' },
-  { key: 'views', label: 'TRAFFIC' },
-  { key: 'lastMod', label: 'LAST REVISION' },
-];
-
 export default function CMSManagement() {
+  const [pages, setPages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [newPath, setNewPath] = useState({ title: '', slug: '' });
+  const [creating, setCreating] = useState(false);
+
+  useEffect(() => {
+    fetchPages();
+  }, []);
+
+  const fetchPages = async () => {
+    try {
+      const res = await fetch('/api/admin/cms/pages');
+      const data = await res.json();
+      setPages(data);
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+    }
+  };
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    setCreating(true);
+    try {
+      const res = await fetch('/api/admin/cms/pages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newPath)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setShowModal(false);
+        fetchPages();
+        setNewPath({ title: '', slug: '' });
+      } else {
+        alert(data.error);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const columns = [
+    { key: 'title', label: 'PAGE IDENTITY' },
+    { key: 'slug', label: 'URL ENDPOINT' },
+    { key: 'isActive', label: 'STATUS', render: (val) => (
+      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${val ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+        {val ? 'Live' : 'Draft'}
+      </span>
+    )},
+    { key: 'updatedAt', label: 'LAST REVISION', render: (val) => new Date(val).toLocaleDateString() },
+  ];
+
   return (
     <div className="space-y-12">
       {/* Page Header */}
-      <motion.div 
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8"
-      >
+      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 rounded-lg bg-[#38bdf8]/10 flex items-center justify-center text-[#38bdf8]">
+            <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
               <Globe size={18} />
             </div>
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#38bdf8] italic">Content Architecture</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400 italic">Content Architecture</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-[#f3f4f6] tracking-tighter italic">CMS Builder.</h1>
-          <p className="text-[#9ca3af] font-medium italic mt-1">Manage public pages, dynamic sections, and site-wide branding assets.</p>
+          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter italic">CMS Builder.</h1>
+          <p className="text-slate-400 font-medium italic mt-1">Manage public pages, dynamic sections, and site-wide branding assets.</p>
         </div>
 
-        <button className="flex items-center gap-3 px-8 py-4 bg-[#38bdf8] text-[#0b1220] rounded-2xl font-black italic shadow-xl hover:scale-105 transition-all">
+        <button 
+          onClick={() => setShowModal(true)}
+          className="flex items-center gap-3 px-8 py-4 bg-blue-500 text-white rounded-2xl font-black italic shadow-xl hover:scale-105 transition-all active:scale-95"
+        >
           <Plus size={20} /> SPAWN NEW PAGE
         </button>
       </motion.div>
@@ -58,52 +92,65 @@ export default function CMSManagement() {
       {/* Stats Tier */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
-          { label: 'TOTAL PAGES', value: '14', icon: Layers, color: 'text-[#6366f1]' },
-          { label: 'LIVE ASSETS', value: '248', icon: Sparkles, color: 'text-[#22c55e]' },
-          { label: 'DB CONNECTED', value: 'Synced', icon: Database, color: 'text-[#38bdf8]' },
-          { label: 'PENDING FORMS', value: '4', icon: FileText, color: 'text-[#f59e0b]' },
+          { label: 'TOTAL PAGES', value: pages.length, icon: Layers, color: 'text-blue-400' },
+          { label: 'LIVE ASSETS', value: pages.filter(p => p.isActive).length, icon: Sparkles, color: 'text-green-400' },
+          { label: 'DB CONNECTED', value: 'Synced', icon: Database, color: 'text-purple-400' },
+          { label: 'PENDING FORMS', value: '0', icon: FileText, color: 'text-orange-400' },
         ].map((item, idx) => (
-          <div key={idx} className="p-8 bg-[#111827] border border-[#1f2937] rounded-[2.5rem] flex flex-col items-center group hover:border-[#38bdf8]/20 transition-all">
+          <div key={idx} className="p-8 bg-[#111827] border border-[#1f2937] rounded-[2.5rem] flex flex-col items-center group hover:border-blue-500/20 transition-all">
              <div className={`w-12 h-12 rounded-2xl bg-[#0b1220] flex items-center justify-center ${item.color} mb-6 shadow-xl`}>
                 <item.icon size={22} />
              </div>
-             <p className="text-[10px] font-black uppercase text-[#6b7280] tracking-widest italic mb-1">{item.label}</p>
-             <p className="text-2xl font-black text-[#f3f4f6] italic">{item.value}</p>
+             <p className="text-[10px] font-black uppercase text-slate-500 tracking-widest italic mb-1">{item.label}</p>
+             <p className="text-2xl font-black text-white italic">{item.value}</p>
           </div>
         ))}
       </div>
 
       {/* Main Table */}
-      <DataTable 
-        title="Web Page Inventory" 
-        columns={columns} 
-        data={pageData} 
-      />
+      {loading ? (
+        <div className="flex flex-col items-center justify-center p-20 bg-[#111827] rounded-[3.5rem] border border-[#1f2937]">
+          <Loader2 className="animate-spin text-blue-500 mb-4" size={40} />
+          <p className="text-slate-400 font-black italic uppercase tracking-widest">Hydrating Page Matrix...</p>
+        </div>
+      ) : (
+        <DataTable 
+          title="Web Page Inventory" 
+          columns={columns} 
+          data={pages} 
+        />
+      )}
 
-      {/* Quick Launch Area */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mt-12">
-         <div className="p-10 bg-[#111827] border border-[#1f2937] rounded-[3.5rem] relative overflow-hidden group">
-            <h3 className="text-2xl font-black text-[#f3f4f6] italic mb-8">Page Builder V2</h3>
-            <p className="text-[#9ca3af] font-medium italic text-sm mb-10">Our visual composer allows you to modify homepage banners, service cards, and testimonials with zero code.</p>
-            <div className="flex gap-4">
-               <button className="px-8 py-4 bg-[#38bdf8] text-[#0b1220] rounded-xl font-black italic text-[10px] uppercase tracking-widest shadow-2xl flex items-center gap-2">
-                  LAUNCH COMPOSER <Edit3 size={16} />
-               </button>
-               <button className="px-8 py-4 bg-[#1f2937] text-white rounded-xl font-black italic text-[10px] uppercase tracking-widest flex items-center gap-2">
-                  VIEW PUBLIC SITE <Eye size={16} />
-               </button>
-            </div>
-         </div>
-
-         <div className="p-10 bg-gradient-to-br from-[#111827] to-[#0b1220] border border-[#1f2937] rounded-[3.5rem] flex flex-col items-center justify-center text-center space-y-6">
-            <div className="w-20 h-20 bg-[#6366f1]/10 rounded-3xl flex items-center justify-center text-[#6366f1] mb-2 group-hover:scale-110 transition-transform">
-               <Sparkles size={40} />
-            </div>
-            <h3 className="text-3xl font-black text-[#f3f4f6] italic leading-tight">Dynamic <br /> SEO Node</h3>
-            <p className="text-slate-400 text-sm font-medium italic max-w-xs">Meta tags, open-graph images, and sitemaps are automatically optimized for every public page.</p>
-            <button className="px-10 py-3 rounded-xl bg-white/5 border border-white/5 text-[10px] font-black uppercase tracking-widest italic text-white">REGENERATE SITEMAP</button>
-         </div>
-      </div>
+      {/* Create Modal */}
+      <AnimatePresence>
+        {showModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-[#111827] w-full max-w-xl rounded-[3rem] border border-[#1f2937] overflow-hidden shadow-2xl">
+              <div className="p-8 border-b border-[#1f2937] flex items-center justify-between">
+                <h3 className="text-2xl font-black text-white italic uppercase tracking-tight">Spawn New Page</h3>
+                <button onClick={() => setShowModal(false)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white"><X size={20} /></button>
+              </div>
+              <form onSubmit={handleCreate} className="p-8 space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">Page Title</label>
+                  <input required value={newPath.title} onChange={e => setNewPath({...newPath, title: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl px-6 py-4 text-white font-black italic outline-none focus:border-blue-500 transition-all" placeholder="e.g. Services Overview" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">URL Endpoint (Slug)</label>
+                  <div className="relative">
+                    <span className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 font-black italic">/</span>
+                    <input required value={newPath.slug} onChange={e => setNewPath({...newPath, slug: e.target.value.replace(/\s+/g, '-').toLowerCase()})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl pl-10 pr-6 py-4 text-white font-black italic outline-none focus:border-blue-500 transition-all" placeholder="services" />
+                  </div>
+                </div>
+                <button disabled={creating} className="w-full bg-blue-500 py-5 rounded-2xl text-white font-black italic uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 hover:bg-blue-600 transition-all disabled:opacity-50 mt-4">
+                  {creating ? <Loader2 className="animate-spin" /> : <Save size={20} />}
+                  {creating ? 'Spawning...' : 'Initialize New Page'}
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
