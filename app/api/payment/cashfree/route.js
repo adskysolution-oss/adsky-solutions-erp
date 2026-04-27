@@ -8,8 +8,11 @@ function getCashfreeInstance() {
   const clientId = process.env.CASHFREE_CLIENT_ID;
   const clientSecret = process.env.CASHFREE_CLIENT_SECRET;
   const isProduction = process.env.CASHFREE_ENV === 'production';
-  const environment = isProduction ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX;
+  
+  // Use Cashfree constants directly
+  const environment = isProduction ? Cashfree.Environment.PRODUCTION : Cashfree.Environment.SANDBOX;
 
+  console.log(`Initializing Cashfree in ${isProduction ? 'PRODUCTION' : 'SANDBOX'} mode`);
   return new Cashfree(environment, clientId, clientSecret);
 }
 
