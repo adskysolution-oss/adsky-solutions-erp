@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import connectToDatabase from '@/utils/db';
 import CustomForm from '@/models/CustomForm';
 
@@ -8,12 +9,12 @@ export async function GET(req, { params }) {
   try {
     await connectToDatabase();
     const { slug } = params;
-    console.log(`[API] Fetching form for slug: ${slug}`);
+    const cleanSlug = slug.trim();
+    const slugRegex = new RegExp(`^/?${cleanSlug}$`, 'i');
     
-    // Look for slug with or without leading slash, case-insensitive
-    const form = await CustomForm.findOne({ 
-      slug: { $regex: new RegExp(`^/?${slug.trim()}$`, 'i') } 
-    });
+    console.log(`[API] Fetching form for slug: ${cleanSlug}`);
+    
+    const form = await CustomForm.findOne({ slug: slugRegex });
     
     if (!form) {
       console.log(`[API] Form NOT FOUND for slug: ${slug}`);
@@ -23,6 +24,10 @@ export async function GET(req, { params }) {
     
     return NextResponse.json(form);
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error(`[API ERROR] Error fetching form:`, error);
+    return NextResponse.json({ 
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
+    }, { status: 500 });
   }
 }
