@@ -167,36 +167,44 @@ export default function RabbitFarmingForm() {
     return true;
   };
 
-  const nextStep = async () => {
+  const [duplicateError, setDuplicateError] = useState('');
+
+  // Debounced Duplicate Check
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (formData.aadhar.length === 12 || formData.mobile.length === 10) {
+        try {
+          const res = await fetch('/api/forms/rabbit-farming/check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ aadhar: formData.aadhar, mobile: formData.mobile })
+          });
+          const data = await res.json();
+          if (data.isDuplicate) {
+            setDuplicateError(data.message);
+          } else {
+            setDuplicateError('');
+          }
+        } catch (err) { console.error(err); }
+      }
+    }, 1000);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [formData.aadhar, formData.mobile]);
+
+  const nextStep = () => {
     if (!validateStep(currentStep)) {
       alert("Please fill all required fields marked with *");
       return;
     }
 
-    // Duplicate Check on Step 1
-    if (currentStep === 1) {
-      setLoading(true);
-      try {
-        const res = await fetch('/api/forms/rabbit-farming/check', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ aadhar: formData.aadhar, mobile: formData.mobile })
-        });
-        const data = await res.json();
-        if (data.isDuplicate) {
-          alert(data.message);
-          setLoading(false);
-          return;
-        }
-      } catch (err) {
-        console.error("Duplicate check failed", err);
-      } finally {
-        setLoading(false);
-      }
+    if (currentStep === 1 && duplicateError) {
+      alert(duplicateError);
+      return;
     }
 
     setCurrentStep(prev => Math.min(prev + 1, 7));
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const prevStep = () => {
