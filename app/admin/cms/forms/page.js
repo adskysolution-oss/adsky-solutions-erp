@@ -258,6 +258,26 @@ export default function FormBuilderPage() {
                                 </div>
                               </div>
 
+                                {field.type === 'file' && (
+                                   <div className="space-y-4 ml-12 p-6 rounded-[2rem] bg-[#0b1220] border border-blue-500/10 mt-4">
+                                      <p className="text-[10px] font-black uppercase text-blue-500 italic tracking-widest">File Upload Config</p>
+                                      <div className="flex items-center gap-6">
+                                         <div className="flex-1 space-y-2">
+                                            <label className="text-[8px] font-black text-slate-500 uppercase italic ml-1">Max File Size (MB)</label>
+                                            <input 
+                                              type="number" 
+                                              placeholder="10"
+                                              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-5 text-white font-black italic outline-none focus:border-blue-500"
+                                            />
+                                         </div>
+                                         <div className="flex-1 space-y-2 text-right">
+                                            <p className="text-[8px] font-black text-slate-500 uppercase italic mr-1">Allowed Types</p>
+                                            <p className="text-[10px] font-black text-blue-500 italic">ALL FILES ENABLED</p>
+                                         </div>
+                                      </div>
+                                   </div>
+                                )}
+
                               {['select', 'radio', 'checkbox'].includes(field.type) && (
                                 <div className="space-y-4 ml-12 p-6 rounded-[2rem] bg-[#0b1220] border border-blue-500/10 mt-4">
                                    <div className="flex items-center justify-between mb-2">
