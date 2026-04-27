@@ -4,9 +4,10 @@ const ContentSchema = new mongoose.Schema({
   sectionType: { 
     type: String, 
     required: true,
-    enum: ['hero', 'about', 'services', 'contact', 'footer', 'stats', 'banner', 'cta', 'features', 'text-only', 'custom']
+    enum: ['hero', 'about', 'services', 'contact', 'footer', 'stats', 'banner', 'cta', 'features', 'text-only', 'custom', 'strategy', 'job-grid', 'why-us', 'steps', 'featured-testimonial', 'blogs', 'registration']
   },
-  sectionId: { type: String, unique: true }, // For anchoring (e.g., #services)
+  isActive: { type: Boolean, default: true },
+  sectionId: { type: String }, // For anchoring (e.g., #services)
   title: { type: String },
   subtitle: { type: String },
   description: { type: String },
