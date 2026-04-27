@@ -8,7 +8,13 @@ export const dynamic = 'force-dynamic';
 export async function GET(req, { params }) {
   try {
     await connectToDatabase();
-    const { slug } = params;
+    const resolvedParams = await params;
+    const slug = resolvedParams?.slug;
+    
+    if (!slug) {
+      return NextResponse.json({ error: "Slug is missing" }, { status: 400 });
+    }
+    
     const cleanSlug = slug.trim();
     const slugRegex = new RegExp(`^/?${cleanSlug}$`, 'i');
     
