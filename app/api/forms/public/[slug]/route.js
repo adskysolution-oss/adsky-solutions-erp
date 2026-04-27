@@ -8,7 +8,9 @@ export async function GET(req, { params }) {
   try {
     await connectToDatabase();
     const { slug } = params;
-    const form = await CustomForm.findOne({ slug, isActive: true });
+    const form = await CustomForm.findOne({ 
+      slug: { $regex: new RegExp(`^${slug}$`, 'i') } 
+    });
     
     if (!form) {
       return NextResponse.json({ error: "Form not found" }, { status: 404 });
