@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+const WebsiteConfigSchema = new mongoose.Schema({
   // Global visual settings
   logo: { type: String, default: "/logo.jpeg" },
   favicon: { type: String, default: "/favicon.ico" },
