@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Plus, Trash2, Save, Layout, CheckCircle2, Loader2, ListTodo,
   ArrowLeft, Settings, ShieldCheck, Type, Hash, FileUp,
-  ChevronDown, X, MoveUp, MoveDown, Eye, FileSpreadsheet, Download
+  ChevronDown, X, MoveUp, MoveDown, Eye, FileSpreadsheet, Download, Edit3
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
