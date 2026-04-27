@@ -12,10 +12,15 @@ export async function GET(req, { params }) {
     let page = await Page.findById(id).populate('sections').lean();
     if (!page) return NextResponse.json({ error: "Page not found" }, { status: 404 });
 
-    // Fallback: If population returned empty but sections array has IDs
-    if ((!page.sections || page.sections.length === 0) && page.sections?.length > 0) {
-      const sectionDocs = await Content.find({ _id: { $in: page.sections } }).sort({ order: 1 });
-      page.sections = sectionDocs;
+    // Fallback: If population failed to return objects, but we have IDs
+    if (page.sections?.length > 0 && (typeof page.sections[0] !== 'object' || page.sections[0] === null)) {
+      console.log("Manual population triggered for Page:", id);
+      const sectionDocs = await Content.find({ _id: { $in: page.sections } }).lean();
+      // Sort them according to the original array order
+      const sortedSections = page.sections.map(sId => 
+        sectionDocs.find(doc => doc._id.toString() === sId.toString())
+      ).filter(Boolean);
+      page.sections = sortedSections;
     }
 
     return NextResponse.json(page);
