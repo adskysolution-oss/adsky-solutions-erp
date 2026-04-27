@@ -94,7 +94,7 @@ export default function FormBuilderPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-black text-white italic">Form <span className="text-blue-500">Builder Pro.</span></h1>
+          <h1 className="text-4xl font-black text-white italic">Form <span className="text-blue-500">Builder Intelligence.</span></h1>
           <p className="text-slate-500 mt-1 uppercase text-[10px] font-black tracking-widest italic">Multi-step Lead Capture Engine</p>
         </div>
         {!editingForm && (
