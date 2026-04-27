@@ -52,7 +52,7 @@ const STEPS = [
   { id: 2, title: 'Qualification / योग्यता', icon: GraduationCap },
   { id: 3, title: 'Address & Unit / पता और इकाई', icon: MapPin },
   { id: 4, title: 'Project & Bank / प्रोजेक्ट और बैंक', icon: CreditCard },
-  { id: 5, title: 'Vendor / वेंडर', icon: ShieldCheck },
+  { id: 5, title: 'Agency/Vendor / एजेंसी/वेंडर', icon: ShieldCheck },
   { id: 6, title: 'Documents / दस्तावेज', icon: FileUp }
 ];
 
@@ -307,10 +307,10 @@ export default function RabbitFarmingForm() {
 
               {currentStep === 5 && (
                 <motion.div key="s5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <InputField label="Vendor Code" name="vendorCode" value={formData.vendorCode} onChange={handleChange} required />
-                  <InputField label="Vendor Name" name="vendorName" value={formData.vendorName} onChange={handleChange} required />
-                  <InputField label="Sub-Vendor Code" name="subVendorCode" value={formData.subVendorCode} onChange={handleChange} />
-                  <InputField label="Sub-Vendor Name" name="subVendorName" value={formData.subVendorName} onChange={handleChange} />
+                  <InputField label="Agency/Vendor Code" name="vendorCode" value={formData.vendorCode} onChange={handleChange} required />
+                  <InputField label="Agency/Vendor Name" name="vendorName" value={formData.vendorName} onChange={handleChange} required />
+                  <InputField label="Sub-Agency/Vendor Code" name="subVendorCode" value={formData.subVendorCode} onChange={handleChange} />
+                  <InputField label="Sub-Agency/Vendor Name" name="subVendorName" value={formData.subVendorName} onChange={handleChange} />
                   <InputField label="Agent Name" name="agentName" value={formData.agentName} onChange={handleChange} required />
                   <InputField label="Agent Mobile" name="agentMobile" value={formData.agentMobile} onChange={handleChange} required maxLength={10} />
                 </motion.div>

@@ -4,21 +4,20 @@ import { Cashfree, CFEnvironment } from 'cashfree-pg';
 import WebsiteConfig from '@/models/WebsiteConfig';
 
 // Initialize based on DB/ENV config
-async function initCashfree() {
+function getCashfreeInstance() {
   const clientId = process.env.CASHFREE_CLIENT_ID;
   const clientSecret = process.env.CASHFREE_CLIENT_SECRET;
   const isProduction = process.env.CASHFREE_ENV === 'production';
+  const environment = isProduction ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX;
 
-  Cashfree.XClientId = clientId;
-  Cashfree.XClientSecret = clientSecret;
-  Cashfree.XEnvironment = isProduction ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX;
+  return new Cashfree(environment, clientId, clientSecret);
 }
 
 // POST: Create a generic payment order for ANY product/service
 export async function POST(req) {
   try {
     await connectToDatabase();
-    await initCashfree();
+    const cashfree = getCashfreeInstance();
 
     const body = await req.json();
     const {
@@ -56,7 +55,7 @@ export async function POST(req) {
       }
     };
 
-    const response = await Cashfree.PGCreateOrder('2023-08-01', request);
+    const response = await cashfree.PGCreateOrder(request);
     const orderData = response.data;
 
     return NextResponse.json({
@@ -74,13 +73,13 @@ export async function POST(req) {
 // GET: Verify payment status
 export async function GET(req) {
   try {
-    await initCashfree();
+    const cashfree = getCashfreeInstance();
     const { searchParams } = new URL(req.url);
     const orderId = searchParams.get('order_id');
 
     if (!orderId) return NextResponse.json({ error: 'order_id required' }, { status: 400 });
 
-    const response = await Cashfree.PGFetchOrder('2023-08-01', orderId);
+    const response = await cashfree.PGFetchOrder(orderId);
     return NextResponse.json({ success: true, order: response.data });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
