@@ -25,9 +25,14 @@ export default function PublicForm({ params }) {
   useEffect(() => {
     const fetchForm = async () => {
       try {
+        console.log(`[CLIENT] Requesting slug: ${slug}`);
         const res = await fetch(`/api/forms/public/${slug}`);
-        if (!res.ok) throw new Error("Form not found");
+        if (!res.ok) {
+          console.error(`[CLIENT] API Error: ${res.status}`);
+          throw new Error("Form not found");
+        }
         const data = await res.json();
+        console.log(`[CLIENT] Form data received: ${data.formName}`);
         setForm(data);
       } catch (err) {
         setError(err.message);
