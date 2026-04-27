@@ -160,7 +160,7 @@ export default function PublicForm({ params }) {
                            />
                          ) : field.type === 'select' ? (
                             <select 
-                               className="w-full px-6 py-5 rounded-2xl bg-white/5 border border-white/10 text-white focus:border-blue-500 focus:bg-white/10 transition-all outline-none italic font-medium"
+                               className="w-full px-6 py-5 rounded-2xl bg-white/5 border border-white/10 text-white focus:border-blue-500 focus:bg-white/10 transition-all outline-none italic font-medium appearance-none"
                                onChange={(e) => handleInputChange(currentStep, fIdx, e.target.value)}
                                value={formData[`${currentStep}-${fIdx}`] || ''}
                             >
@@ -169,6 +169,61 @@ export default function PublicForm({ params }) {
                                  <option key={oIdx} value={opt} className="bg-[#020617]">{opt}</option>
                                ))}
                             </select>
+                         ) : field.type === 'radio' ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                               {field.options?.map((opt, oIdx) => (
+                                 <label key={oIdx} className={`flex items-center gap-4 p-5 rounded-2xl border cursor-pointer transition-all ${formData[`${currentStep}-${fIdx}`] === opt ? 'bg-blue-500/20 border-blue-500' : 'bg-white/5 border-white/10 hover:border-white/20'}`}>
+                                    <input 
+                                      type="radio" 
+                                      name={`radio-${currentStep}-${fIdx}`}
+                                      className="hidden"
+                                      onChange={() => handleInputChange(currentStep, fIdx, opt)}
+                                      checked={formData[`${currentStep}-${fIdx}`] === opt}
+                                    />
+                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData[`${currentStep}-${fIdx}`] === opt ? 'border-blue-500' : 'border-slate-600'}`}>
+                                       {formData[`${currentStep}-${fIdx}`] === opt && <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />}
+                                    </div>
+                                    <span className="font-bold italic text-sm">{opt}</span>
+                                 </label>
+                               ))}
+                            </div>
+                         ) : field.type === 'checkbox' ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                               {field.options?.map((opt, oIdx) => {
+                                 const currentValues = formData[`${currentStep}-${fIdx}`] || [];
+                                 const isChecked = currentValues.includes(opt);
+                                 return (
+                                   <label key={oIdx} className={`flex items-center gap-4 p-5 rounded-2xl border cursor-pointer transition-all ${isChecked ? 'bg-emerald-500/20 border-emerald-500' : 'bg-white/5 border-white/10 hover:border-white/20'}`}>
+                                      <input 
+                                        type="checkbox" 
+                                        className="hidden"
+                                        onChange={() => {
+                                           const newVal = isChecked ? currentValues.filter(v => v !== opt) : [...currentValues, opt];
+                                           handleInputChange(currentStep, fIdx, newVal);
+                                        }}
+                                        checked={isChecked}
+                                      />
+                                      <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center ${isChecked ? 'border-emerald-500 bg-emerald-500' : 'border-slate-600'}`}>
+                                         {isChecked && <CheckCircle2 size={12} className="text-white" />}
+                                      </div>
+                                      <span className="font-bold italic text-sm">{opt}</span>
+                                   </label>
+                                 );
+                               })}
+                            </div>
+                         ) : field.type === 'rating' ? (
+                            <div className="flex items-center gap-4 bg-white/5 p-8 rounded-3xl border border-white/10">
+                               {[1,2,3,4,5].map(star => (
+                                  <button 
+                                    key={star} 
+                                    onClick={() => handleInputChange(currentStep, fIdx, star)}
+                                    className={`text-4xl transition-all hover:scale-125 ${formData[`${currentStep}-${fIdx}`] >= star ? 'text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]' : 'text-slate-700'}`}
+                                  >
+                                    ★
+                                  </button>
+                               ))}
+                               <span className="ml-4 font-black italic text-slate-500">{formData[`${currentStep}-${fIdx}`] || 0} / 5</span>
+                            </div>
                          ) : (
                            <input 
                              type={field.type}
