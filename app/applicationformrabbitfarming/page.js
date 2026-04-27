@@ -1,12 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, MapPin, Briefcase, Building2, ShieldCheck, 
   ArrowRight, ArrowLeft, CheckCircle2, AlertCircle, Loader2,
   FileText, CreditCard, GraduationCap
 } from 'lucide-react';
+
+// Simplified Geo Data (Major States & Districts)
+// In production, you might want to fetch this from an API
+const GEO_DATA = {
+  "Madhya Pradesh": ["Indore", "Bhopal", "Gwalior", "Jabalpur", "Ujjain", "Sagar", "Rewa", "Satna", "Ratlam"],
+  "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Agra", "Meerut", "Ghaziabad", "Prayagraj", "Bareilly"],
+  "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", "Darbhanga", "Arrah"],
+  "Rajasthan": ["Jaipur", "Jodhpur", "Kota", "Bikaner", "Ajmer", "Udaipur", "Bhilwara"],
+  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik", "Aurangabad", "Solapur"],
+  "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda"],
+  "Haryana": ["Faridabad", "Gurugram", "Panipat", "Ambala", "Yamunanagar"],
+  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar"],
+  "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi"],
+  // Add more as needed
+};
 
 const STEPS = [
   { id: 1, title: 'Personal / व्यक्तिगत', icon: User },
@@ -21,51 +36,44 @@ export default function RabbitFarmingForm() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
+  const [availableDistricts, setAvailableDistricts] = useState([]);
   
   const [formData, setFormData] = useState({
-    // Step 1: Personal
-    aadhar: '',
-    name: '',
-    parentName: '',
-    mobile: '',
-    email: '',
-    gender: '',
-    dob: '',
-    socialCategory: '', // General, SC, ST, OBC, Minority
-    specialCategory: 'Not Applicable',
-    pan: '',
-
-    // Step 2: Qualification
-    qualification: '', // 8th, 10th, 12th, Graduate, etc.
-    edpTraining: 'No',
-    experience: 'No',
-
-    // Step 3: Address & Unit
-    address: '',
-    state: '',
-    district: '',
-    block: '',
-    pincode: '',
-    unitLocation: 'Rural', // Rural, Urban
-    unitAddress: '',
-
-    // Step 4: Project & Bank
-    businessActivity: 'Rabbit Farming',
-    industryType: 'Service',
-    projectCost: '', // Capital + Working Capital
-    bankName: '',
-    accountNumber: '',
-    ifscCode: '',
-    bankBranch: '',
-
-    // Step 5: Vendor
-    vendorCode: '',
-    vendorName: '',
-    subVendorCode: '',
-    subVendorName: '',
-    agentName: '',
-    agentMobile: ''
+    aadhar: '', name: '', parentName: '', mobile: '', email: '', gender: '', dob: '', socialCategory: '', specialCategory: 'Not Applicable', pan: '',
+    qualification: '', edpTraining: 'No', experience: 'No',
+    address: '', state: '', district: '', block: '', pincode: '', unitLocation: 'Rural', unitAddress: '',
+    businessActivity: 'Rabbit Farming', industryType: 'Service', projectCost: '', bankName: '', accountNumber: '', ifscCode: '', bankBranch: '',
+    vendorCode: '', vendorName: '', subVendorCode: '', subVendorName: '', agentName: '', agentMobile: ''
   });
+
+  // Handle Pincode Auto-fill
+  useEffect(() => {
+    if (formData.pincode.length === 6) {
+      fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data[0].Status === "Success") {
+            const postOffice = data[0].PostOffice[0];
+            setFormData(prev => ({
+              ...prev,
+              state: postOffice.State,
+              district: postOffice.District,
+              block: postOffice.Block
+            }));
+          }
+        })
+        .catch(err => console.error("Pincode API error", err));
+    }
+  }, [formData.pincode]);
+
+  // Update Districts when State changes
+  useEffect(() => {
+    if (formData.state && GEO_DATA[formData.state]) {
+      setAvailableDistricts(GEO_DATA[formData.state]);
+    } else {
+      setAvailableDistricts([]);
+    }
+  }, [formData.state]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -116,7 +124,7 @@ export default function RabbitFarmingForm() {
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-md w-full bg-white border-2 border-[#DEB887] rounded-3xl p-10 text-center shadow-2xl">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600"><CheckCircle2 size={48} /></div>
           <h2 className="text-3xl font-black text-[#B32D2D] mb-4">सफलतापूर्वक जमा!</h2>
-          <p className="text-gray-600 font-bold mb-8">आपका आवेदन PMEGP पोर्टल के अनुसार जमा कर लिया गया है।</p>
+          <p className="text-gray-600 font-bold mb-8">आपका आवेदन सफलतापूर्वक जमा कर लिया गया है।</p>
           <button onClick={() => window.location.reload()} className="w-full py-4 bg-[#B32D2D] text-white font-black rounded-xl hover:bg-[#8e2424]">OK</button>
         </motion.div>
       </div>
@@ -125,7 +133,6 @@ export default function RabbitFarmingForm() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] pb-20">
-      {/* Brand Header */}
       <div className="bg-white border-b-4 border-[#B32D2D] shadow-sm mb-8">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-center gap-6">
            <div className="flex items-center gap-4">
@@ -139,7 +146,6 @@ export default function RabbitFarmingForm() {
       </div>
 
       <div className="max-w-5xl mx-auto px-4">
-        {/* Step Indicator */}
         <div className="flex justify-between mb-10 overflow-x-auto no-scrollbar py-2">
           {STEPS.map((step) => (
             <div key={step.id} className="flex flex-col items-center flex-1 min-w-[120px]">
@@ -179,11 +185,11 @@ export default function RabbitFarmingForm() {
 
               {currentStep === 3 && (
                 <motion.div key="s3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="md:col-span-2"><InputField label="Communication Address" name="address" value={formData.address} onChange={handleChange} /></div>
-                  <InputField label="State" name="state" value={formData.state} onChange={handleChange} />
-                  <InputField label="District" name="district" value={formData.district} onChange={handleChange} />
+                  <InputField label="Pincode / पिनकोड (Auto-fill)" name="pincode" value={formData.pincode} onChange={handleChange} maxLength={6} required placeholder="Enter Pincode to auto-fill" />
+                  <SelectField label="State / राज्य" name="state" value={formData.state} onChange={handleChange} options={Object.keys(GEO_DATA)} required />
+                  <SelectField label="District / जिला" name="district" value={formData.district} onChange={handleChange} options={availableDistricts} required />
                   <InputField label="Taluka/Block" name="block" value={formData.block} onChange={handleChange} />
-                  <InputField label="Pincode" name="pincode" value={formData.pincode} onChange={handleChange} maxLength={6} />
+                  <div className="md:col-span-2"><InputField label="Full Address" name="address" value={formData.address} onChange={handleChange} /></div>
                   <SelectField label="Unit Location" name="unitLocation" value={formData.unitLocation} onChange={handleChange} options={['Rural', 'Urban']} />
                 </motion.div>
               )}
@@ -230,16 +236,16 @@ function InputField({ label, name, value, onChange, type = "text", required = fa
   return (
     <div className="space-y-1">
       <label className="text-[10px] font-black text-gray-600 uppercase">{label} {required && '*'}</label>
-      <input type={type} name={name} value={value} onChange={onChange} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#B32D2D] font-bold text-sm" {...props} />
+      <input type={type} name={name} value={value} onChange={onChange} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#B32D2D] font-bold text-sm outline-none" {...props} />
     </div>
   );
 }
 
-function SelectField({ label, name, value, onChange, options }) {
+function SelectField({ label, name, value, onChange, options, required = false }) {
   return (
     <div className="space-y-1">
-      <label className="text-[10px] font-black text-gray-600 uppercase">{label}</label>
-      <select name={name} value={value} onChange={onChange} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#B32D2D] font-bold text-sm">
+      <label className="text-[10px] font-black text-gray-600 uppercase">{label} {required && '*'}</label>
+      <select name={name} value={value} onChange={onChange} className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#B32D2D] font-bold text-sm outline-none">
         <option value="">Select / चुनें</option>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
