@@ -317,8 +317,8 @@ export default function RabbitFarmingForm() {
               Rabbit Farming <span className="text-[#DEB887]">Application Form</span>
             </h1>
             <div className="flex items-center justify-center gap-3 opacity-80 pointer-events-auto">
-              <p className="text-[9px] md:text-xs font-bold uppercase tracking-[0.1em] flex items-center gap-2">
-                <CheckCircle2 size={12} className="text-green-400" /> PAN India Project
+              <p className="text-[9px] md:text-xs font-bold uppercase tracking-[0.1em]">
+                PAN India Project
               </p>
             </div>
           </div>
