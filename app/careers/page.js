@@ -116,7 +116,7 @@ export default function CareersPage() {
                 <div className="space-y-6">
                   <AnimatePresence mode='popLayout'>
                     {filteredJobs.map((job, idx) => (
-                      <JobCard key={job.id} job={job} index={idx} />
+                      <JobCard key={job._id} job={job} index={idx} />
                     ))}
                     {filteredJobs.length === 0 && (
                       <motion.div 
@@ -168,6 +168,7 @@ export default function CareersPage() {
     </div>
   );
 }
+
 function JobCard({ job, index }) {
   return (
     <motion.div
@@ -210,7 +211,6 @@ function JobCard({ job, index }) {
       </div>
     </motion.div>
   );
-}
 }
 
 function JobMeta({ icon: Icon, text }) {
