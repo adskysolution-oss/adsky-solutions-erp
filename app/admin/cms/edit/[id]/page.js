@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect, use, useRef } from 'react';
 import { 
   Plus, 
   Trash2, 
@@ -8,6 +8,7 @@ import {
   ChevronDown, 
   Save, 
   Eye, 
+  EyeOff,
   ArrowLeft,
   Layout,
   Type,
@@ -16,7 +17,9 @@ import {
   CheckCircle2,
   Loader2,
   Settings,
-  X
+  X,
+  Upload,
+  Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -30,6 +33,8 @@ export default function SectionEditor({ params }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editingSection, setEditingSection] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchPageAndSections();
@@ -57,7 +62,7 @@ export default function SectionEditor({ params }) {
     setSaving(true);
     const initialData = {
       sectionType: type,
-      title: `New ${type.charAt(0).toUpperCase() + type.slice(1)} Section`,
+      title: `New ${type.charAt(0).toUpperCase() + type.slice(1)} Block`,
       description: 'Enter your content description here...',
       isActive: true,
       order: sections.length
@@ -72,6 +77,7 @@ export default function SectionEditor({ params }) {
       const data = await res.json();
       if (data.success) {
         setSections([...sections, data.section]);
+        setEditingSection(data.section);
       }
     } catch (err) {
       console.error(err);
@@ -100,6 +106,20 @@ export default function SectionEditor({ params }) {
     }
   };
 
+  const toggleVisibility = async (section) => {
+    const updated = { ...section, isActive: !section.isActive };
+    setSections(sections.map(s => s._id === section._id ? updated : s));
+    try {
+      await fetch('/api/admin/cms/sections', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pageId, sectionData: { _id: section._id, isActive: !section.isActive } })
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleDeleteSection = async (sId) => {
     if (!confirm('Are you sure you want to delete this section?')) return;
     setSaving(true);
@@ -116,19 +136,39 @@ export default function SectionEditor({ params }) {
     }
   };
 
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (data.url) {
+        setEditingSection({ ...editingSection, image: data.url });
+      }
+    } catch (err) {
+      console.error('Upload failed:', err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const moveSection = async (index, direction) => {
     const newSections = [...sections];
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
     if (targetIndex < 0 || targetIndex >= newSections.length) return;
 
-    // Swap locally
     [newSections[index], newSections[targetIndex]] = [newSections[targetIndex], newSections[index]];
-    
-    // Update order locally
     const updatedSections = newSections.map((s, i) => ({ ...s, order: i }));
     setSections(updatedSections);
 
-    // Save all orders to backend
     try {
       await Promise.all(updatedSections.map(s => 
         fetch('/api/admin/cms/sections', {
@@ -144,7 +184,7 @@ export default function SectionEditor({ params }) {
 
   if (loading) return <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
     <Loader2 className="animate-spin text-blue-500" size={48} />
-    <p className="text-blue-500 font-black italic tracking-widest animate-pulse">SYNCING ARCHITECTURE...</p>
+    <p className="text-blue-500 font-black italic tracking-widest animate-pulse">SYNCHRONIZING REPOSITORY...</p>
   </div>;
 
   return (
@@ -155,20 +195,20 @@ export default function SectionEditor({ params }) {
           <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center group-hover:bg-blue-500 transition-all group-hover:text-white">
             <ArrowLeft size={18} />
           </div>
-          Back to Inventory
+          Return to Inventory
         </Link>
         <div className="flex gap-4">
           <Link href={`/${page?.slug === 'home' ? '' : page?.slug}`} target="_blank" className="px-8 py-4 bg-white/5 border border-white/10 text-white font-black rounded-2xl flex items-center gap-3 hover:bg-white/10 transition-all text-xs italic uppercase tracking-widest">
             <Eye size={18} />
-            Live Preview
+            View Live Site
           </Link>
         </div>
       </div>
 
       {/* Page Info */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter">Edit <span className="text-blue-500">{page?.title}.</span></h1>
-        <p className="text-slate-400 mt-2 uppercase text-[10px] font-black tracking-[0.4em] italic opacity-50">Architectural Content Orchestration</p>
+        <h1 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter uppercase">Edit <span className="text-blue-500">{page?.title}</span></h1>
+        <p className="text-slate-400 mt-2 uppercase text-[10px] font-black tracking-[0.4em] italic opacity-50">Content Block Management & Orchestration</p>
       </motion.div>
 
       {/* Editor Main */}
@@ -179,36 +219,44 @@ export default function SectionEditor({ params }) {
           <div className="bg-[#111827] border border-[#1f2937] rounded-[3rem] p-10 shadow-3xl">
             <div className="flex items-center justify-between mb-12">
                <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-[0.3em] italic">Section Hierarchy</h3>
-               <span className="px-4 py-1 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-black italic border border-blue-500/20">{sections.length} BLOCKS ACTIVE</span>
+               <span className="px-4 py-1 rounded-full bg-blue-500/10 text-blue-500 text-[10px] font-black italic border border-blue-500/20">{sections.length} NODES CONFIGURED</span>
             </div>
             
             <div className="space-y-6">
               {sections.length === 0 ? (
                 <div className="text-center py-24 border-2 border-dashed border-[#1f2937] rounded-[3rem] group hover:border-blue-500/20 transition-all cursor-pointer">
-                  <Layers size={48} className="mx-auto text-slate-800 group-hover:text-blue-500 transition-colors mb-6" />
-                  <p className="text-white font-black italic uppercase tracking-widest text-sm">ARCHIVE IS EMPTY</p>
-                  <p className="text-slate-600 text-xs mt-2 italic font-medium">Click a block below to initialize structural deployment.</p>
+                  <Layout size={48} className="mx-auto text-slate-800 group-hover:text-blue-500 transition-colors mb-6" />
+                  <p className="text-white font-black italic uppercase tracking-widest text-sm">HIERARCHY IS VACANT</p>
+                  <p className="text-slate-600 text-xs mt-2 italic font-medium">Inject a content block to initiate deployment.</p>
                 </div>
               ) : (
                 sections.map((section, index) => (
                   <motion.div 
                     layout
                     key={section._id}
-                    className={`p-8 rounded-[2rem] bg-[#0b1220] border transition-all flex items-center justify-between group ${editingSection?._id === section._id ? 'border-blue-500 ring-4 ring-blue-500/10 shadow-2xl scale-[1.02]' : 'border-[#1f2937] hover:border-white/10'}`}
+                    className={`p-8 rounded-[2rem] bg-[#0b1220] border transition-all flex items-center justify-between group ${editingSection?._id === section._id ? 'border-blue-500 ring-4 ring-blue-500/10 shadow-2xl scale-[1.01]' : 'border-[#1f2937] hover:border-white/10'}`}
                   >
                     <div className="flex items-center gap-6">
-                      <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-slate-500 font-black italic text-xl border border-white/5 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                      <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-slate-500 font-black italic text-xl border border-white/5 group-hover:bg-blue-500 group-hover:text-white transition-all relative">
                         {index + 1}
+                        {!section.isActive && (
+                           <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-[#0b1220]"></div>
+                        )}
                       </div>
-                      <div>
-                        <h4 className="text-white font-black italic text-lg tracking-tight mb-1">{section.title}</h4>
+                      <div className="cursor-pointer" onClick={() => setEditingSection(section)}>
+                        <h4 className="text-white font-black italic text-lg tracking-tight mb-1 group-hover:text-blue-400 transition-colors">{section.title}</h4>
                         <div className="flex items-center gap-3">
                            <span className="text-[9px] font-black uppercase text-blue-500 tracking-widest italic px-2 py-0.5 bg-blue-500/10 rounded-md">{section.sectionType}</span>
-                           <span className="text-[9px] font-black uppercase text-slate-600 tracking-widest italic">{section.isActive ? 'Active' : 'Disabled'}</span>
+                           <span className={`text-[9px] font-black uppercase tracking-widest italic ${section.isActive ? 'text-emerald-500' : 'text-red-500'}`}>
+                             {section.isActive ? 'Live' : 'Hidden'}
+                           </span>
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-3 opacity-40 group-hover:opacity-100 transition-all">
+                       <button onClick={() => toggleVisibility(section)} title={section.isActive ? 'Hide Section' : 'Show Section'} className={`p-3 rounded-xl transition-all shadow-xl ${section.isActive ? 'bg-white/5 text-slate-400 hover:text-white' : 'bg-red-500/10 text-red-500'}`}>
+                          {section.isActive ? <Eye size={18} /> : <EyeOff size={18} />}
+                       </button>
                        <button onClick={() => setEditingSection(section)} className="p-3 bg-white/5 hover:bg-blue-500 text-slate-400 hover:text-white rounded-xl transition-all shadow-xl"><Settings size={18} /></button>
                        <div className="flex flex-col gap-1 mx-2">
                          <button onClick={() => moveSection(index, 'up')} className="p-1.5 bg-white/5 hover:bg-white/10 text-slate-600 hover:text-white rounded-lg transition-all"><ChevronUp size={16} /></button>
@@ -221,16 +269,16 @@ export default function SectionEditor({ params }) {
               )}
             </div>
 
-            <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 pt-12 border-t border-[#1f2937]">
+            <div className="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 pt-12 border-t border-[#1f2937]">
               {['hero', 'services', 'stats', 'cta', 'latest-blogs', 'testimonials'].map(type => (
                 <button 
                   key={type}
                   onClick={() => handleAddSection(type)}
                   disabled={saving}
-                  className="py-4 px-4 bg-[#0b1220] border border-[#1f2937] text-slate-500 hover:border-blue-500 hover:text-white hover:bg-blue-600/10 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all italic flex flex-col items-center gap-2 group"
+                  className="py-4 px-2 bg-[#0b1220] border border-[#1f2937] text-slate-500 hover:border-blue-500 hover:text-white hover:bg-blue-600/10 rounded-2xl text-[8px] font-black uppercase tracking-widest transition-all italic flex flex-col items-center gap-2 group"
                 >
-                  <Plus size={16} className="group-hover:scale-125 transition-transform" />
-                  ADD {type}
+                  <Plus size={14} className="group-hover:scale-125 transition-transform" />
+                  {type}
                 </button>
               ))}
             </div>
@@ -242,9 +290,9 @@ export default function SectionEditor({ params }) {
           <AnimatePresence mode="wait">
             {editingSection ? (
               <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
                 className="bg-[#111827] border border-blue-500/30 rounded-[3rem] p-10 h-fit sticky top-8 shadow-4xl"
               >
                 <div className="flex items-center justify-between mb-10 pb-8 border-b border-[#1f2937]">
@@ -275,15 +323,35 @@ export default function SectionEditor({ params }) {
                     />
                   </div>
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-2 italic">Media/Image URL</label>
-                    <div className="relative">
-                      <ImageIcon className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700" size={18} />
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-2 italic">Visual Media</label>
+                    
+                    {editingSection.image && (
+                       <div className="relative aspect-video rounded-2xl overflow-hidden border border-[#1f2937] mb-4 group">
+                          <img src={editingSection.image} alt="Preview" className="w-full h-full object-cover" />
+                          <button onClick={() => setEditingSection({...editingSection, image: ''})} className="absolute top-3 right-3 w-8 h-8 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center shadow-2xl"><X size={16} /></button>
+                       </div>
+                    )}
+
+                    <div className="flex gap-2">
+                       <button 
+                         onClick={() => fileInputRef.current.click()}
+                         disabled={uploading}
+                         className="flex-grow py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-black italic uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 hover:bg-white/10 transition-all"
+                       >
+                         {uploading ? <Loader2 className="animate-spin" size={16} /> : <Upload size={16} />}
+                         {uploading ? 'Uploading...' : 'Upload Media'}
+                       </button>
+                    </div>
+                    <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept="image/*" />
+                    
+                    <div className="relative mt-2">
+                      <ImageIcon className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-700" size={16} />
                       <input 
                         type="text" 
                         value={editingSection.image || ''} 
                         onChange={e => setEditingSection({...editingSection, image: e.target.value})}
-                        className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-5 pl-14 pr-6 text-white focus:border-blue-500 outline-none transition-all placeholder:text-slate-700 font-mono text-xs"
-                        placeholder="https://images.unsplash.com/..."
+                        className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 pl-14 pr-6 text-white focus:border-blue-500 outline-none transition-all placeholder:text-slate-700 font-mono text-[10px]"
+                        placeholder="Or paste image URL..."
                       />
                     </div>
                   </div>
@@ -291,7 +359,7 @@ export default function SectionEditor({ params }) {
                   <button 
                     onClick={() => handleUpdateSection(editingSection)}
                     disabled={saving}
-                    className="w-full py-6 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-black uppercase tracking-[0.3em] rounded-3xl transition-all shadow-3xl shadow-blue-600/20 flex items-center justify-center gap-4 mt-8 italic text-xs"
+                    className="w-full py-6 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-black uppercase tracking-[0.3em] rounded-3xl transition-all shadow-3xl shadow-blue-600/20 flex items-center justify-center gap-4 mt-8 italic text-xs active:scale-95"
                   >
                     {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
                     Authorize Changes
@@ -301,11 +369,11 @@ export default function SectionEditor({ params }) {
             ) : (
               <div className="bg-[#111827] border border-[#1f2937] border-dashed rounded-[3rem] p-16 text-center flex flex-col items-center justify-center gap-6 opacity-30 h-[500px]">
                 <div className="w-24 h-24 rounded-[2rem] bg-white/5 flex items-center justify-center text-slate-800">
-                  <Layout size={48} />
+                  <Sparkles size={48} />
                 </div>
                 <div>
                   <p className="text-white font-black italic uppercase tracking-widest text-xs mb-2">Editor Dormant</p>
-                  <p className="text-slate-600 font-medium italic text-[11px] leading-relaxed max-w-[200px] mx-auto">Select a section block from the hierarchy to initiate customization.</p>
+                  <p className="text-slate-600 font-medium italic text-[11px] leading-relaxed max-w-[200px] mx-auto">Select a content block from the hierarchy to initiate customization.</p>
                 </div>
               </div>
             )}

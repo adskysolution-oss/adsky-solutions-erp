@@ -39,7 +39,7 @@ export default function HomePage() {
       try {
         const res = await fetch('/api/admin/cms/pages');
         const pages = await res.json();
-        const home = pages.find(p => p.slug === '/');
+        const home = pages.find(p => p.slug === 'home');
         if (home && home.isActive) {
           const detailRes = await fetch(`/api/admin/cms/pages/${home._id}`);
           const detail = await detailRes.json();
@@ -55,11 +55,13 @@ export default function HomePage() {
   }, []);
 
   if (!loading && dynamicPage && dynamicPage.sections?.length > 0) {
+    const activeSections = dynamicPage.sections.filter(s => s.isActive);
+    
     return (
       <div className="min-h-screen flex flex-col bg-[#020617] text-white">
         <Navbar />
         <main className="flex-grow">
-          {dynamicPage.sections.map((section, idx) => (
+          {activeSections.map((section, idx) => (
             <SectionRenderer key={section._id || idx} section={section} />
           ))}
         </main>

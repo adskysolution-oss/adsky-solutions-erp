@@ -21,27 +21,35 @@ export default function SectionRenderer({ section }) {
   switch (sectionType) {
     case 'hero':
       return (
-        <section className="relative min-h-[90vh] flex items-center pt-24 pb-12 px-6 overflow-hidden bg-[#020617]" style={{ backgroundColor: style.backgroundColor }}>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none"></div>
+        <section className="relative min-h-screen flex items-center pt-24 pb-12 px-6 overflow-hidden bg-[#020617]" style={{ backgroundColor: style.backgroundColor }}>
+          {/* Main Background Image */}
+          {image && (
+            <div className="absolute inset-0 z-0">
+               <img src={image} alt={title} className="w-full h-full object-cover opacity-30" />
+               <div className="absolute inset-0 bg-gradient-to-b from-[#020617] via-transparent to-[#020617]"></div>
+            </div>
+          )}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"></div>
           <div className="max-w-7xl mx-auto relative z-10 w-full text-center">
             <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl sm:text-6xl md:text-8xl font-black mb-8 text-white leading-[1.1] tracking-tighter italic"
+              className="text-5xl sm:text-7xl md:text-[9rem] font-black mb-8 text-white leading-[0.85] tracking-tighter italic"
               style={{ color: style.textColor }}
             >
               {title}
             </motion.h2>
             <motion.p 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-slate-400 text-base sm:text-lg md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed font-light italic"
+              transition={{ delay: 0.2 }}
+              className="text-slate-400 text-lg sm:text-xl md:text-2xl max-w-3xl mx-auto mb-16 leading-relaxed font-medium italic opacity-80"
             >
               {description}
             </motion.p>
             <div className="flex flex-col sm:flex-row justify-center gap-6">
-              <Link href="/register" className="px-12 py-5 rounded-2xl bg-white text-black font-black hover:shadow-2xl transition-all italic">
-                Get Started
+              <Link href="/candidate/register" className="px-16 py-6 rounded-[2rem] bg-white text-black font-black text-lg hover:scale-105 hover:shadow-[0_0_50px_rgba(255,255,255,0.2)] transition-all italic uppercase tracking-widest">
+                Start Career
               </Link>
             </div>
           </div>
