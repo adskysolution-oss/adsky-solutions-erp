@@ -53,8 +53,8 @@ const MENU_GROUPS = [
   {
     title: 'Web & CMS V2',
     items: [
-      { name: 'Page Builder', icon: Layers, path: '/admin/cms/builder' },
-      { name: 'Form Engine', icon: FileText, path: '/admin/forms/builder' },
+      { name: 'CMS Builder', icon: Layers, path: '/admin/cms' },
+      { name: 'Form Pro', icon: FileText, path: '/admin/cms/forms' },
       { name: 'Branding', icon: Sparkles, path: '/admin/settings' },
     ]
   },
