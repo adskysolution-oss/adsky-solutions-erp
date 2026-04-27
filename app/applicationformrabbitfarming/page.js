@@ -68,11 +68,9 @@ export default function RabbitFarmingForm() {
     address: '', state: '', district: '', block: '', pincode: '', unitLocation: 'Rural', unitAddress: '',
     businessActivity: 'Rabbit Farming', industryType: 'Service', projectCost: '', bankName: '', accountNumber: '', ifscCode: '', bankBranch: '',
     vendorCode: '', vendorName: '', subVendorCode: '', subVendorName: '', agentName: '', agentMobile: '',
-    // Document Base64 fields
-    doc_aadhar: '', doc_pan: '', doc_photo: '', doc_bank: '', doc_address: '', doc_land: '', doc_dpr: '', doc_income: '', doc_training: '', doc_caste: ''
+    doc_aadhar_front: '', doc_aadhar_back: '', doc_pan: '', doc_photo: '', doc_bank: '', doc_address: '', doc_land: '', doc_dpr: '', doc_income: '', doc_training: '', doc_caste: ''
   });
 
-  // Handle File to Base64
   const handleFileChange = (e, field) => {
     const file = e.target.files[0];
     if (file) {
@@ -84,7 +82,6 @@ export default function RabbitFarmingForm() {
     }
   };
 
-  // Pincode Auto-fill
   useEffect(() => {
     if (formData.pincode.length === 6) {
       fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`)
@@ -99,7 +96,6 @@ export default function RabbitFarmingForm() {
     }
   }, [formData.pincode]);
 
-  // IFSC Auto-fill
   useEffect(() => {
     if (formData.ifscCode.length === 11) {
       fetch(`https://ifsc.razorpay.com/${formData.ifscCode}`)
@@ -166,7 +162,7 @@ export default function RabbitFarmingForm() {
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-md w-full bg-white border-2 border-[#DEB887] rounded-3xl p-10 text-center shadow-2xl">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600"><CheckCircle2 size={48} /></div>
           <h2 className="text-3xl font-black text-[#B32D2D] mb-4">सफलतापूर्वक जमा!</h2>
-          <p className="text-gray-600 font-bold mb-8">आपका आवेदन और दस्तावेज सफलतापूर्वक जमा कर लिए गए हैं।</p>
+          <p className="text-gray-600 font-bold mb-8">आपका आवेदन सफलतापूर्वक जमा कर लिया गया है।</p>
           <button onClick={() => window.location.reload()} className="w-full py-4 bg-[#B32D2D] text-white font-black rounded-xl hover:bg-[#8e2424]">OK</button>
         </motion.div>
       </div>
@@ -176,14 +172,9 @@ export default function RabbitFarmingForm() {
   return (
     <div className="min-h-screen bg-[#FDFBF7] pb-20">
       <div className="bg-white border-b-4 border-[#B32D2D] shadow-sm mb-8">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-center gap-6">
-           <div className="flex items-center gap-4">
-              <img src="/logo.jpeg" className="h-16" alt="AdSky Logo" />
-              <div className="border-l-2 border-gray-200 pl-4">
-                 <h1 className="text-xl md:text-2xl font-black text-[#B32D2D]">Online Application Form</h1>
-                 <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Rabbit Farming Mission | ADSKY Solution</p>
-              </div>
-           </div>
+        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col items-center justify-center gap-2">
+           <h1 className="text-2xl md:text-3xl font-black text-[#B32D2D]">Online Application Form</h1>
+           <p className="text-[10px] md:text-xs font-bold text-gray-600 uppercase tracking-widest">Rabbit Farming Mission | Entrepreneurship Development</p>
         </div>
       </div>
 
@@ -210,6 +201,7 @@ export default function RabbitFarmingForm() {
                   <InputField label="Applicant Name / आवेदक का नाम" name="name" value={formData.name} onChange={handleChange} required />
                   <InputField label="Father/Husband Name" name="parentName" value={formData.parentName} onChange={handleChange} />
                   <InputField label="Mobile Number" name="mobile" value={formData.mobile} onChange={handleChange} required maxLength={10} />
+                  <InputField label="Email ID / ईमेल" name="email" value={formData.email} onChange={handleChange} type="email" placeholder="example@gmail.com" />
                   <SelectField label="Social Category" name="socialCategory" value={formData.socialCategory} onChange={handleChange} options={['General', 'SC', 'ST', 'OBC', 'Minority']} />
                   <SelectField label="Gender" name="gender" value={formData.gender} onChange={handleChange} options={['Male', 'Female', 'Other']} />
                   <InputField label="Date of Birth" name="dob" value={formData.dob} onChange={handleChange} type="date" />
@@ -265,7 +257,8 @@ export default function RabbitFarmingForm() {
                     <p className="text-sm text-blue-700 font-bold italic">Upload clear photos or scans of your documents. (Non-mandatory)</p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <FileUploadField label="Aadhaar Card (Front/Back)" onChange={(e) => handleFileChange(e, 'doc_aadhar')} hasFile={!!formData.doc_aadhar} />
+                    <FileUploadField label="Aadhaar Card (Front Side)" onChange={(e) => handleFileChange(e, 'doc_aadhar_front')} hasFile={!!formData.doc_aadhar_front} />
+                    <FileUploadField label="Aadhaar Card (Back Side)" onChange={(e) => handleFileChange(e, 'doc_aadhar_back')} hasFile={!!formData.doc_aadhar_back} />
                     <FileUploadField label="PAN Card" onChange={(e) => handleFileChange(e, 'doc_pan')} hasFile={!!formData.doc_pan} />
                     <FileUploadField label="Passport Size Photo" onChange={(e) => handleFileChange(e, 'doc_photo')} hasFile={!!formData.doc_photo} />
                     <FileUploadField label="Bank Passbook / Statement" onChange={(e) => handleFileChange(e, 'doc_bank')} hasFile={!!formData.doc_bank} />
