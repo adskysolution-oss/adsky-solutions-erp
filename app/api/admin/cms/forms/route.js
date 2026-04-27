@@ -19,6 +19,10 @@ export async function POST(req) {
     await connectToDatabase();
     const data = await req.json();
     
+    if (!data.slug) {
+      data.slug = data.formName.toLowerCase().replace(/\s+/g, '-');
+    }
+    
     let form;
     if (data._id) {
       form = await CustomForm.findByIdAndUpdate(data._id, data, { new: true });
