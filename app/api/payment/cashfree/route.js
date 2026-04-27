@@ -6,8 +6,8 @@ export async function POST(req) {
   try {
     await connectToDatabase();
 
-    const clientId = process.env.CASHFREE_CLIENT_ID;
-    const clientSecret = process.env.CASHFREE_CLIENT_SECRET;
+    const clientId = process.env.CASHFREE_CLIENT_ID?.trim();
+    const clientSecret = process.env.CASHFREE_CLIENT_SECRET?.trim();
     const isProduction = process.env.CASHFREE_ENV === 'production';
     
     if (!clientId || !clientSecret) {
