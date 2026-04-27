@@ -11,6 +11,15 @@ export default function CandidateRegister() {
   const [success, setSuccess] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedRef = localStorage.getItem('adsky_referral_code');
+      if (savedRef) {
+        setFormData(prev => ({ ...prev, referralCode: savedRef }));
+      }
+    }
+  }, []);
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);

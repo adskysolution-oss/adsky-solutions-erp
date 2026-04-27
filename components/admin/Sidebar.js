@@ -27,6 +27,8 @@ const MENU_ITEMS = [
   { name: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
   { name: 'CMS Builder', icon: Globe, path: '/admin/cms' },
   { name: 'Form Pro', icon: FileText, path: '/admin/cms/forms' },
+  { name: 'Careers Hub', icon: Briefcase, path: '/admin/careers' },
+  { name: 'Blog CMS', icon: FileText, path: '/admin/blogs' },
   { name: 'Vendors Matrix', icon: Store, path: '/admin/vendors' },
   { name: 'User Control', icon: Users, path: '/admin/users' },
   { name: 'Farmers', icon: Sprout, path: '/admin/farmers' },

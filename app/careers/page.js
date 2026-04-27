@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   MapPin, 
@@ -13,55 +13,34 @@ import {
   Award,
   Zap,
   Sparkles,
-  ChevronRight
+  ChevronRight,
+  Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
-const jobs = [
-  {
-    id: 1,
-    title: "Senior Business Consultant",
-    location: "Noida, UP",
-    type: "Full Time",
-    salary: "₹12L - ₹18L PA",
-    posted: "2 days ago",
-    description: "Lead strategic consulting projects for MSME clients and manage institutional partnerships.",
-    tags: ["Management", "MSME", "Consulting"],
-    category: "Consulting"
-  },
-  {
-    id: 2,
-    title: "Project Coordinator (Skill Dev)",
-    location: "Remote / Noida",
-    type: "Full Time",
-    salary: "₹6L - ₹9L PA",
-    posted: "1 week ago",
-    description: "Coordinate vocational training batches and ensure compliance with government mission guidelines.",
-    tags: ["Project Management", "Govt. Liaison"],
-    category: "Management"
-  },
-  {
-    id: 3,
-    title: "Manpower Resource Manager",
-    location: "Gurugram, HR",
-    type: "Contract",
-    salary: "₹8L - ₹12L PA",
-    posted: "3 days ago",
-    description: "Oversee recruitment and payroll for large-scale private sector manpower requirements.",
-    tags: ["HR", "Recruitment", "Operations"],
-    category: "Operations"
-  }
-];
-
 export default function CareersPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/admin/careers')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.error) setJobs(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
   const filteredJobs = jobs.filter(job => 
-    job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    job.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+    job.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (loading) return <div className="min-h-screen bg-[#020617] flex items-center justify-center"><Loader2 className="animate-spin text-blue-500" size={48} /></div>;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#020617] text-white overflow-hidden relative">
@@ -189,7 +168,6 @@ export default function CareersPage() {
     </div>
   );
 }
-
 function JobCard({ job, index }) {
   return (
     <motion.div
@@ -206,10 +184,10 @@ function JobCard({ job, index }) {
         <div className="space-y-4 max-w-xl">
           <div className="flex items-center gap-3">
              <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-[9px] font-black uppercase tracking-widest border border-blue-500/20 italic">
-               {job.category}
+               {job.type}
              </span>
              <span className="text-[10px] text-white/40 font-bold italic flex items-center gap-1">
-               <Clock size={12} /> {job.posted}
+               <Clock size={12} /> {new Date(job.createdAt).toLocaleDateString()}
              </span>
           </div>
           <h3 className="text-3xl font-black italic tracking-tighter group-hover:text-blue-400 transition-colors">
@@ -222,24 +200,17 @@ function JobCard({ job, index }) {
           <div className="flex flex-wrap gap-6 pt-4">
             <JobMeta icon={MapPin} text={job.location} />
             <JobMeta icon={Briefcase} text={job.type} />
-            <JobMeta icon={DollarSign} text={job.salary} />
-          </div>
-
-          <div className="flex flex-wrap gap-2 pt-4">
-            {job.tags.map(tag => (
-              <span key={tag} className="px-3 py-1 rounded-lg bg-white/5 border border-white/5 text-[9px] font-bold uppercase tracking-wider text-white/60 italic">
-                {tag}
-              </span>
-            ))}
+            {job.salary && <JobMeta icon={DollarSign} text={job.salary} />}
           </div>
         </div>
 
-        <button className="px-10 py-6 rounded-2xl bg-white text-black font-black transform transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-2 active:scale-95 shadow-2xl flex items-center gap-3 text-sm italic uppercase tracking-widest shrink-0">
-          APPLY <ArrowRight size={18} />
-        </button>
+        <Link href={`mailto:hr@adskysolution.com?subject=Application for ${job.title}`} className="px-10 py-6 rounded-2xl bg-white text-black font-black transform transition-all duration-300 group-hover:scale-105 group-hover:-translate-y-2 active:scale-95 shadow-2xl flex items-center gap-3 text-sm italic uppercase tracking-widest shrink-0">
+          APPLY NOW <ArrowRight size={18} />
+        </Link>
       </div>
     </motion.div>
   );
+}
 }
 
 function JobMeta({ icon: Icon, text }) {

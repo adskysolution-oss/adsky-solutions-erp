@@ -1,5 +1,7 @@
+import React from 'react';
 import './globals.css';
 import { generateCSSVariables } from '@/lib/theme/ThemeRegistry';
+import ReferralTracker from '@/components/ReferralTracker';
 
 export const metadata = {
   title: 'AD Sky Solution',
@@ -44,6 +46,9 @@ export default async function RootLayout({ children }) {
         <style dangerouslySetInnerHTML={{ __html: `:root { ${cssVariables} }` }} />
       </head>
       <body className="antialiased selection:bg-primary/20 transition-all duration-300">
+        <React.Suspense fallback={null}>
+          <ReferralTracker />
+        </React.Suspense>
         {children}
       </body>
     </html>

@@ -43,9 +43,9 @@ export default function DashboardPage() {
 
   const stats = [
     { label: 'TOTAL USERS', value: report?.totalUsers || '0', icon: Users, color: 'text-cyan-400' },
-    { label: 'TOTAL REVENUE', value: `₹${(report?.totalRevenue / 1000).toFixed(1)}k`, icon: TrendingUp, color: 'text-emerald-400' },
-    { label: 'APPLICATIONS', value: report?.totalApplications || '0', icon: Wallet, color: 'text-orange-400' },
-    { label: 'PENDING', value: report?.pendingApplications || '0', icon: ShieldAlert, color: 'text-rose-400' },
+    { label: 'VENDORS', value: report?.totalVendors || '0', icon: Users, color: 'text-purple-400' },
+    { label: 'JOB VACANCIES', value: report?.totalJobs || '0', icon: Users, color: 'text-emerald-400' },
+    { label: 'BLOG POSTS', value: report?.totalPosts || '0', icon: Users, color: 'text-orange-400' },
   ];
 
 
