@@ -70,8 +70,7 @@ export default function RabbitFarmingForm() {
     address: '', state: '', district: '', block: '', pincode: '', unitLocation: 'Rural', unitAddress: '',
     businessActivity: 'Rabbit Farming', industryType: 'Service', projectCost: '', bankName: '', accountNumber: '', ifscCode: '', bankBranch: '',
     vendorCode: '', vendorName: '', subVendorCode: '', subVendorName: '', agentName: '', agentMobile: '',
-    doc_aadhar_front: '', doc_aadhar_back: '', doc_pan: '', doc_photo: '', doc_bank: '', doc_address: '', doc_land: '', doc_dpr: '', doc_income: '', doc_training: '', doc_caste: '',
-    doc_rural_cert: '', doc_affidavit: '',
+    doc_aadhar_front: '', doc_aadhar_back: '', doc_pan: '', doc_photo: '', doc_bank: '', doc_address: '', doc_land: '', doc_rent_agreement: '', doc_dpr: '', doc_income: '', doc_loan: '', doc_training: '', doc_caste: '', doc_education: '', doc_rural_cert: '', doc_edp: '', doc_affidavit: '',
     txnId: '', paymentStatus: 'Pending'
   });
 
@@ -419,9 +418,18 @@ export default function RabbitFarmingForm() {
                     <FileUploadField label="Aadhaar Card (Back)" name="doc_aadhar_back" value={formData.doc_aadhar_back} onChange={(e) => handleFileChange(e, 'doc_aadhar_back')} onPreview={() => setPreviewImage(formData.doc_aadhar_back)} onClear={() => setFormData(p => ({...p, doc_aadhar_back: ''}))} />
                     <FileUploadField label="PAN Card" name="doc_pan" value={formData.doc_pan} onChange={(e) => handleFileChange(e, 'doc_pan')} onPreview={() => setPreviewImage(formData.doc_pan)} onClear={() => setFormData(p => ({...p, doc_pan: ''}))} />
                     <FileUploadField label="Passport Photo" name="doc_photo" value={formData.doc_photo} onChange={(e) => handleFileChange(e, 'doc_photo')} onPreview={() => setPreviewImage(formData.doc_photo)} onClear={() => setFormData(p => ({...p, doc_photo: ''}))} />
-                    <FileUploadField label="Bank Passbook" name="doc_bank" value={formData.doc_bank} onChange={(e) => handleFileChange(e, 'doc_bank')} onPreview={() => setPreviewImage(formData.doc_bank)} onClear={() => setFormData(p => ({...p, doc_bank: ''}))} />
+                    <FileUploadField label="Bank Passbook / Statement" name="doc_bank" value={formData.doc_bank} onChange={(e) => handleFileChange(e, 'doc_bank')} onPreview={() => setPreviewImage(formData.doc_bank)} onClear={() => setFormData(p => ({...p, doc_bank: ''}))} />
                     <FileUploadField label="Address Proof" name="doc_address" value={formData.doc_address} onChange={(e) => handleFileChange(e, 'doc_address')} onPreview={() => setPreviewImage(formData.doc_address)} onClear={() => setFormData(p => ({...p, doc_address: ''}))} />
-                    <FileUploadField label="Rural Certificate" name="doc_rural_cert" value={formData.doc_rural_cert} onChange={(e) => handleFileChange(e, 'doc_rural_cert')} onPreview={() => setPreviewImage(formData.doc_rural_cert)} onClear={() => setFormData(p => ({...p, doc_rural_cert: ''}))} />
+                    <FileUploadField label="Khasra / Khatauni" name="doc_land" value={formData.doc_land} onChange={(e) => handleFileChange(e, 'doc_land')} onPreview={() => setPreviewImage(formData.doc_land)} onClear={() => setFormData(p => ({...p, doc_land: ''}))} />
+                    <FileUploadField label="Rent Agreement" name="doc_rent_agreement" value={formData.doc_rent_agreement} onChange={(e) => handleFileChange(e, 'doc_rent_agreement')} onPreview={() => setPreviewImage(formData.doc_rent_agreement)} onClear={() => setFormData(p => ({...p, doc_rent_agreement: ''}))} />
+                    <FileUploadField label="Project Report (DPR)" name="doc_dpr" value={formData.doc_dpr} onChange={(e) => handleFileChange(e, 'doc_dpr')} onPreview={() => setPreviewImage(formData.doc_dpr)} onClear={() => setFormData(p => ({...p, doc_dpr: ''}))} />
+                    <FileUploadField label="Income Proof" name="doc_income" value={formData.doc_income} onChange={(e) => handleFileChange(e, 'doc_income')} onPreview={() => setPreviewImage(formData.doc_income)} onClear={() => setFormData(p => ({...p, doc_income: ''}))} />
+                    <FileUploadField label="Existing Loan Details" name="doc_loan" value={formData.doc_loan} onChange={(e) => handleFileChange(e, 'doc_loan')} onPreview={() => setPreviewImage(formData.doc_loan)} onClear={() => setFormData(p => ({...p, doc_loan: ''}))} />
+                    <FileUploadField label="Training Certificate" name="doc_training" value={formData.doc_training} onChange={(e) => handleFileChange(e, 'doc_training')} onPreview={() => setPreviewImage(formData.doc_training)} onClear={() => setFormData(p => ({...p, doc_training: ''}))} />
+                    <FileUploadField label="Caste Certificate" name="doc_caste" value={formData.doc_caste} onChange={(e) => handleFileChange(e, 'doc_caste')} onPreview={() => setPreviewImage(formData.doc_caste)} onClear={() => setFormData(p => ({...p, doc_caste: ''}))} />
+                    <FileUploadField label="Highest Education Certificate" name="doc_education" value={formData.doc_education} onChange={(e) => handleFileChange(e, 'doc_education')} onPreview={() => setPreviewImage(formData.doc_education)} onClear={() => setFormData(p => ({...p, doc_education: ''}))} />
+                    <FileUploadField label="Rural Area Certificate" name="doc_rural_cert" value={formData.doc_rural_cert} onChange={(e) => handleFileChange(e, 'doc_rural_cert')} onPreview={() => setPreviewImage(formData.doc_rural_cert)} onClear={() => setFormData(p => ({...p, doc_rural_cert: ''}))} />
+                    <FileUploadField label="EDP Training Certificate" name="doc_edp" value={formData.doc_edp} onChange={(e) => handleFileChange(e, 'doc_edp')} onPreview={() => setPreviewImage(formData.doc_edp)} onClear={() => setFormData(p => ({...p, doc_edp: ''}))} />
                     <FileUploadField label="Affidavit" name="doc_affidavit" value={formData.doc_affidavit} onChange={(e) => handleFileChange(e, 'doc_affidavit')} onPreview={() => setPreviewImage(formData.doc_affidavit)} onClear={() => setFormData(p => ({...p, doc_affidavit: ''}))} />
                   </div>
                 </motion.div>
@@ -446,7 +454,7 @@ export default function RabbitFarmingForm() {
                           <button onClick={() => setCurrentStep(6)} className="text-[#B32D2D]"><Edit3 size={16} /></button>
                        </div>
                        <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
-                          {['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_rural_cert', 'doc_affidavit'].map(doc => (
+                          {['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'].map(doc => (
                             formData[doc] && (
                               <div key={doc} onClick={() => setPreviewImage(formData[doc])} className="aspect-square border-2 border-gray-100 rounded-lg overflow-hidden cursor-pointer hover:border-[#B32D2D]">
                                 <img src={formData[doc]} className="w-full h-full object-cover" alt="doc" />
