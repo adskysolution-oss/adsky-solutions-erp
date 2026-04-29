@@ -225,8 +225,8 @@ export default function FormLeadsPage() {
                               <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{field.label}</p>
                               <div className="font-medium text-slate-200 break-words text-sm">
                                 {Array.isArray(val) ? val.join(", ") : 
-                                 (typeof val === 'string' && val.startsWith('http')) ? 
-                                 <a href={val} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-2 mt-1"><ExternalLink size={14}/> Click to View Attached File</a> : 
+                                 (typeof val === 'string' && (val.startsWith('http') || val.startsWith('data:'))) ? 
+                                 <a href={val} download={`attachment_${fIdx}`} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-2 mt-1"><Download size={14}/> Download Attached File</a> : 
                                  (val || "—")}
                               </div>
                             </div>

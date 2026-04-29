@@ -235,36 +235,34 @@ export default function PublicForm() {
                             <div className="relative">
                               <input 
                                 type="file"
+                                accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
                                 className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-slate-300 focus:border-blue-500 transition-all outline-none italic font-medium file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:uppercase file:tracking-widest file:font-black file:bg-blue-500/20 file:text-blue-400 hover:file:bg-blue-500 hover:file:text-white file:transition-all file:cursor-pointer cursor-pointer"
-                                onChange={async (e) => {
+                                onChange={(e) => {
                                   const file = e.target.files[0];
                                   if (!file) return;
                                   
+                                  if (file.size > 5 * 1024 * 1024) {
+                                    alert("File is too large. Maximum allowed size is 5MB.");
+                                    e.target.value = '';
+                                    return;
+                                  }
+                                  
                                   handleInputChange(currentStep, fIdx, "Uploading...");
                                   
-                                  const formDataUpload = new FormData();
-                                  formDataUpload.append('file', file);
-                                  
-                                  try {
-                                    const uploadRes = await fetch('/api/admin/upload', {
-                                      method: 'POST',
-                                      body: formDataUpload
-                                    });
-                                    const uploadData = await uploadRes.json();
-                                    if (uploadData.url) {
-                                      handleInputChange(currentStep, fIdx, uploadData.url);
-                                    } else {
-                                      handleInputChange(currentStep, fIdx, "Upload failed");
-                                    }
-                                  } catch (error) {
+                                  const reader = new FileReader();
+                                  reader.onloadend = () => {
+                                    handleInputChange(currentStep, fIdx, reader.result);
+                                  };
+                                  reader.onerror = () => {
                                     handleInputChange(currentStep, fIdx, "Upload failed");
-                                  }
+                                  };
+                                  reader.readAsDataURL(file);
                                 }}
                               />
                               {formData[`${currentStep}-${fIdx}`] === "Uploading..." && (
-                                <p className="text-[10px] text-amber-400 mt-2 font-black italic uppercase tracking-widest flex items-center gap-2"><Loader2 size={12} className="animate-spin" /> Uploading to cloud...</p>
+                                <p className="text-[10px] text-amber-400 mt-2 font-black italic uppercase tracking-widest flex items-center gap-2"><Loader2 size={12} className="animate-spin" /> Processing file...</p>
                               )}
-                              {formData[`${currentStep}-${fIdx}`] && formData[`${currentStep}-${fIdx}`].startsWith('http') && (
+                              {formData[`${currentStep}-${fIdx}`] && (formData[`${currentStep}-${fIdx}`].startsWith('http') || formData[`${currentStep}-${fIdx}`].startsWith('data:')) && (
                                 <p className="text-[10px] text-emerald-400 mt-2 font-black italic uppercase tracking-widest flex items-center gap-2"><CheckCircle2 size={12} /> File Secured</p>
                               )}
                             </div>
