@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
   FileSpreadsheet, ArrowLeft, Search, Filter, 
-  Download, Calendar, User, Mail, Phone, ExternalLink, Trash2, Loader2
+  Download, Calendar, User, Mail, Phone, ExternalLink, Trash2, Loader2, X
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -17,6 +17,7 @@ export default function FormLeadsPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(null);
+  const [selectedLead, setSelectedLead] = useState(null);
 
   useEffect(() => {
     if (!id) return;
@@ -183,7 +184,7 @@ export default function FormLeadsPage() {
                       );
                     })}
                     <td className="p-8 text-right">
-                       <button className="p-3 bg-white/5 text-slate-400 rounded-xl hover:text-white hover:bg-blue-500 transition-all"><ExternalLink size={18} /></button>
+                       <button onClick={() => setSelectedLead(lead)} className="p-3 bg-white/5 text-slate-400 rounded-xl hover:text-white hover:bg-blue-500 transition-all"><ExternalLink size={18} /></button>
                     </td>
                   </tr>
                 ))}
@@ -197,6 +198,48 @@ export default function FormLeadsPage() {
             </div>
           )}
         </div>
+
+        {/* Lead Details Modal */}
+        <AnimatePresence>
+          {selectedLead && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }} 
+                animate={{ opacity: 1, scale: 1 }} 
+                exit={{ opacity: 0, scale: 0.9 }} 
+                className="w-full max-w-2xl max-h-[85vh] bg-[#0f172a] border border-white/10 rounded-[2rem] shadow-2xl flex flex-col overflow-hidden"
+              >
+                <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+                  <h2 className="text-xl font-black italic uppercase tracking-widest text-white">Lead Intelligence Report</h2>
+                  <button onClick={() => setSelectedLead(null)} className="p-2 text-slate-400 hover:text-white transition-colors bg-white/5 rounded-xl"><X size={20} /></button>
+                </div>
+                <div className="p-8 overflow-y-auto space-y-8">
+                  {form?.steps?.map((step, sIdx) => (
+                    <div key={sIdx} className="space-y-4">
+                      <h3 className="text-sm font-black text-blue-400 uppercase tracking-widest italic border-b border-white/5 pb-2">{step.title}</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {step.fields.map((field, fIdx) => {
+                          const val = selectedLead.data?.[`${sIdx}-${fIdx}`];
+                          return (
+                            <div key={fIdx} className="space-y-1 bg-white/[0.02] p-4 rounded-2xl border border-white/5">
+                              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{field.label}</p>
+                              <p className="font-medium text-slate-200 break-words">{Array.isArray(val) ? val.join(", ") : val || "—"}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                  <div className="mt-8 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-between">
+                     <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Submission Timestamp</p>
+                     <p className="text-sm font-bold text-emerald-400">{new Date(selectedLead.createdAt).toLocaleString()}</p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
       </div>
     </div>
   );

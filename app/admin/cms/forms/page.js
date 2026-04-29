@@ -348,7 +348,7 @@ export default function FormBuilderPage() {
                      </div>
                     <div className="flex items-center gap-3">
                         <button 
-                           onClick={() => window.open(`/${form.slug}`, '_blank')}
+                           onClick={() => window.open(`${window.location.origin.replace('admin.', '')}/${form.slug}`, '_blank')}
                            className="p-3 bg-white/5 text-slate-400 rounded-xl hover:bg-white/10 hover:text-white transition-all shadow-lg"
                            title="Preview Live"
                         >
@@ -373,12 +373,12 @@ export default function FormBuilderPage() {
                   <div className="space-y-4">
                      <div className="p-4 rounded-2xl bg-[#0b1220] border border-[#1f2937] flex items-center justify-between gap-4 group/link">
                         <div className="truncate text-[10px] font-black text-blue-400 italic">
-                           {typeof window !== 'undefined' ? `${window.location.origin}/${form.slug}` : `/${form.slug}`}
+                           {typeof window !== 'undefined' ? `${window.location.origin.replace('admin.', '')}/${form.slug}` : `/${form.slug}`}
                         </div>
                         <div className="flex items-center gap-2">
                            <button 
                               onClick={() => {
-                                 const url = `${window.location.origin}/${form.slug}`;
+                                 const url = `${window.location.origin.replace('admin.', '')}/${form.slug}`;
                                  navigator.clipboard.writeText(url);
                                  alert("Link Copied!");
                               }} 
@@ -392,7 +392,7 @@ export default function FormBuilderPage() {
                                  if (navigator.share) {
                                     navigator.share({
                                        title: form.formName,
-                                       url: `${window.location.origin}/${form.slug}`
+                                       url: `${window.location.origin.replace('admin.', '')}/${form.slug}`
                                     });
                                  } else {
                                     alert("Sharing not supported on this browser. Link copied instead.");

@@ -219,6 +219,24 @@ export default function RabbitFarmingForm() {
 
     setLoading(true);
     
+    // --- 1. FINAL DUPLICATE CHECK BEFORE PAYMENT (Safe Validation) ---
+    try {
+      const checkRes = await fetch('/api/forms/rabbit-farming/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ aadhar: formData.aadhar, mobile: formData.mobile })
+      });
+      const checkData = await checkRes.json();
+      if (checkData.isDuplicate) {
+        alert(checkData.message || "This Aadhar or Mobile number is already registered.");
+        setLoading(false);
+        return; // Stop payment process if duplicate
+      }
+    } catch (checkErr) {
+      console.error("Verification error, continuing...", checkErr);
+    }
+    // -----------------------------------------------------------------
+
     try {
       const orderRes = await fetch('/api/payment/cashfree', {
         method: 'POST',
@@ -235,7 +253,7 @@ export default function RabbitFarmingForm() {
       const orderData = await orderRes.json();
       if (!orderData.success) throw new Error(orderData.error || 'Failed to create order');
 
-      const cashfree = window.Cashfree({ mode: "production" });
+      const cashfree = window.Cashfree({ mode: process.env.NEXT_PUBLIC_CASHFREE_ENV || "production" });
       const checkoutOptions = {
         paymentSessionId: orderData.paymentSessionId,
         redirectTarget: "_modal", 
