@@ -223,7 +223,12 @@ export default function FormLeadsPage() {
                           return (
                             <div key={fIdx} className="space-y-1 bg-white/[0.02] p-4 rounded-2xl border border-white/5">
                               <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{field.label}</p>
-                              <p className="font-medium text-slate-200 break-words">{Array.isArray(val) ? val.join(", ") : val || "—"}</p>
+                              <div className="font-medium text-slate-200 break-words text-sm">
+                                {Array.isArray(val) ? val.join(", ") : 
+                                 (typeof val === 'string' && val.startsWith('http')) ? 
+                                 <a href={val} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-2 mt-1"><ExternalLink size={14}/> Click to View Attached File</a> : 
+                                 (val || "—")}
+                              </div>
                             </div>
                           );
                         })}
