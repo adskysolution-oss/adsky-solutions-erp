@@ -6,7 +6,7 @@ import {
   CheckCircle, XCircle, Clock, MoreVertical,
   Eye, DownloadCloud, CheckCircle2, AlertCircle,
   TrendingUp, MapPin, Building2, User, ShieldCheck, CreditCard, Calendar,
-  Globe, Briefcase, Heart, Info, FileText, Hash, Edit3, Loader2, ArrowRight
+  Globe, Briefcase, Heart, Info, FileText, Hash, Edit3, ArrowRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as XLSX from 'xlsx';
@@ -173,15 +173,12 @@ export default function SakhiHubAdmin() {
                       <div className="space-y-6">
                         <div className="bg-slate-900/50 p-6 rounded-3xl border-2 border-slate-800 space-y-4">
                            <div className="flex items-center gap-2 text-[9px] font-black text-[#B32D2D] uppercase italic"><Edit3 size={14} /> Assign Partner ID</div>
-                           <input type="text" placeholder="Enter Custom ID (e.g. SH-NGO-MP-001)" className="w-full bg-[#0f172a] border-2 border-slate-800 p-4 rounded-xl text-xs font-bold text-white outline-none focus:border-[#B32D2D] transition-all uppercase" value={manualPartnerId} onChange={(e) => setManualPartnerId(e.target.value.toUpperCase())} />
-                           <p className="text-[8px] text-slate-500 italic">Leave empty to auto-generate based on state and type.</p>
+                           <input type="text" placeholder="Enter Custom ID" className="w-full bg-[#0f172a] border-2 border-slate-800 p-4 rounded-xl text-xs font-bold text-white outline-none focus:border-[#B32D2D] transition-all uppercase" value={manualPartnerId} onChange={(e) => setManualPartnerId(e.target.value.toUpperCase())} />
                         </div>
-                        
                         <div className="pt-4 space-y-4">
                            <p className="text-[10px] font-black text-slate-500 uppercase text-center">Current: <StatusBadge status={selectedApp.status} /></p>
                            <button onClick={() => handleStatusUpdate(selectedApp._id, 'Approved')} disabled={updating} className="w-full py-6 bg-green-600 text-white font-black rounded-3xl hover:bg-green-700 transition-all shadow-xl shadow-green-900/30 flex items-center justify-center gap-3 active:scale-95 text-xs uppercase italic">{updating ? <Loader2 className="animate-spin" /> : <><CheckCircle2 size={24} /> Approve & Send ID</>}</button>
                            <button onClick={() => handleStatusUpdate(selectedApp._id, 'Rejected')} disabled={updating} className="w-full py-6 bg-red-600/10 text-red-500 border-4 border-red-500/20 font-black rounded-3xl hover:bg-red-600 hover:text-white transition-all flex items-center justify-center gap-3 active:scale-95 text-xs uppercase italic"><XCircle size={24} /> Reject Application</button>
-                           <button onClick={() => handleStatusUpdate(selectedApp._id, 'Under Review')} disabled={updating} className="w-full py-6 bg-indigo-600/10 text-indigo-400 border-4 border-indigo-500/20 font-black rounded-3xl hover:bg-indigo-600 hover:text-white transition-all active:scale-95 text-xs uppercase italic">Set Under Review</button>
                         </div>
                       </div>
                     </div>
