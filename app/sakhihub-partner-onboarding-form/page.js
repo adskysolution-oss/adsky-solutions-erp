@@ -32,7 +32,7 @@ export default function SakhiHubOnboardingForm() {
     applicantType: '', organizationName: '', contactPersonName: '',
     mobileNumber: '', alternateMobileNumber: '', emailId: '',
     whatsappNumber: '', websiteSocialLink: '',
-    otp: '', otpSent: false, otpVerified: false,
+    otpVerified: true, // Bypass OTP
     
     // Step 2
     aadhaarNumber: '', panNumber: '', gstNumber: '',
@@ -114,10 +114,6 @@ export default function SakhiHubOnboardingForm() {
     const step = STEPS.find(s => s.id === stepId);
     const newErrors = {};
     
-    if (stepId === 1 && !formData.otpVerified) {
-      newErrors.otp = 'Mobile verification mandatory';
-    }
-
     if (step.fields) {
       step.fields.forEach(field => {
         if (!formData[field] || (Array.isArray(formData[field]) && formData[field].length === 0)) {
@@ -137,44 +133,6 @@ export default function SakhiHubOnboardingForm() {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const sendOtp = async () => {
-    if (!formData.mobileNumber || formData.mobileNumber.length !== 10) {
-      alert('Valid 10-digit mobile required');
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await fetch('/api/sakhihub/otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'send', mobile: formData.mobileNumber })
-      });
-      if (res.ok) {
-        setFormData(prev => ({ ...prev, otpSent: true }));
-        alert('OTP sent! Check console in dev mode.');
-      }
-    } catch (err) { console.error(err); }
-    finally { setLoading(false); }
-  };
-
-  const verifyOtp = async () => {
-    if (!formData.otp) return;
-    setLoading(true);
-    try {
-      const res = await fetch('/api/sakhihub/otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'verify', mobile: formData.mobileNumber, otp: formData.otp })
-      });
-      if (res.ok) {
-        setFormData(prev => ({ ...prev, otpVerified: true }));
-      } else {
-        alert('Invalid OTP');
-      }
-    } catch (err) { console.error(err); }
-    finally { setLoading(false); }
   };
 
   const nextStep = () => {
@@ -304,28 +262,7 @@ export default function SakhiHubOnboardingForm() {
                     <SelectField label="Applicant Type" name="applicantType" value={formData.applicantType} onChange={handleChange} error={errors.applicantType} options={['NGO', 'Vendor / Distributor', 'SHG Group', 'Individual Partner', 'State Partner', 'District Partner', 'Block / Tehsil Partner']} required />
                     <InputField label="Organization / Firm Name" name="organizationName" value={formData.organizationName} onChange={handleChange} error={errors.organizationName} placeholder="Enter Name" required />
                     <InputField label="Contact Person Name" name="contactPersonName" value={formData.contactPersonName} onChange={handleChange} error={errors.contactPersonName} placeholder="Full Name" required />
-                    <div className="space-y-4">
-                      <InputField label="Mobile Number" name="mobileNumber" value={formData.mobileNumber} onChange={handleChange} error={errors.mobileNumber} placeholder="10 digits" maxLength={10} required disabled={formData.otpVerified} />
-                      {!formData.otpVerified && (
-                        <div className="flex gap-4">
-                           <button onClick={sendOtp} disabled={loading || !formData.mobileNumber} className="text-[10px] font-black text-[#B32D2D] uppercase border-b-2 border-[#B32D2D]/20 hover:border-[#B32D2D] pb-0.5">
-                             {formData.otpSent ? 'Resend OTP' : 'Send Verification OTP'}
-                           </button>
-                        </div>
-                      )}
-                    </div>
-                    {formData.otpSent && !formData.otpVerified && (
-                      <div className="md:col-span-2 bg-[#FDFBF7] p-8 rounded-[2rem] border-2 border-[#DEB887] shadow-inner flex flex-col md:flex-row items-center gap-6">
-                        <div className="flex-1 w-full text-center md:text-left">
-                           <p className="text-[10px] font-black text-[#DEB887] uppercase mb-2">Verify your mobile</p>
-                           <input type="text" name="otp" value={formData.otp} onChange={handleChange} className="w-full bg-white border-2 border-[#DEB887]/30 rounded-2xl px-6 py-4 font-black text-2xl tracking-[0.8em] text-center focus:border-[#B32D2D] outline-none" maxLength={6} placeholder="000000" />
-                        </div>
-                        <button onClick={verifyOtp} disabled={loading} className="px-12 py-5 bg-[#B32D2D] text-white font-black rounded-2xl hover:bg-red-800 shadow-xl shadow-red-100">
-                          {loading ? <Loader2 className="animate-spin" /> : 'VERIFY NOW'}
-                        </button>
-                      </div>
-                    )}
-                    {formData.otpVerified && <div className="md:col-span-2 bg-green-50 border-2 border-green-100 p-4 rounded-2xl flex items-center gap-3 text-green-700 font-bold italic text-sm"><CheckCircle2 /> Mobile Verified!</div>}
+                    <InputField label="Mobile Number" name="mobileNumber" value={formData.mobileNumber} onChange={handleChange} error={errors.mobileNumber} placeholder="10 digits" maxLength={10} required />
                     <InputField label="Email ID" name="emailId" value={formData.emailId} onChange={handleChange} error={errors.emailId} placeholder="example@gmail.com" type="email" required />
                     <InputField label="WhatsApp Number" name="whatsappNumber" value={formData.whatsappNumber} onChange={handleChange} placeholder="Optional" maxLength={10} />
                     <InputField label="Website / Social Link" name="websiteSocialLink" value={formData.websiteSocialLink} onChange={handleChange} placeholder="Optional" />
