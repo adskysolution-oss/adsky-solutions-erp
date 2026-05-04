@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/utils/db';
 import SakhiHubApplication from '@/models/SakhiHubApplication';
+import { sendApprovalEmail } from '@/lib/services/emailService';
 
 export async function GET(req) {
   try {
@@ -58,11 +59,24 @@ export async function PATCH(req) {
     await connectToDatabase();
     const { id, status, adminRemarks, partnerId } = await req.json();
     
+    const oldApp = await SakhiHubApplication.findById(id);
+    if (!oldApp) return NextResponse.json({ error: 'Application not found' }, { status: 404 });
+
     const updated = await SakhiHubApplication.findByIdAndUpdate(
       id, 
       { status, adminRemarks, partnerId },
       { new: true }
     );
+
+    // Send email if approved
+    if (status === 'Approved' && updated.emailId) {
+      await sendApprovalEmail(
+        updated.emailId, 
+        updated.contactPersonName, 
+        partnerId || updated.partnerId, 
+        updated.organizationName
+      );
+    }
 
     return NextResponse.json(updated);
   } catch (error) {
