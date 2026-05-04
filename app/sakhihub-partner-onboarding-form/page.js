@@ -6,7 +6,7 @@ import {
   User, ShieldCheck, MapPin, Briefcase, Heart, 
   Building2, CreditCard, FileUp, Eye, CheckCircle2, 
   AlertCircle, Loader2, ArrowRight, ArrowLeft, 
-  Check, X, Phone, Mail, Globe, Search, Plus, Trash2, Camera, Edit3, Upload, CheckCircle
+  Check, X, Phone, Mail, Globe, Search, Plus, Trash2, Camera, Edit3, Upload, CheckCircle, Map
 } from 'lucide-react';
 
 const STEPS = [
@@ -38,7 +38,7 @@ export default function SakhiHubOnboardingForm() {
     aadhaarNumber: '', panNumber: '', gstNumber: '',
     ngoRegistrationNumber: '', firmRegistrationNumber: '', udyamMsmeNumber: '',
     address: '', state: '', district: '', tehsil: '', block: '', cityVillage: '', pincode: '',
-    workAreaType: '', selectedStates: [], selectedDistricts: [], selectedBlocks: [], exclusiveStateInterest: false,
+    workAreaType: '', selectedStates: [], selectedDistricts: [], manualWorkArea: '',
     interestedWorkCategories: [], monthlyCapacity: '', teamSize: '', experience: [],
     bankName: '', accountHolderName: '', accountNumber: '', confirmAccountNumber: '', ifscCode: '', bankBranch: '',
     documents: {
@@ -76,13 +76,7 @@ export default function SakhiHubOnboardingForm() {
         .then(data => {
           if (data[0].Status === "Success") {
             const po = data[0].PostOffice[0];
-            setFormData(prev => ({ 
-              ...prev, 
-              state: po.State, 
-              district: po.District, 
-              block: po.Block,
-              cityVillage: po.Name
-            }));
+            setFormData(prev => ({ ...prev, state: po.State, district: po.District, block: po.Block, cityVillage: po.Name }));
           }
         }).catch(err => console.error(err));
     }
@@ -230,32 +224,48 @@ export default function SakhiHubOnboardingForm() {
                     </div>
 
                     {formData.workAreaType && (
-                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-8 bg-slate-50 border-2 border-slate-100 rounded-[2rem] space-y-6">
-                        <p className="text-[10px] font-black text-[#B32D2D] uppercase tracking-widest italic underline">Select Your Preferred Work Area</p>
-                        
-                        {(formData.workAreaType.includes('State') || formData.workAreaType.includes('District')) && (
-                           <div className="space-y-4">
-                             <div className="bg-[#B32D2D] text-white text-[8px] font-black px-3 py-1 rounded inline-block uppercase italic">Select State for filtering</div>
-                             <select name="state" value={formData.state} onChange={handleChange} className="w-full px-5 py-4 bg-white border-2 border-gray-100 rounded-2xl font-bold text-xs">
-                                <option value="">Select State</option>
+                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-8 bg-slate-50 border-2 border-slate-100 rounded-[2rem] space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                           <InputField label="State Name (For Selection)" name="state" value={formData.state} onChange={handleChange} placeholder="Type State Name" />
+                           <div className="space-y-2">
+                              <div className="bg-[#B32D2D] text-white text-[8px] font-black px-3 py-1 rounded inline-block uppercase italic">Or Select from List</div>
+                              <select name="state" value={formData.state} onChange={handleChange} className="w-full px-5 py-4 bg-white border-2 border-gray-100 rounded-2xl font-bold text-xs">
+                                <option value="">--- Select State ---</option>
                                 {states.map(s => <option key={s.state_id} value={s.state_name}>{s.state_name}</option>)}
-                             </select>
-                             
+                              </select>
+                           </div>
+                        </div>
+
+                        {(formData.workAreaType.includes('State') || formData.workAreaType.includes('District')) && (
+                           <div className="space-y-6 pt-6 border-t border-slate-200">
                              {formData.workAreaType === 'Multiple States' && (
-                               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
-                                  {states.map(s => (
-                                    <button key={s.state_id} onClick={() => handleMultiSelect('selectedStates', s.state_name)} className={`px-2 py-2 rounded-lg border text-[8px] font-bold ${formData.selectedStates?.includes(s.state_name) ? 'bg-[#B32D2D] text-white border-[#B32D2D]' : 'bg-white text-gray-400'}`}>{s.state_name}</button>
-                                  ))}
+                               <div className="space-y-4">
+                                  <p className="text-[10px] font-black text-gray-400 uppercase italic">Click to select Multiple States:</p>
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-[200px] overflow-y-auto p-2 no-scrollbar border-2 border-gray-100 rounded-2xl bg-white">
+                                    {states.map(s => (
+                                      <button key={s.state_id} onClick={() => handleMultiSelect('selectedStates', s.state_name)} className={`px-2 py-2 rounded-lg border text-[8px] font-bold ${formData.selectedStates?.includes(s.state_name) ? 'bg-[#B32D2D] text-white border-[#B32D2D]' : 'bg-white text-gray-400'}`}>{s.state_name}</button>
+                                    ))}
+                                  </div>
                                </div>
                              )}
 
                              {(formData.workAreaType.includes('District')) && (
-                               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4 max-h-[300px] overflow-y-auto p-2 no-scrollbar">
-                                  {districts.map(d => (
-                                    <button key={d.district_id} onClick={() => handleMultiSelect('selectedDistricts', d.district_name)} className={`px-2 py-2 rounded-lg border text-[8px] font-bold ${formData.selectedDistricts?.includes(d.district_name) ? 'bg-[#B32D2D] text-white border-[#B32D2D]' : 'bg-white text-gray-400'}`}>{d.district_name}</button>
-                                  ))}
+                               <div className="space-y-4">
+                                  <p className="text-[10px] font-black text-gray-400 uppercase italic">Select Districts for {formData.state || 'Selected State'}:</p>
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-h-[300px] overflow-y-auto p-2 no-scrollbar border-2 border-gray-100 rounded-2xl bg-white">
+                                    {districts.map(d => (
+                                      <button key={d.district_id} onClick={() => handleMultiSelect('selectedDistricts', d.district_name)} className={`px-2 py-2 rounded-lg border text-[8px] font-bold ${formData.selectedDistricts?.includes(d.district_name) ? 'bg-[#B32D2D] text-white border-[#B32D2D]' : 'bg-white text-gray-400'}`}>{d.district_name}</button>
+                                    ))}
+                                  </div>
                                </div>
                              )}
+
+                             {/* Manual Entry Field */}
+                             <div className="space-y-3">
+                                <div className="bg-[#B32D2D] text-white text-[8px] font-black px-3 py-1 rounded inline-block uppercase italic">Enter Work Areas Manually (If not in list)</div>
+                                <textarea name="manualWorkArea" value={formData.manualWorkArea} onChange={handleChange} className="w-full px-6 py-5 bg-white border-2 border-gray-100 rounded-[2rem] font-bold text-xs min-h-[120px] outline-none focus:border-[#B32D2D] transition-all shadow-inner" placeholder="E.g. Indore, Bhopal, Dewas (Madhya Pradesh)"></textarea>
+                                <p className="text-[8px] text-gray-400 italic px-4 font-bold uppercase">Yaha aap apne prantiya kshetra ya jilo ke naam likh sakte hain jo upar list me nahi hain.</p>
+                             </div>
                            </div>
                         )}
                       </motion.div>
@@ -311,7 +321,7 @@ export default function SakhiHubOnboardingForm() {
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                          <ReviewItem title="Basic Information" icon={User} data={{ 'Applicant Type': formData.applicantType, 'Organization': formData.organizationName, 'Contact Person': formData.contactPersonName, 'Mobile': formData.mobileNumber, 'Email': formData.emailId }} onEdit={() => setCurrentStep(1)} />
                          <ReviewItem title="Identity & Address" icon={ShieldCheck} data={{ 'Aadhaar': formData.aadhaarNumber, 'PAN': formData.panNumber, 'District': formData.district, 'State': formData.state, 'Pincode': formData.pincode }} onEdit={() => setCurrentStep(2)} />
-                         <ReviewItem title="Work Interest" icon={Briefcase} data={{ 'Work Area': formData.workAreaType, 'Interests': formData.interestedWorkCategories?.join(', '), 'Capacity': formData.monthlyCapacity, 'Team Size': formData.teamSize }} onEdit={() => setCurrentStep(5)} />
+                         <ReviewItem title="Work Interest" icon={Briefcase} data={{ 'Work Area': formData.workAreaType, 'Interests': formData.interestedWorkCategories?.join(', '), 'Manual Entry': formData.manualWorkArea }} onEdit={() => setCurrentStep(4)} />
                          <ReviewItem title="Bank Information" icon={CreditCard} data={{ 'A/C Holder': formData.accountHolderName, 'Bank Name': formData.bankName, 'IFSC': formData.ifscCode, 'A/C Number': 'XXXX XXXX ' + formData.accountNumber?.slice(-4) }} onEdit={() => setCurrentStep(6)} />
                       </div>
                       <div className="p-8 bg-slate-50 border-2 border-slate-100 rounded-[2.5rem]">
