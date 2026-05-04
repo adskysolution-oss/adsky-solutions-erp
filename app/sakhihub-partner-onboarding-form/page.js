@@ -6,7 +6,7 @@ import {
   User, ShieldCheck, MapPin, Briefcase, Heart, 
   Building2, CreditCard, FileUp, Eye, CheckCircle2, 
   AlertCircle, Loader2, ArrowRight, ArrowLeft, 
-  Check, X, Phone, Mail, Globe, Search, Plus, Trash2, Camera, Edit3, Upload, CheckCircle, Calendar, Users
+  Check, X, Phone, Mail, Globe, Search, Plus, Trash2, Camera, Edit3, Upload, CheckCircle, Calendar, Users, Sparkles
 } from 'lucide-react';
 
 const STEPS = [
@@ -19,6 +19,15 @@ const STEPS = [
   { id: 7, title: 'Document Upload', icon: FileUp, fields: [] },
   { id: 8, title: 'Review & Submit', icon: Eye, fields: [] }
 ];
+
+// Logo Colors
+const THEME = {
+  pink: '#E91E63',
+  purple: '#4A148C',
+  lightPink: '#FCE4EC',
+  gradient: 'linear-gradient(135deg, #E91E63 0%, #4A148C 100%)',
+  softGradient: 'linear-gradient(135deg, #FFF0F5 0%, #F3E5F5 100%)'
+};
 
 export default function SakhiHubOnboardingForm() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -113,50 +122,62 @@ export default function SakhiHubOnboardingForm() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-6 font-sans">
-        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-md w-full bg-white border-4 border-[#DEB887] rounded-[3rem] p-12 text-center shadow-2xl">
-          <CheckCircle2 size={80} className="mx-auto mb-8 text-green-600" />
-          <h2 className="text-4xl font-black text-[#B32D2D] mb-4 italic uppercase tracking-tighter leading-none">Success!</h2>
-          <p className="text-gray-500 font-bold mb-10 leading-relaxed uppercase text-xs tracking-widest italic">Application ID: <span className="text-[#B32D2D] text-lg block mt-2">{applicationId}</span></p>
-          <button onClick={() => window.location.href = '/'} className="w-full py-5 bg-[#B32D2D] text-white font-black rounded-2xl hover:bg-[#8e2424] shadow-xl uppercase italic tracking-widest">Done</button>
+      <div className="min-h-screen bg-[#FFF0F5] flex items-center justify-center p-6 font-sans">
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-md w-full bg-white border-4 border-[#4A148C]/20 rounded-[3rem] p-12 text-center shadow-[0_20px_60px_rgba(233,30,99,0.2)]">
+          <CheckCircle2 size={80} className="mx-auto mb-8 text-green-500" />
+          <h2 className={`text-4xl font-black mb-4 italic uppercase tracking-tighter leading-none`} style={{ color: THEME.pink }}>Success!</h2>
+          <p className="text-gray-500 font-bold mb-10 leading-relaxed uppercase text-xs tracking-widest italic">Application ID: <span className="text-purple-900 text-lg block mt-2">{applicationId}</span></p>
+          <button onClick={() => window.location.href = '/'} className="w-full py-5 text-white font-black rounded-2xl hover:scale-105 transition-all shadow-xl uppercase italic tracking-widest" style={{ background: THEME.gradient }}>Back to Home</button>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] pb-24 font-sans text-slate-800">
-      <header className="sticky top-0 z-50 bg-[#B32D2D] text-white shadow-2xl border-b-[6px] border-[#DEB887]">
-        <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative">
-          <div className="bg-white p-1 rounded-xl rotate-[-2deg] shadow-lg"><img src="/logo.jpeg" className="h-12" /></div>
+    <div className="min-h-screen bg-[#FFFDFE] pb-24 font-sans text-slate-800">
+      {/* Dynamic Header with Gradient */}
+      <header className="sticky top-0 z-50 shadow-2xl border-b-[4px] border-white/20" style={{ background: THEME.gradient }}>
+        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between relative">
+          <div className="bg-white p-2 rounded-2xl rotate-[-2deg] shadow-xl"><img src="/logo.jpeg" className="h-10 md:h-14" /></div>
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <h1 className="text-2xl md:text-4xl font-black uppercase italic tracking-tighter">SakhiHub <span className="text-[#DEB887]">Onboarding</span></h1>
+            <h1 className="text-xl md:text-3xl font-black uppercase italic tracking-tighter text-white">SakhiHub <span className="text-pink-200">Onboarding</span></h1>
           </div>
-          <Heart className="text-[#DEB887] animate-pulse" />
+          <div className="flex items-center gap-4">
+             <Sparkles className="text-pink-300 animate-pulse" size={24} />
+          </div>
         </div>
       </header>
 
-      <div className="max-w-5xl mx-auto px-4 mt-16">
-        <div className="flex justify-between mb-16 overflow-x-auto no-scrollbar py-6 px-4 gap-4">
+      <div className="max-w-5xl mx-auto px-4 mt-12">
+        {/* Step Indicators with Theme Colors */}
+        <div className="flex justify-between mb-12 overflow-x-auto no-scrollbar py-6 px-4 gap-4 bg-white/50 rounded-[3rem] backdrop-blur-sm">
           {STEPS.map((step) => (
-            <div key={step.id} className="flex flex-col items-center flex-1 min-w-[100px] group cursor-pointer" onClick={() => step.id < currentStep && setCurrentStep(step.id)}>
-              <div className={`w-14 h-14 rounded-[1.5rem] flex items-center justify-center border-4 transition-all duration-500 shadow-xl ${currentStep >= step.id ? 'bg-[#B32D2D] border-[#DEB887] text-white rotate-[-3deg]' : 'bg-white border-slate-100 text-slate-300'}`}>
-                {currentStep > step.id ? <Check size={24} /> : <step.icon size={22} />}
+            <div key={step.id} className="flex flex-col items-center flex-1 min-w-[90px] group cursor-pointer" onClick={() => step.id < currentStep && setCurrentStep(step.id)}>
+              <div className={`w-12 h-12 rounded-[1.2rem] flex items-center justify-center border-4 transition-all duration-500 shadow-lg ${currentStep >= step.id ? 'text-white rotate-[-3deg]' : 'bg-white border-slate-100 text-slate-300'}`} style={{ background: currentStep >= step.id ? THEME.gradient : '', borderColor: currentStep >= step.id ? 'white' : '' }}>
+                {currentStep > step.id ? <Check size={20} /> : <step.icon size={20} />}
               </div>
-              <span className={`mt-4 text-[9px] font-black uppercase tracking-widest italic text-center ${currentStep >= step.id ? 'text-[#B32D2D]' : 'text-slate-400'}`}>{step.title}</span>
+              <span className={`mt-4 text-[8px] font-black uppercase tracking-widest italic text-center ${currentStep >= step.id ? 'text-purple-900' : 'text-slate-400'}`}>{step.title}</span>
             </div>
           ))}
         </div>
 
-        <div className="bg-white border-[4px] border-[#DEB887] rounded-[4rem] shadow-[0_20px_80px_rgba(0,0,0,0.1)] overflow-hidden mb-24">
-          <div className="bg-[#DEB887] px-12 py-6 flex justify-between items-center shadow-inner">
-             <h3 className="text-white font-black italic uppercase tracking-[0.2em]">{STEPS.find(s => s.id === currentStep).title}</h3>
-             <span className="bg-white/20 text-white px-5 py-2 rounded-full text-[10px] font-black italic uppercase">Step {currentStep} of 8</span>
+        {/* Main Card with Glassmorphism */}
+        <div className="bg-white border-[6px] border-pink-50 rounded-[4rem] shadow-[0_40px_100px_rgba(74,20,140,0.1)] overflow-hidden mb-24 relative">
+          <div className="absolute top-0 left-0 w-full h-2" style={{ background: THEME.gradient }}></div>
+          
+          <div className="px-12 py-8 flex justify-between items-center bg-pink-50/50">
+             <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white" style={{ background: THEME.gradient }}>
+                   {React.createElement(STEPS.find(s => s.id === currentStep).icon, { size: 20 })}
+                </div>
+                <h3 className="font-black italic uppercase tracking-[0.2em] text-purple-900">{STEPS.find(s => s.id === currentStep).title}</h3>
+             </div>
+             <span className="bg-white px-5 py-2 rounded-full text-[10px] font-black italic uppercase text-pink-600 shadow-sm border border-pink-100">Step {currentStep} of 8</span>
           </div>
 
           <div className="p-10 md:p-16">
             <AnimatePresence mode="wait">
-              <motion.div key={currentStep} initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}>
+              <motion.div key={currentStep} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                 {currentStep === 1 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     <SelectField label="Applicant Type" name="applicantType" value={formData.applicantType} onChange={handleChange} error={errors.applicantType} options={['NGO', 'Vendor / Distributor', 'SHG Group', 'Individual Partner', 'State Partner', 'District Partner', 'Block / Tehsil Partner']} required />
@@ -196,21 +217,21 @@ export default function SakhiHubOnboardingForm() {
                   <div className="space-y-12">
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                       {['Full State', 'Multiple States', 'Single District', 'Multiple Districts', 'Block Level', 'Village Level'].map(t => (
-                        <button key={t} onClick={() => setFormData(p => ({ ...p, workAreaType: t }))} className={`px-8 py-6 rounded-[2rem] border-4 font-black text-[10px] uppercase italic transition-all ${formData.workAreaType === t ? 'bg-[#B32D2D] border-[#B32D2D] text-white shadow-xl' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>{t}</button>
+                        <button key={t} onClick={() => setFormData(p => ({ ...p, workAreaType: t }))} className={`px-8 py-6 rounded-[2rem] border-4 font-black text-[10px] uppercase italic transition-all ${formData.workAreaType === t ? 'text-white shadow-xl border-white' : 'bg-slate-50 border-slate-100 text-slate-400'}`} style={{ background: formData.workAreaType === t ? THEME.gradient : '' }}>{t}</button>
                       ))}
                     </div>
                     {formData.workAreaType && (
-                      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-10 bg-[#FDFBF7] border-4 border-slate-100 rounded-[3rem] space-y-10">
+                      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="p-10 bg-pink-50/30 border-4 border-pink-100/50 rounded-[3rem] space-y-10">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                            <InputField label="Type State Name" name="state" value={formData.state} onChange={handleChange} />
                            <div className="space-y-3">
-                              <p className="text-[10px] font-black text-slate-400 uppercase italic">Or Select State</p>
-                              <select name="state" value={formData.state} onChange={handleChange} className="w-full px-6 py-5 bg-white border-2 border-slate-100 rounded-3xl font-black text-xs appearance-none cursor-pointer"><option value="">--- Select ---</option>{states.map(s => <option key={s.state_id} value={s.state_name}>{s.state_name}</option>)}</select>
+                              <p className="text-[10px] font-black text-purple-900 uppercase italic">Or Select State</p>
+                              <select name="state" value={formData.state} onChange={handleChange} className="w-full px-6 py-5 bg-white border-2 border-pink-100 rounded-3xl font-black text-xs appearance-none cursor-pointer text-slate-700 outline-none focus:border-pink-500"><option value="">--- Select ---</option>{states.map(s => <option key={s.state_id} value={s.state_name}>{s.state_name}</option>)}</select>
                            </div>
                         </div>
                         <div className="space-y-4">
-                           <p className="text-[10px] font-black text-[#B32D2D] uppercase italic tracking-widest">Manually Define Your Service Areas (Cities/Blocks/Districts)</p>
-                           <textarea name="manualWorkArea" value={formData.manualWorkArea} onChange={handleChange} className="w-full px-8 py-6 bg-white border-2 border-slate-100 rounded-[2.5rem] font-bold text-xs min-h-[150px] outline-none focus:border-[#B32D2D] transition-all shadow-inner" placeholder="E.g. Full Madhya Pradesh / Only Indore & Ujjain Districts..."></textarea>
+                           <p className="text-[10px] font-black text-pink-600 uppercase italic tracking-widest">Define Your Service Areas</p>
+                           <textarea name="manualWorkArea" value={formData.manualWorkArea} onChange={handleChange} className="w-full px-8 py-6 bg-white border-2 border-pink-100 rounded-[2.5rem] font-bold text-xs min-h-[150px] outline-none focus:border-pink-500 transition-all shadow-inner" placeholder="E.g. Full Madhya Pradesh / Only Indore & Ujjain Districts..."></textarea>
                         </div>
                       </motion.div>
                     )}
@@ -219,10 +240,10 @@ export default function SakhiHubOnboardingForm() {
 
                 {currentStep === 5 && (
                   <div className="space-y-12">
-                    <p className="text-[10px] font-black text-[#B32D2D] uppercase italic tracking-widest mb-6 underline">Work Interests & Current Strength</p>
+                    <p className="text-[10px] font-black text-pink-600 uppercase italic tracking-widest mb-6 underline decoration-purple-900">Work Interests & Current Strength</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {['Women Awareness', 'Sanitary Pad Distribution', 'SHG Training', 'NGO Collaboration', 'Membership Drive', 'Rural Health Camps', 'Distribution / Franchise'].map(cat => (
-                        <button key={cat} onClick={() => handleMultiSelect('interestedWorkCategories', cat)} className={`px-8 py-5 rounded-2xl border-4 text-[11px] font-black text-left flex justify-between items-center transition-all ${formData.interestedWorkCategories?.includes(cat) ? 'border-[#B32D2D] bg-red-50 text-[#B32D2D]' : 'border-slate-50 bg-white text-slate-400'}`}>{cat} {formData.interestedWorkCategories?.includes(cat) && <CheckCircle size={18} />}</button>
+                        <button key={cat} onClick={() => handleMultiSelect('interestedWorkCategories', cat)} className={`px-8 py-5 rounded-2xl border-4 text-[11px] font-black text-left flex justify-between items-center transition-all ${formData.interestedWorkCategories?.includes(cat) ? 'border-pink-500 bg-pink-50 text-pink-700 shadow-md' : 'border-slate-50 bg-white text-slate-400'}`}>{cat} {formData.interestedWorkCategories?.includes(cat) && <CheckCircle size={18} className="text-pink-600" />}</button>
                       ))}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -231,7 +252,7 @@ export default function SakhiHubOnboardingForm() {
                     </div>
                     <div className="space-y-3">
                        <p className="text-[10px] font-black text-slate-400 uppercase italic">Nature of Current Work / Activities</p>
-                       <textarea name="natureOfWork" value={formData.natureOfWork} onChange={handleChange} error={errors.natureOfWork} className="w-full px-8 py-6 bg-slate-50 border-2 border-slate-100 rounded-[2.5rem] font-bold text-xs min-h-[120px] outline-none focus:border-[#B32D2D]" placeholder="Briefly describe your current activities..." required></textarea>
+                       <textarea name="natureOfWork" value={formData.natureOfWork} onChange={handleChange} className="w-full px-8 py-6 bg-pink-50/20 border-2 border-pink-100 rounded-[2.5rem] font-bold text-xs min-h-[120px] outline-none focus:border-pink-500" placeholder="Briefly describe your current activities..." required></textarea>
                     </div>
                   </div>
                 )}
@@ -268,11 +289,11 @@ export default function SakhiHubOnboardingForm() {
                          <ReviewItem title="Work & Capacity" icon={Briefcase} data={{ 'Work Type': formData.workAreaType, 'Capacity': formData.monthlyCapacity, 'Interests': formData.interestedWorkCategories?.join(', '), 'Staff': formData.staffCount }} onEdit={() => setCurrentStep(4)} />
                          <ReviewItem title="Bank Information" icon={CreditCard} data={{ 'Holder': formData.accountHolderName, 'Bank': formData.bankName, 'IFSC': formData.ifscCode, 'AC': 'XXXX XXXX ' + formData.accountNumber?.slice(-4) }} onEdit={() => setCurrentStep(6)} />
                       </div>
-                      <div className="p-10 bg-slate-50 border-4 border-slate-100 rounded-[3rem] space-y-8">
-                         <p className="text-[10px] font-black text-[#B32D2D] uppercase tracking-widest italic underline">Self Declaration</p>
+                      <div className="p-10 bg-pink-50/30 border-4 border-pink-100/50 rounded-[3rem] space-y-8">
+                         <p className="text-[10px] font-black text-pink-600 uppercase tracking-widest italic underline">Self Declaration</p>
                          <div className="flex items-start gap-5 cursor-pointer" onClick={() => document.getElementById('declare').click()}>
-                            <input type="checkbox" id="declare" className="w-8 h-8 rounded-xl accent-[#B32D2D] cursor-pointer mt-1 shadow-sm" required />
-                            <label className="text-[11px] font-bold text-slate-600 leading-relaxed italic">I hereby declare that all the information provided above is true to the best of my knowledge and I agree to the terms and conditions of SakhiHub partnership initiative.</label>
+                            <input type="checkbox" id="declare" className="w-8 h-8 rounded-xl accent-pink-600 cursor-pointer mt-1 shadow-sm" required />
+                            <label className="text-[11px] font-bold text-slate-600 leading-relaxed italic">I hereby declare that all the information provided is true and I agree to the SakhiHub partnership terms.</label>
                          </div>
                       </div>
                    </div>
@@ -280,15 +301,15 @@ export default function SakhiHubOnboardingForm() {
               </motion.div>
             </AnimatePresence>
 
-            <div className="flex flex-col md:flex-row gap-8 mt-16 pt-12 border-t-4 border-[#DEB887]/20">
-               {currentStep > 1 && <button onClick={prevStep} className="flex-1 py-5 border-4 border-[#B32D2D] text-[#B32D2D] font-black rounded-2xl hover:bg-red-50 uppercase tracking-[0.2em] italic text-[11px] flex items-center justify-center gap-3"><ArrowLeft size={18} /> BACK</button>}
-               {currentStep < 8 ? <button onClick={nextStep} className="flex-[2] py-5 bg-[#B32D2D] text-white font-black rounded-2xl hover:bg-[#8e2424] shadow-2xl uppercase tracking-[0.2em] italic text-[11px] flex items-center justify-center gap-3">CONTINUE TO STEP {currentStep + 1} <ArrowRight size={18} /></button> : <button onClick={handleSubmit} disabled={loading} className="flex-[2] py-5 bg-[#22c55e] text-white font-black rounded-2xl hover:bg-[#16a34a] shadow-2xl uppercase tracking-[0.2em] italic text-[11px] flex items-center justify-center gap-3">{loading ? <Loader2 className="animate-spin" /> : 'FINAL SUBMIT APPLICATION'}</button>}
+            <div className="flex flex-col md:flex-row gap-8 mt-16 pt-12 border-t-4 border-pink-50">
+               {currentStep > 1 && <button onClick={prevStep} className="flex-1 py-5 border-4 border-pink-200 text-pink-600 font-black rounded-2xl hover:bg-pink-50 uppercase tracking-[0.2em] italic text-[11px] flex items-center justify-center gap-3"><ArrowLeft size={18} /> BACK</button>}
+               {currentStep < 8 ? <button onClick={nextStep} className="flex-[2] py-5 text-white font-black rounded-2xl hover:scale-[1.02] transition-all shadow-2xl uppercase tracking-[0.2em] italic text-[11px] flex items-center justify-center gap-3" style={{ background: THEME.gradient }}>CONTINUE TO STEP {currentStep + 1} <ArrowRight size={18} /></button> : <button onClick={handleSubmit} disabled={loading} className="flex-[2] py-5 bg-[#22c55e] text-white font-black rounded-2xl hover:bg-[#16a34a] shadow-2xl uppercase tracking-[0.2em] italic text-[11px] flex items-center justify-center gap-3">{loading ? <Loader2 className="animate-spin" /> : 'FINAL SUBMIT APPLICATION'}</button>}
             </div>
           </div>
         </div>
       </div>
 
-      {previewImage && <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-8 backdrop-blur-xl" onClick={() => setPreviewImage(null)}><img src={previewImage} className="max-w-full max-h-full rounded-[3rem] border-8 border-white shadow-[0_0_100px_rgba(0,0,0,0.5)]" /></div>}
+      {previewImage && <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-8 backdrop-blur-xl" onClick={() => setPreviewImage(null)}><img src={previewImage} className="max-w-full max-h-full rounded-[3rem] border-8 border-white shadow-2xl" /></div>}
     </div>
   );
 }
@@ -296,8 +317,8 @@ export default function SakhiHubOnboardingForm() {
 function InputField({ label, name, value, onChange, error, type="text", required=false, ...props }) {
   return (
     <div className="space-y-3">
-      <div className="bg-[#B32D2D] text-white text-[9px] font-black px-4 py-1.5 rounded-xl inline-block uppercase italic tracking-widest">{label} {required && '*'}</div>
-      <input type={type} name={name} value={value} onChange={onChange} className={`w-full px-6 py-5 bg-[#FDFBF7] border-2 rounded-2xl font-bold text-xs text-slate-700 outline-none transition-all shadow-inner ${error ? 'border-red-500' : 'border-slate-100 focus:border-[#B32D2D] focus:shadow-lg focus:shadow-[#B32D2D]/5'}`} {...props} />
+      <div className="bg-pink-100 text-pink-700 text-[9px] font-black px-4 py-1.5 rounded-xl inline-block uppercase italic tracking-widest">{label} {required && '*'}</div>
+      <input type={type} name={name} value={value} onChange={onChange} className={`w-full px-6 py-5 bg-white border-2 rounded-2xl font-bold text-xs text-slate-700 outline-none transition-all ${error ? 'border-red-500' : 'border-pink-50 focus:border-pink-500 focus:shadow-lg focus:shadow-pink-500/5'}`} {...props} />
     </div>
   );
 }
@@ -305,8 +326,8 @@ function InputField({ label, name, value, onChange, error, type="text", required
 function SelectField({ label, name, value, onChange, options, error, required=false }) {
   return (
     <div className="space-y-3">
-      <div className="bg-[#B32D2D] text-white text-[9px] font-black px-4 py-1.5 rounded-xl inline-block uppercase italic tracking-widest">{label} {required && '*'}</div>
-      <select name={name} value={value} onChange={onChange} className="w-full px-6 py-5 bg-[#FDFBF7] border-2 border-slate-100 rounded-2xl font-bold text-xs text-slate-700 outline-none focus:border-[#B32D2D] shadow-inner appearance-none cursor-pointer">
+      <div className="bg-pink-100 text-pink-700 text-[9px] font-black px-4 py-1.5 rounded-xl inline-block uppercase italic tracking-widest">{label} {required && '*'}</div>
+      <select name={name} value={value} onChange={onChange} className="w-full px-6 py-5 bg-white border-2 border-pink-50 rounded-2xl font-bold text-xs text-slate-700 outline-none focus:border-pink-500 appearance-none cursor-pointer shadow-inner">
         <option value="">Select Option</option>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
@@ -318,8 +339,8 @@ function FileUploadField({ label, value, onChange, onClear, onPreview }) {
   return (
     <div className="space-y-4">
        <p className="text-[9px] font-black text-slate-400 uppercase text-center tracking-widest italic">{label}</p>
-       <div className={`relative h-40 rounded-[2.5rem] border-4 border-dashed transition-all flex flex-col items-center justify-center ${value ? 'border-green-500 bg-green-50/10' : 'border-slate-100 bg-slate-50 hover:border-[#B32D2D]'}`}>
-          {value ? <div className="w-full h-full p-3 relative"><img src={value} onClick={onPreview} className="w-full h-full object-cover rounded-[2rem] cursor-zoom-in" /><button onClick={onClear} className="absolute -top-3 -right-3 w-10 h-10 bg-red-500 text-white rounded-full border-4 border-white shadow-lg"><X size={18} /></button></div> : <><input type="file" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" /><Camera size={32} className="text-[#B32D2D]/30" /><p className="text-[9px] font-black text-slate-300 mt-3 uppercase tracking-widest">Upload</p></>}
+       <div className={`relative h-40 rounded-[2.5rem] border-4 border-dashed transition-all flex flex-col items-center justify-center ${value ? 'border-green-500 bg-green-50/10' : 'border-pink-100 bg-pink-50/20 hover:border-pink-500'}`}>
+          {value ? <div className="w-full h-full p-3 relative"><img src={value} onClick={onPreview} className="w-full h-full object-cover rounded-[2rem] cursor-zoom-in" /><button onClick={onClear} className="absolute -top-3 -right-3 w-10 h-10 bg-red-500 text-white rounded-full border-4 border-white shadow-lg"><X size={18} /></button></div> : <><input type="file" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" /><Camera size={32} className="text-pink-300" /><p className="text-[9px] font-black text-pink-200 mt-3 uppercase tracking-widest">Upload</p></>}
        </div>
     </div>
   );
@@ -327,8 +348,8 @@ function FileUploadField({ label, value, onChange, onClear, onPreview }) {
 
 function ReviewItem({ title, icon: Icon, data, onEdit }) {
   return (
-    <div className="p-8 bg-white border-2 border-slate-50 rounded-[3rem] shadow-xl hover:border-[#B32D2D] transition-all group relative">
-       <div className="flex justify-between items-center mb-6"><div className="flex items-center gap-3"><div className="p-2 bg-[#B32D2D]/10 rounded-xl text-[#B32D2D]"><Icon size={16} /></div><h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] italic">{title}</h4></div><button onClick={onEdit} className="p-3 text-slate-200 hover:text-[#B32D2D] opacity-0 group-hover:opacity-100 transition-all"><Edit3 size={18} /></button></div>
+    <div className="p-8 bg-white border-2 border-pink-50 rounded-[3rem] shadow-xl hover:border-pink-500 transition-all group relative">
+       <div className="flex justify-between items-center mb-6"><div className="flex items-center gap-3"><div className="p-2 bg-pink-50 rounded-xl text-pink-600"><Icon size={16} /></div><h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] italic">{title}</h4></div><button onClick={onEdit} className="p-3 text-slate-200 hover:text-pink-600 opacity-0 group-hover:opacity-100 transition-all"><Edit3 size={18} /></button></div>
        <div className="space-y-3">{Object.entries(data).map(([k, v]) => (<div key={k} className="flex justify-between items-start gap-4"><span className="text-[9px] font-black text-slate-400 uppercase italic leading-loose">{k}</span><span className="text-[11px] font-black text-slate-800 text-right leading-loose">{v || '---'}</span></div>))}</div>
     </div>
   );
