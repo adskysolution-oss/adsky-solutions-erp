@@ -19,7 +19,8 @@ import {
   Settings,
   LogOut,
   ChevronRight,
-  FileText
+  FileText,
+  Heart
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -40,6 +41,7 @@ const MENU_ITEMS = [
   { name: 'Reports', icon: BarChart3, path: '/admin/reports' },
   { name: 'Notifications', icon: Bell, path: '/admin/notifications' },
   { name: 'Branding', icon: Settings, path: '/admin/settings' },
+  { name: 'SakhiHub', icon: Heart, path: '/admin/sakhihub' },
 ];
 
 export default function Sidebar() {
