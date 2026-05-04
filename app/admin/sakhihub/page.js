@@ -5,7 +5,7 @@ import {
   Users, Search, Filter, Download, 
   CheckCircle, XCircle, Clock, MoreVertical,
   Eye, DownloadCloud, CheckCircle2, AlertCircle,
-  TrendingUp, MapPin, Building2, User
+  TrendingUp, MapPin, Building2, User, ShieldCheck, CreditCard
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
