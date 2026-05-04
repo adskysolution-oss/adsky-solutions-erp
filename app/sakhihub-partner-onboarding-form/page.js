@@ -135,42 +135,42 @@ export default function SakhiHubOnboardingForm() {
 
   return (
     <div className="min-h-screen bg-[#FFFDFE] pb-24 font-sans text-slate-800">
-      <header className="sticky top-0 z-50 shadow-2xl border-b-[6px] border-white/20" style={{ background: THEME.gradient }}>
-        <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative">
-          <div className="bg-white p-2.5 rounded-2xl rotate-[-2deg] shadow-xl"><img src="/logo.jpeg" className="h-12 md:h-20" /></div>
-          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <h1 className="text-2xl md:text-5xl font-black uppercase italic tracking-tighter text-white">SakhiHub <span className="text-pink-200">Onboarding</span></h1>
+      <header className="sticky top-0 z-50 shadow-2xl border-b-[4px] border-white/20" style={{ background: THEME.gradient }}>
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+          <div className="bg-white p-1.5 rounded-xl rotate-[-2deg] shadow-xl flex-shrink-0"><img src="/logo.jpeg" className="h-10 md:h-14" /></div>
+          <div className="flex-1 text-center">
+            <h1 className="text-lg sm:text-2xl md:text-4xl font-black uppercase italic tracking-tight text-white leading-tight">SakhiHub <span className="text-pink-200">Onboarding</span></h1>
           </div>
-          <div className="flex items-center gap-4"><Sparkles className="text-pink-300 animate-pulse" size={32} /></div>
+          <Sparkles className="text-pink-300 animate-pulse flex-shrink-0" size={24} />
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-4 mt-20">
-        <div className="flex justify-between mb-16 overflow-x-auto no-scrollbar py-10 px-6 gap-6 bg-white/50 rounded-[4rem] backdrop-blur-md shadow-inner">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 mt-6 md:mt-12">
+        <div className="flex justify-between mb-8 md:mb-12 overflow-x-auto no-scrollbar py-4 md:py-8 px-3 md:px-6 gap-2 md:gap-4 bg-white/50 rounded-[2rem] md:rounded-[4rem] backdrop-blur-md shadow-inner">
           {STEPS.map((step) => (
-            <div key={step.id} className="flex flex-col items-center flex-1 min-w-[120px] group cursor-pointer" onClick={() => step.id < currentStep && setCurrentStep(step.id)}>
-              <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center border-[5px] transition-all duration-500 shadow-2xl ${currentStep >= step.id ? 'text-white rotate-[-3deg]' : 'bg-white border-slate-100 text-slate-300'}`} style={{ background: currentStep >= step.id ? THEME.gradient : '', borderColor: currentStep >= step.id ? 'white' : '' }}>
-                {currentStep > step.id ? <Check size={28} /> : <step.icon size={28} />}
+            <div key={step.id} className="flex flex-col items-center flex-1 min-w-[56px] md:min-w-[100px] group cursor-pointer" onClick={() => step.id < currentStep && setCurrentStep(step.id)}>
+              <div className={`w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-[1.5rem] flex items-center justify-center border-[3px] md:border-[4px] transition-all duration-500 shadow-lg ${currentStep >= step.id ? 'text-white' : 'bg-white border-slate-100 text-slate-300'}`} style={{ background: currentStep >= step.id ? THEME.gradient : '', borderColor: currentStep >= step.id ? 'white' : '' }}>
+                {currentStep > step.id ? <Check size={16} className="md:w-6 md:h-6" /> : <step.icon size={16} className="md:w-6 md:h-6" />}
               </div>
-              <span className={`mt-6 text-[11px] font-black uppercase tracking-widest italic text-center leading-tight ${currentStep >= step.id ? 'text-purple-900' : 'text-slate-400'}`}>{step.title}</span>
+              <span className={`mt-2 md:mt-4 text-[8px] md:text-[10px] font-black uppercase tracking-tight md:tracking-widest italic text-center leading-tight ${currentStep >= step.id ? 'text-purple-900' : 'text-slate-400'}`}>{step.title}</span>
             </div>
           ))}
         </div>
 
-        <div className="bg-white border-[8px] border-pink-50 rounded-[5rem] shadow-[0_60px_150px_rgba(74,20,140,0.12)] overflow-hidden mb-32 relative">
-          <div className="absolute top-0 left-0 w-full h-3" style={{ background: THEME.gradient }}></div>
+        <div className="bg-white border-[4px] md:border-[8px] border-pink-50 rounded-[2.5rem] md:rounded-[5rem] shadow-[0_20px_60px_rgba(74,20,140,0.12)] overflow-hidden mb-16 md:mb-32 relative">
+          <div className="absolute top-0 left-0 w-full h-2" style={{ background: THEME.gradient }}></div>
           
-          <div className="px-16 py-10 flex justify-between items-center bg-pink-50/40">
-             <div className="flex items-center gap-6">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-lg" style={{ background: THEME.gradient }}>
-                   {React.createElement(STEPS.find(s => s.id === currentStep).icon, { size: 30 })}
+          <div className="px-6 md:px-16 py-6 md:py-10 flex justify-between items-center bg-pink-50/40">
+             <div className="flex items-center gap-4">
+                <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center text-white shadow-lg flex-shrink-0" style={{ background: THEME.gradient }}>
+                   {React.createElement(STEPS.find(s => s.id === currentStep).icon, { size: 22 })}
                 </div>
-                <h3 className="text-2xl font-black italic uppercase tracking-[0.25em] text-purple-900">{STEPS.find(s => s.id === currentStep).title}</h3>
+                <h3 className="text-base md:text-2xl font-black italic uppercase tracking-wide md:tracking-[0.25em] text-purple-900">{STEPS.find(s => s.id === currentStep).title}</h3>
              </div>
-             <span className="bg-white px-8 py-3 rounded-full text-sm font-black italic uppercase text-pink-600 shadow-md border-2 border-pink-100">Step {currentStep} of 8</span>
+             <span className="bg-white px-4 md:px-8 py-2 md:py-3 rounded-full text-xs md:text-sm font-black italic uppercase text-pink-600 shadow-md border-2 border-pink-100 whitespace-nowrap">Step {currentStep}/8</span>
           </div>
 
-          <div className="p-12 md:p-24">
+          <div className="p-6 sm:p-10 md:p-16 lg:p-20">
             <AnimatePresence mode="wait">
               <motion.div key={currentStep} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}>
                 {currentStep === 1 && (
@@ -296,9 +296,9 @@ export default function SakhiHubOnboardingForm() {
               </motion.div>
             </AnimatePresence>
 
-            <div className="flex flex-col md:flex-row gap-10 mt-20 pt-16 border-t-8 border-pink-50/50">
-               {currentStep > 1 && <button onClick={prevStep} className="flex-1 py-6 border-[5px] border-pink-200 text-pink-600 font-black rounded-3xl hover:bg-pink-50 uppercase tracking-[0.3em] italic text-xs flex items-center justify-center gap-4 transition-all shadow-lg active:scale-95"><ArrowLeft size={24} /> BACK</button>}
-               {currentStep < 8 ? <button onClick={nextStep} className="flex-[2] py-6 text-white font-black rounded-3xl hover:scale-[1.03] transition-all shadow-2xl uppercase tracking-[0.3em] italic text-xs flex items-center justify-center gap-4 active:scale-95" style={{ background: THEME.gradient }}>CONTINUE TO NEXT STEP <ArrowRight size={24} /></button> : <button onClick={handleSubmit} disabled={loading} className="flex-[2] py-6 bg-[#22c55e] text-white font-black rounded-3xl hover:bg-[#16a34a] shadow-2xl uppercase tracking-[0.3em] italic text-xs flex items-center justify-center gap-4 active:scale-95">{loading ? <Loader2 className="animate-spin" /> : 'CONFIRM & SUBMIT APPLICATION'}</button>}
+            <div className="flex flex-col sm:flex-row gap-4 md:gap-8 mt-10 md:mt-16 pt-8 md:pt-12 border-t-4 border-pink-50/50">
+               {currentStep > 1 && <button onClick={prevStep} className="flex-1 py-4 md:py-6 border-4 border-pink-200 text-pink-600 font-black rounded-2xl hover:bg-pink-50 uppercase tracking-widest italic text-xs flex items-center justify-center gap-3 transition-all shadow-lg active:scale-95"><ArrowLeft size={20} /> Back</button>}
+               {currentStep < 8 ? <button onClick={nextStep} className="flex-[2] py-4 md:py-6 text-white font-black rounded-2xl transition-all shadow-xl uppercase tracking-widest italic text-xs flex items-center justify-center gap-3 active:scale-95" style={{ background: THEME.gradient }}>Next Step <ArrowRight size={20} /></button> : <button onClick={handleSubmit} disabled={loading} className="flex-[2] py-4 md:py-6 bg-[#22c55e] text-white font-black rounded-2xl shadow-xl uppercase tracking-widest italic text-xs flex items-center justify-center gap-3 active:scale-95">{loading ? <Loader2 className="animate-spin" /> : 'Submit Application'}</button>}
             </div>
           </div>
         </div>
