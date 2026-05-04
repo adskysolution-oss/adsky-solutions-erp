@@ -188,6 +188,7 @@ export default function SakhiHubOnboardingForm() {
           <div className="p-8 md:p-12">
             <AnimatePresence mode="wait">
               <motion.div key={currentStep} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                {/* Step 1: Basic Details */}
                 {currentStep === 1 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <SelectField label="Applicant Type" name="applicantType" value={formData.applicantType} onChange={handleChange} error={errors.applicantType} options={['NGO', 'Vendor / Distributor', 'SHG Group', 'Individual Partner', 'State Partner', 'District Partner', 'Block / Tehsil Partner']} required />
@@ -260,11 +261,9 @@ export default function SakhiHubOnboardingForm() {
                                </div>
                              )}
 
-                             {/* Manual Entry Field */}
                              <div className="space-y-3">
-                                <div className="bg-[#B32D2D] text-white text-[8px] font-black px-3 py-1 rounded inline-block uppercase italic">Enter Work Areas Manually (If not in list)</div>
-                                <textarea name="manualWorkArea" value={formData.manualWorkArea} onChange={handleChange} className="w-full px-6 py-5 bg-white border-2 border-gray-100 rounded-[2rem] font-bold text-xs min-h-[120px] outline-none focus:border-[#B32D2D] transition-all shadow-inner" placeholder="E.g. Indore, Bhopal, Dewas (Madhya Pradesh)"></textarea>
-                                <p className="text-[8px] text-gray-400 italic px-4 font-bold uppercase">Yaha aap apne prantiya kshetra ya jilo ke naam likh sakte hain jo upar list me nahi hain.</p>
+                                <div className="bg-[#B32D2D] text-white text-[8px] font-black px-3 py-1 rounded inline-block uppercase italic">Enter Work Areas Manually</div>
+                                <textarea name="manualWorkArea" value={formData.manualWorkArea} onChange={handleChange} className="w-full px-6 py-5 bg-white border-2 border-gray-100 rounded-[2rem] font-bold text-xs min-h-[120px] outline-none focus:border-[#B32D2D] transition-all shadow-inner" placeholder="E.g. Indore, Bhopal, Dewas"></textarea>
                              </div>
                            </div>
                         )}
@@ -287,13 +286,18 @@ export default function SakhiHubOnboardingForm() {
                   </div>
                 )}
 
+                {/* Step 6: Bank Details (Fixing Auto-fill) */}
                 {currentStep === 6 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <InputField label="Account Holder" name="accountHolderName" value={formData.accountHolderName} onChange={handleChange} required />
-                    <InputField label="IFSC Code" name="ifscCode" value={formData.ifscCode} onChange={handleChange} error={errors.ifscCode} maxLength={11} required />
-                    <InputField label="Bank Name" name="bankName" value={formData.bankName} onChange={handleChange} required />
-                    <InputField label="Account Number" name="accountNumber" value={formData.accountNumber} onChange={handleChange} type="password" required />
-                    <InputField label="Confirm A/C Number" name="confirmAccountNumber" value={formData.confirmAccountNumber} onChange={handleChange} error={errors.confirmAccountNumber} required />
+                    {/* Dummy hidden fields to trap browser auto-fill */}
+                    <input type="text" name="dummy_email" style={{ display: 'none' }} tabIndex="-1" autoComplete="off" />
+                    <input type="password" name="dummy_password" style={{ display: 'none' }} tabIndex="-1" autoComplete="off" />
+
+                    <InputField label="Account Holder" name="accountHolderName" value={formData.accountHolderName} onChange={handleChange} required autoComplete="off" />
+                    <InputField label="IFSC Code" name="ifscCode" value={formData.ifscCode} onChange={handleChange} error={errors.ifscCode} maxLength={11} required autoComplete="off" />
+                    <InputField label="Bank Name" name="bankName" value={formData.bankName} onChange={handleChange} required autoComplete="off" />
+                    <InputField label="Account Number" name="accountNumber" value={formData.accountNumber} onChange={handleChange} type="password" required autoComplete="new-password" />
+                    <InputField label="Confirm A/C Number" name="confirmAccountNumber" value={formData.confirmAccountNumber} onChange={handleChange} error={errors.confirmAccountNumber} required autoComplete="new-password" />
                   </div>
                 )}
 
@@ -352,11 +356,11 @@ export default function SakhiHubOnboardingForm() {
   );
 }
 
-function InputField({ label, name, value, onChange, error, type="text", required=false, ...props }) {
+function InputField({ label, name, value, onChange, error, type="text", required=false, autoComplete="off", ...props }) {
   return (
     <div className="space-y-2">
       <div className="bg-[#B32D2D] text-white text-[8px] font-black px-3 py-1 rounded inline-block uppercase italic">{label} {required && '*'}</div>
-      <input type={type} name={name} value={value} onChange={onChange} className={`w-full px-5 py-4 bg-white border-2 rounded-2xl font-bold text-xs text-gray-800 outline-none transition-all ${error ? 'border-red-500' : 'border-gray-100 focus:border-[#B32D2D]'}`} {...props} />
+      <input type={type} name={name} value={value} onChange={onChange} autoComplete={autoComplete} className={`w-full px-5 py-4 bg-white border-2 rounded-2xl font-bold text-xs text-gray-800 outline-none transition-all ${error ? 'border-red-500' : 'border-gray-100 focus:border-[#B32D2D]'}`} {...props} />
     </div>
   );
 }
