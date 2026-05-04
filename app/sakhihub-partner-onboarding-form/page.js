@@ -6,7 +6,7 @@ import {
   User, ShieldCheck, MapPin, Briefcase, Heart, 
   Building2, CreditCard, FileUp, Eye, CheckCircle2, 
   AlertCircle, Loader2, ArrowRight, ArrowLeft, 
-  Check, X, Phone, Mail, Globe, Search, Plus, Trash2, Camera, Edit3, Upload
+  Check, X, Phone, Mail, Globe, Search, Plus, Trash2, Camera, Edit3, Upload, CheckCircle
 } from 'lucide-react';
 
 const STEPS = [
@@ -27,30 +27,21 @@ export default function SakhiHubOnboardingForm() {
   const [applicationId, setApplicationId] = useState('');
   const [previewImage, setPreviewImage] = useState(null);
   
+  // Advanced Location Data
+  const [states, setStates] = useState([]);
+  const [districts, setDistricts] = useState([]);
+
   const [formData, setFormData] = useState({
-    // Step 1
     applicantType: '', organizationName: '', contactPersonName: '',
     mobileNumber: '', alternateMobileNumber: '', emailId: '',
     whatsappNumber: '', websiteSocialLink: '',
-    otpVerified: true, // Bypass OTP
-    
-    // Step 2
+    otpVerified: true, 
     aadhaarNumber: '', panNumber: '', gstNumber: '',
     ngoRegistrationNumber: '', firmRegistrationNumber: '', udyamMsmeNumber: '',
-    
-    // Step 3
     address: '', state: '', district: '', tehsil: '', block: '', cityVillage: '', pincode: '',
-    
-    // Step 4
     workAreaType: '', selectedStates: [], selectedDistricts: [], selectedBlocks: [], exclusiveStateInterest: false,
-    
-    // Step 5
     interestedWorkCategories: [], monthlyCapacity: '', teamSize: '', experience: [],
-    
-    // Step 6
     bankName: '', accountHolderName: '', accountNumber: '', confirmAccountNumber: '', ifscCode: '', bankBranch: '',
-    
-    // Step 7
     documents: {
       aadhaarFront: '', aadhaarBack: '', panCard: '', ngoFirmProof: '',
       gstCertificate: '', udyamCertificate: '', cancelledCheque: '',
@@ -60,7 +51,28 @@ export default function SakhiHubOnboardingForm() {
 
   const [errors, setErrors] = useState({});
 
-  // Auto-fill Pincode
+  // Fetch States on Load
+  useEffect(() => {
+    fetch('https://cdn-api.co-vin.in/api/v2/admin/location/states')
+      .then(res => res.json())
+      .then(data => setStates(data.states || []))
+      .catch(err => console.error(err));
+  }, []);
+
+  // Fetch Districts when State changes
+  useEffect(() => {
+    if (formData.state) {
+      const stateObj = states.find(s => s.state_name === formData.state);
+      if (stateObj) {
+        fetch(`https://cdn-api.co-vin.in/api/v2/admin/location/districts/${stateObj.state_id}`)
+          .then(res => res.json())
+          .then(data => setDistricts(data.districts || []))
+          .catch(err => console.error(err));
+      }
+    }
+  }, [formData.state, states]);
+
+  // Pincode Auto-fill
   useEffect(() => {
     if (formData.pincode.length === 6) {
       fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`)
@@ -79,19 +91,6 @@ export default function SakhiHubOnboardingForm() {
         }).catch(err => console.error(err));
     }
   }, [formData.pincode]);
-
-  // Auto-fill IFSC
-  useEffect(() => {
-    if (formData.ifscCode.length === 11) {
-      fetch(`https://ifsc.razorpay.com/${formData.ifscCode}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.BANK) {
-            setFormData(prev => ({ ...prev, bankName: data.BANK, bankBranch: data.BRANCH }));
-          }
-        }).catch(err => console.error(err));
-    }
-  }, [formData.ifscCode]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -113,24 +112,13 @@ export default function SakhiHubOnboardingForm() {
   const validateStep = (stepId) => {
     const step = STEPS.find(s => s.id === stepId);
     const newErrors = {};
-    
     if (step.fields) {
       step.fields.forEach(field => {
         if (!formData[field] || (Array.isArray(formData[field]) && formData[field].length === 0)) {
-          newErrors[field] = 'This field is required';
+          newErrors[field] = 'Required';
         }
       });
     }
-
-    if (stepId === 2) {
-        if (formData.aadhaarNumber && formData.aadhaarNumber.length !== 12) newErrors.aadhaarNumber = '12 digit Aadhaar required';
-        if (formData.panNumber && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(formData.panNumber)) newErrors.panNumber = 'Invalid PAN format';
-    }
-
-    if (stepId === 6) {
-        if (formData.accountNumber !== formData.confirmAccountNumber) newErrors.confirmAccountNumber = 'Account numbers do not match';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -139,8 +127,6 @@ export default function SakhiHubOnboardingForm() {
     if (validateStep(currentStep)) {
       setCurrentStep(prev => Math.min(prev + 1, 8));
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      alert("Please fill all required fields correctly.");
     }
   };
 
@@ -161,10 +147,8 @@ export default function SakhiHubOnboardingForm() {
       if (res.ok) {
         setApplicationId(data.applicationId);
         setSubmitted(true);
-      } else {
-        alert(data.error || 'Submission failed');
-      }
-    } catch (err) { alert('Error submitting form'); }
+      } else { alert(data.error); }
+    } catch (err) { alert('Submission Error'); }
     finally { setLoading(false); }
   };
 
@@ -172,14 +156,10 @@ export default function SakhiHubOnboardingForm() {
     return (
       <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-6">
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-md w-full bg-white border-4 border-[#DEB887] rounded-[3rem] p-10 text-center shadow-2xl">
-          <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8 text-green-600 shadow-inner"><CheckCircle2 size={56} /></div>
+          <CheckCircle2 size={72} className="mx-auto mb-8 text-green-600" />
           <h2 className="text-4xl font-black text-[#B32D2D] mb-4 italic uppercase">Success!</h2>
-          <p className="text-gray-600 font-bold mb-8">Thank you for joining SakhiHub. Your application has been submitted successfully.</p>
-          <div className="bg-[#FDFBF7] p-6 rounded-3xl border-2 border-[#DEB887] mb-8">
-             <p className="text-[10px] font-black text-[#DEB887] uppercase tracking-widest mb-1">Application ID</p>
-             <p className="text-2xl font-black text-[#B32D2D]">{applicationId}</p>
-          </div>
-          <button onClick={() => window.location.href = '/'} className="w-full py-5 bg-[#B32D2D] text-white font-black rounded-2xl hover:bg-[#8e2424] shadow-xl shadow-red-100 transform active:scale-95 transition-all">OK</button>
+          <p className="text-gray-600 font-bold mb-8">Your Application ID: <span className="text-[#B32D2D]">{applicationId}</span></p>
+          <button onClick={() => window.location.href = '/'} className="w-full py-5 bg-[#B32D2D] text-white font-black rounded-2xl hover:bg-[#8e2424]">OK</button>
         </motion.div>
       </div>
     );
@@ -187,305 +167,315 @@ export default function SakhiHubOnboardingForm() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] pb-20 font-sans">
-      {/* Rabbit Farming Style Header */}
       <header className="sticky top-0 z-50 bg-[#B32D2D] text-white shadow-2xl border-b-[6px] border-[#DEB887]">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between relative min-h-[90px]">
-          <div className="flex-shrink-0 z-10">
-            <div className="bg-white p-1.5 rounded-xl shadow-2xl rotate-[-2deg]">
-              <img src="/logo.jpeg" alt="Logo" className="h-12 md:h-14 w-auto object-contain" />
-            </div>
+        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between relative">
+          <div className="bg-white p-1 rounded-xl rotate-[-2deg]"><img src="/logo.jpeg" className="h-12" /></div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <h1 className="text-2xl md:text-3xl font-black uppercase italic">SakhiHub <span className="text-[#DEB887]">Onboarding</span></h1>
           </div>
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-20 text-center">
-            <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tighter text-white leading-none mb-1 italic">
-              SakhiHub <span className="text-[#DEB887]">Partner Onboarding</span>
-            </h1>
-            <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-[#DEB887] opacity-90">
-              Women Empowerment & Awareness Initiative
-            </p>
-          </div>
-
-          <div className="hidden md:block w-14 h-14 bg-white/10 rounded-full border border-white/20 flex items-center justify-center backdrop-blur-md">
-             <Heart className="text-[#DEB887] animate-pulse" />
-          </div>
+          <Heart className="text-[#DEB887] animate-pulse" />
         </div>
       </header>
 
       <div className="max-w-5xl mx-auto px-4 mt-12">
-        {/* Stepper (Rabbit Style) */}
-        <div className="flex justify-between mb-12 overflow-x-auto no-scrollbar py-4 px-2 bg-white/50 rounded-full border border-[#DEB887]/20">
+        {/* Stepper */}
+        <div className="flex justify-between mb-12 overflow-x-auto no-scrollbar py-4 px-2">
           {STEPS.map((step) => (
-            <div key={step.id} className="flex flex-col items-center flex-1 min-w-[100px]">
-              <div 
-                className={`w-12 h-12 rounded-full flex items-center justify-center border-4 transition-all duration-700 shadow-lg ${
-                  currentStep >= step.id 
-                  ? 'bg-[#B32D2D] border-[#DEB887] text-white rotate-[360deg]' 
-                  : 'bg-white border-gray-200 text-gray-300'
-                }`}
-              >
-                {currentStep > step.id ? <CheckCircle2 size={24} /> : <step.icon size={22} />}
+            <div key={step.id} className="flex flex-col items-center flex-1 min-w-[80px]">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 transition-all duration-500 shadow-lg ${currentStep >= step.id ? 'bg-[#B32D2D] border-[#DEB887] text-white' : 'bg-white border-gray-200 text-gray-300'}`}>
+                {currentStep > step.id ? <Check size={20} /> : <step.icon size={18} />}
               </div>
-              <span className={`mt-3 text-[9px] font-black uppercase text-center tracking-tighter ${currentStep >= step.id ? 'text-[#B32D2D]' : 'text-gray-400'}`}>
-                {step.title.split(' ')[0]}
-              </span>
+              <span className={`mt-2 text-[8px] font-black uppercase tracking-tighter ${currentStep >= step.id ? 'text-[#B32D2D]' : 'text-gray-400'}`}>{step.title}</span>
             </div>
           ))}
         </div>
 
-        {/* Main Card (Rabbit Style) */}
-        <div className="bg-white border-[3px] border-[#DEB887] rounded-[3.5rem] shadow-[0_20px_50px_rgba(179,45,45,0.1)] overflow-hidden mb-20">
-          <div className="bg-[#DEB887] px-10 py-5 flex justify-between items-center border-b-4 border-[#B32D2D]/10">
-            <div className="flex items-center gap-4">
-               <div className="w-8 h-8 bg-[#B32D2D] rounded-lg flex items-center justify-center text-white shadow-lg">
-                  <span className="font-black text-sm">{currentStep}</span>
-               </div>
-               <h3 className="text-white font-black italic text-base uppercase tracking-widest">{STEPS.find(s => s.id === currentStep).title}</h3>
-            </div>
-            {currentStep > 1 && currentStep < 8 && (
-              <button onClick={() => setCurrentStep(8)} className="text-[10px] bg-white/20 hover:bg-white/40 px-4 py-2 rounded-full text-white font-black flex items-center gap-2 border border-white/30 backdrop-blur-sm transition-all">
-                <Eye size={14} /> JUMP TO PREVIEW
-              </button>
-            )}
+        <div className="bg-white border-[3px] border-[#DEB887] rounded-[3rem] shadow-2xl overflow-hidden mb-20">
+          <div className="bg-[#DEB887] px-10 py-5 flex justify-between items-center">
+             <h3 className="text-white font-black italic uppercase tracking-widest">{STEPS.find(s => s.id === currentStep).title}</h3>
+             <span className="bg-white/20 text-white px-4 py-1 rounded-full text-[10px] font-bold">STEP {currentStep} OF 8</span>
           </div>
 
-          <div className="p-8 md:p-14">
+          <div className="p-8 md:p-12">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStep}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -30 }}
-                transition={{ duration: 0.4, ease: "circOut" }}
-              >
+              <motion.div key={currentStep} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                {/* Step 1: Basic Details */}
                 {currentStep === 1 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <SelectField label="Applicant Type" name="applicantType" value={formData.applicantType} onChange={handleChange} error={errors.applicantType} options={['NGO', 'Vendor / Distributor', 'SHG Group', 'Individual Partner', 'State Partner', 'District Partner', 'Block / Tehsil Partner']} required />
-                    <InputField label="Organization / Firm Name" name="organizationName" value={formData.organizationName} onChange={handleChange} error={errors.organizationName} placeholder="Enter Name" required />
-                    <InputField label="Contact Person Name" name="contactPersonName" value={formData.contactPersonName} onChange={handleChange} error={errors.contactPersonName} placeholder="Full Name" required />
-                    <InputField label="Mobile Number" name="mobileNumber" value={formData.mobileNumber} onChange={handleChange} error={errors.mobileNumber} placeholder="10 digits" maxLength={10} required />
-                    <InputField label="Email ID" name="emailId" value={formData.emailId} onChange={handleChange} error={errors.emailId} placeholder="example@gmail.com" type="email" required />
-                    <InputField label="WhatsApp Number" name="whatsappNumber" value={formData.whatsappNumber} onChange={handleChange} placeholder="Optional" maxLength={10} />
-                    <InputField label="Website / Social Link" name="websiteSocialLink" value={formData.websiteSocialLink} onChange={handleChange} placeholder="Optional" />
+                    <InputField label="Organization Name" name="organizationName" value={formData.organizationName} onChange={handleChange} error={errors.organizationName} placeholder="Enter Name" required />
+                    <InputField label="Contact Person" name="contactPersonName" value={formData.contactPersonName} onChange={handleChange} error={errors.contactPersonName} required />
+                    <InputField label="Mobile Number" name="mobileNumber" value={formData.mobileNumber} onChange={handleChange} error={errors.mobileNumber} maxLength={10} required />
+                    <InputField label="Email ID" name="emailId" value={formData.emailId} onChange={handleChange} error={errors.emailId} type="email" required />
+                    <InputField label="WhatsApp" name="whatsappNumber" value={formData.whatsappNumber} onChange={handleChange} maxLength={10} />
                   </div>
                 )}
 
+                {/* Step 2: Identity & Legal */}
                 {currentStep === 2 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <InputField label="Aadhaar Number" name="aadhaarNumber" value={formData.aadhaarNumber} onChange={handleChange} error={errors.aadhaarNumber} placeholder="12 digit number" maxLength={12} required />
-                    <InputField label="PAN Card Number" name="panNumber" value={formData.panNumber} onChange={handleChange} error={errors.panNumber} placeholder="ABCDE1234F" maxLength={10} required />
-                    <InputField label="GST Number" name="gstNumber" value={formData.gstNumber} onChange={handleChange} placeholder="Optional" />
-                    <InputField label="NGO Registration #" name="ngoRegistrationNumber" value={formData.ngoRegistrationNumber} onChange={handleChange} placeholder="Optional" />
-                    <InputField label="Firm Registration #" name="firmRegistrationNumber" value={formData.firmRegistrationNumber} onChange={handleChange} placeholder="Optional" />
-                    <InputField label="Udyam / MSME Number" name="udyamMsmeNumber" value={formData.udyamMsmeNumber} onChange={handleChange} placeholder="Optional" />
+                    <InputField label="Aadhaar Number" name="aadhaarNumber" value={formData.aadhaarNumber} onChange={handleChange} error={errors.aadhaarNumber} maxLength={12} required />
+                    <InputField label="PAN Number" name="panNumber" value={formData.panNumber} onChange={handleChange} error={errors.panNumber} maxLength={10} required />
+                    <InputField label="GST Number" name="gstNumber" value={formData.gstNumber} onChange={handleChange} />
+                    <InputField label="NGO Reg #" name="ngoRegistrationNumber" value={formData.ngoRegistrationNumber} onChange={handleChange} />
                   </div>
                 )}
 
+                {/* Step 3: Address Details */}
                 {currentStep === 3 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div className="md:col-span-2">
-                       <InputField label="Office / Residential Address" name="address" value={formData.address} onChange={handleChange} error={errors.address} placeholder="Full Address" required />
-                    </div>
-                    <InputField label="PIN Code (Auto-fill Location)" name="pincode" value={formData.pincode} onChange={handleChange} error={errors.pincode} placeholder="6 digits" maxLength={6} required />
-                    <InputField label="State" name="state" value={formData.state} onChange={handleChange} error={errors.state} required />
-                    <InputField label="District" name="district" value={formData.district} onChange={handleChange} error={errors.district} required />
-                    <InputField label="Block / Tehsil" name="block" value={formData.block} onChange={handleChange} />
-                    <InputField label="City / Village" name="cityVillage" value={formData.cityVillage} onChange={handleChange} />
+                    <div className="md:col-span-2"><InputField label="Full Address" name="address" value={formData.address} onChange={handleChange} error={errors.address} required /></div>
+                    <InputField label="PIN Code" name="pincode" value={formData.pincode} onChange={handleChange} error={errors.pincode} maxLength={6} required />
+                    <SelectField label="State" name="state" value={formData.state} onChange={handleChange} error={errors.state} options={states.map(s => s.state_name)} required />
+                    <SelectField label="District" name="district" value={formData.district} onChange={handleChange} error={errors.district} options={districts.map(d => d.district_name)} required />
+                    <InputField label="Tehsil/Block" name="block" value={formData.block} onChange={handleChange} />
                   </div>
                 )}
 
+                {/* Step 4: Work Area Selection (Advanced) */}
                 {currentStep === 4 && (
                   <div className="space-y-10">
-                    <div className="bg-[#FDFBF7] p-10 rounded-[3rem] border-2 border-[#DEB887]">
-                       <p className="text-sm font-black text-[#B32D2D] mb-6 italic uppercase underline">Area Work Selection</p>
-                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          {['Full State Level', 'Multiple States', 'Single District', 'Multiple Districts', 'Block / Tehsil Level', 'City / Village Level'].map(type => (
-                            <button key={type} onClick={() => setFormData(p => ({ ...p, workAreaType: type }))} className={`px-6 py-4 rounded-2xl border-2 font-black text-xs transition-all shadow-sm ${formData.workAreaType === type ? 'bg-[#B32D2D] border-[#B32D2D] text-white scale-105' : 'bg-white border-gray-100 text-gray-500 hover:border-[#DEB887]'}`}>
-                              {type}
-                            </button>
-                          ))}
-                       </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {['Full State Level', 'Multiple States', 'Single District', 'Multiple Districts', 'Block / Tehsil Level', 'City / Village Level'].map(t => (
+                        <button key={t} onClick={() => setFormData(p => ({ ...p, workAreaType: t }))} className={`px-6 py-4 rounded-2xl border-2 font-black text-[10px] transition-all ${formData.workAreaType === t ? 'bg-[#B32D2D] border-[#B32D2D] text-white' : 'bg-white border-gray-100 text-gray-500'}`}>{t}</button>
+                      ))}
                     </div>
-                    {/* Add more work area specific selectors here if needed */}
+
+                    {formData.workAreaType && (
+                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-8 bg-slate-50 border-2 border-slate-100 rounded-[2rem] space-y-6">
+                        <p className="text-[10px] font-black text-[#B32D2D] uppercase tracking-widest italic underline">Select Your Preferred Work Area</p>
+                        
+                        {(formData.workAreaType.includes('State') || formData.workAreaType.includes('District')) && (
+                           <div className="space-y-4">
+                             <SelectField label="Base State" name="state" value={formData.state} onChange={handleChange} options={states.map(s => s.state_name)} />
+                             
+                             {formData.workAreaType === 'Multiple States' && (
+                               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4">
+                                  {states.map(s => (
+                                    <button key={s.state_id} onClick={() => handleMultiSelect('selectedStates', s.state_name)} className={`px-2 py-2 rounded-lg border text-[8px] font-bold ${formData.selectedStates?.includes(s.state_name) ? 'bg-[#B32D2D] text-white border-[#B32D2D]' : 'bg-white text-gray-400'}`}>{s.state_name}</button>
+                                  ))}
+                               </div>
+                             )}
+
+                             {(formData.workAreaType.includes('District')) && (
+                               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4 max-h-[300px] overflow-y-auto p-2 no-scrollbar">
+                                  {districts.map(d => (
+                                    <button key={d.district_id} onClick={() => handleMultiSelect('selectedDistricts', d.district_name)} className={`px-2 py-2 rounded-lg border text-[8px] font-bold ${formData.selectedDistricts?.includes(d.district_name) ? 'bg-[#B32D2D] text-white border-[#B32D2D]' : 'bg-white text-gray-400'}`}>{d.district_name}</button>
+                                  ))}
+                               </div>
+                             )}
+                           </div>
+                        )}
+                      </motion.div>
+                    )}
                   </div>
                 )}
 
+                {/* Step 5: Work Interest */}
                 {currentStep === 5 && (
-                  <div className="space-y-12">
-                    <div className="space-y-4">
-                      <label className="text-[10px] font-black text-[#DEB887] uppercase tracking-widest block">Work Interests</label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {['Women Awareness Campaign', 'Sanitary Pad Distribution', 'Membership Drive', 'NGO Collaboration', 'School / College Awareness', 'Rural Women Health Program', 'Franchise / Distribution', 'Training Program'].map(cat => (
-                          <button key={cat} onClick={() => handleMultiSelect('interestedWorkCategories', cat)} className={`px-6 py-4 rounded-2xl border-2 text-xs font-black text-left flex items-center justify-between transition-all ${formData.interestedWorkCategories?.includes(cat) ? 'border-[#B32D2D] bg-red-50 text-[#B32D2D]' : 'border-gray-100 bg-white text-gray-400'}`}>
-                            {cat} {formData.interestedWorkCategories?.includes(cat) && <CheckCircle2 size={16} />}
-                          </button>
-                        ))}
-                      </div>
+                  <div className="space-y-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {['Women Awareness Campaign', 'Sanitary Pad Distribution', 'Membership Drive', 'NGO Collaboration', 'School / College Awareness', 'Rural Women Health Program', 'Franchise / Distribution', 'Training Program'].map(cat => (
+                        <button key={cat} onClick={() => handleMultiSelect('interestedWorkCategories', cat)} className={`px-6 py-4 rounded-xl border-2 text-[10px] font-black text-left flex justify-between items-center transition-all ${formData.interestedWorkCategories?.includes(cat) ? 'border-[#B32D2D] bg-red-50 text-[#B32D2D]' : 'border-gray-100'}`}>
+                          {cat} {formData.interestedWorkCategories?.includes(cat) && <CheckCircle size={14} />}
+                        </button>
+                      ))}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                       <SelectField label="Monthly Capacity" name="monthlyCapacity" value={formData.monthlyCapacity} onChange={handleChange} options={['500 women', '1,000 women', '5,000 women', '10,000+ women']} />
-                       <SelectField label="Team Size" name="teamSize" value={formData.teamSize} onChange={handleChange} options={['1–5', '5–20', '20–50', '50+']} />
+                      <SelectField label="Monthly Capacity" name="monthlyCapacity" value={formData.monthlyCapacity} onChange={handleChange} options={['500 women', '1,000 women', '5,000 women', '10,000+ women']} />
+                      <SelectField label="Team Size" name="teamSize" value={formData.teamSize} onChange={handleChange} options={['1–5', '5–20', '20–50', '50+']} />
                     </div>
                   </div>
                 )}
 
+                {/* Step 6: Bank Details */}
                 {currentStep === 6 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <InputField label="Account Holder Name" name="accountHolderName" value={formData.accountHolderName} onChange={handleChange} placeholder="As per Bank" required />
-                    <InputField label="IFSC Code (Auto-fill Bank)" name="ifscCode" value={formData.ifscCode} onChange={handleChange} error={errors.ifscCode} placeholder="SBIN0001234" maxLength={11} required />
+                    <InputField label="Account Holder" name="accountHolderName" value={formData.accountHolderName} onChange={handleChange} required />
+                    <InputField label="IFSC Code" name="ifscCode" value={formData.ifscCode} onChange={handleChange} error={errors.ifscCode} maxLength={11} required />
                     <InputField label="Bank Name" name="bankName" value={formData.bankName} onChange={handleChange} required />
-                    <InputField label="Account Number" name="accountNumber" value={formData.accountNumber} onChange={handleChange} error={errors.accountNumber} type="password" required />
-                    <InputField label="Confirm Account Number" name="confirmAccountNumber" value={formData.confirmAccountNumber} onChange={handleChange} error={errors.confirmAccountNumber} required />
+                    <InputField label="Account Number" name="accountNumber" value={formData.accountNumber} onChange={handleChange} type="password" required />
+                    <InputField label="Confirm A/C Number" name="confirmAccountNumber" value={formData.confirmAccountNumber} onChange={handleChange} error={errors.confirmAccountNumber} required />
                   </div>
                 )}
 
+                {/* Step 7: Documents Upload */}
                 {currentStep === 7 && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                     {[
-                       { k: 'aadhaarFront', l: 'Aadhaar Front' },
-                       { k: 'aadhaarBack', l: 'Aadhaar Back' },
-                       { k: 'panCard', l: 'PAN Card' },
-                       { k: 'ngoFirmProof', l: 'Reg. Certificate' },
-                       { k: 'cancelledCheque', l: 'Cancelled Cheque' },
-                       { k: 'officePhoto', l: 'Office Photo' }
-                     ].map(doc => (
-                       <FileUploadField key={doc.k} label={doc.l} value={formData.documents[doc.k]} onChange={(e) => {
-                          const file = e.target.files[0];
-                          if (file) {
-                             const r = new FileReader();
-                             r.onloadend = () => setFormData(p => ({ ...p, documents: { ...p.documents, [doc.k]: r.result } }));
-                             r.readAsDataURL(file);
-                          }
-                       }} onClear={() => setFormData(p => ({ ...p, documents: { ...p.documents, [doc.k]: '' } }))} onPreview={() => setPreviewImage(formData.documents[doc.k])} />
-                     ))}
-                  </div>
+                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      {[
+                        { k: 'aadhaarFront', l: 'Aadhaar Front' },
+                        { k: 'aadhaarBack', l: 'Aadhaar Back' },
+                        { k: 'panCard', l: 'PAN Card' },
+                        { k: 'ngoFirmProof', l: 'Reg. Certificate' },
+                        { k: 'cancelledCheque', l: 'Bank Proof' },
+                        { k: 'officePhoto', l: 'Office Photo' }
+                      ].map(doc => (
+                        <FileUploadField key={doc.k} label={doc.l} value={formData.documents[doc.k]} onChange={(e) => {
+                           const file = e.target.files[0];
+                           if (file) {
+                              const r = new FileReader();
+                              r.onloadend = () => setFormData(p => ({ ...p, documents: { ...p.documents, [doc.k]: r.result } }));
+                              r.readAsDataURL(file);
+                           }
+                        }} onClear={() => setFormData(p => ({ ...p, documents: { ...p.documents, [doc.k]: '' } }))} onPreview={() => setPreviewImage(formData.documents[doc.k])} />
+                      ))}
+                   </div>
                 )}
 
+                {/* Step 8: Full Advanced Review */}
                 {currentStep === 8 && (
-                  <div className="space-y-10">
-                     <div className="bg-amber-50 p-8 rounded-[3rem] border-4 border-[#DEB887]/30 flex items-start gap-6">
-                        <AlertCircle className="text-[#B32D2D] mt-1 shrink-0" size={32} />
-                        <div>
-                           <p className="text-xl font-black text-[#B32D2D] italic uppercase">Review Application</p>
-                           <p className="text-sm font-bold text-gray-600 mt-1">Please confirm all details before final submission to SakhiHub.</p>
-                        </div>
-                     </div>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <ReviewBox title="Partner Info" data={{ 'Name': formData.organizationName, 'Type': formData.applicantType, 'Mobile': formData.mobileNumber }} onEdit={() => setCurrentStep(1)} />
-                        <ReviewBox title="Work Area" data={{ 'Selection': formData.workAreaType, 'Category': formData.interestedWorkCategories?.join(', ') }} onEdit={() => setCurrentStep(4)} />
-                        <ReviewBox title="Location" data={{ 'District': formData.district, 'State': formData.state, 'PIN': formData.pincode }} onEdit={() => setCurrentStep(3)} />
-                        <ReviewBox title="Bank Info" data={{ 'Bank': formData.bankName, 'A/C Number': 'XXXX XXXX ' + formData.accountNumber?.slice(-4) }} onEdit={() => setCurrentStep(6)} />
-                     </div>
-                     <div className="p-10 bg-[#FDFBF7] border-2 border-[#DEB887] rounded-[3rem] flex items-start gap-5">
-                        <input type="checkbox" id="declare" className="w-8 h-8 rounded-lg accent-[#B32D2D] cursor-pointer mt-1" />
-                        <label htmlFor="declare" className="text-sm font-black text-gray-700 leading-relaxed cursor-pointer italic">
-                          I hereby declare that all information provided is true to the best of my knowledge. I understand that any false information will lead to rejection of my partnership.
-                        </label>
-                     </div>
-                  </div>
+                   <div className="space-y-10">
+                      <div className="bg-amber-50 p-6 rounded-[2rem] border-2 border-[#DEB887]/50 flex items-start gap-4">
+                         <AlertCircle className="text-[#B32D2D] shrink-0" size={24} />
+                         <div>
+                            <p className="text-sm font-black text-[#B32D2D] italic uppercase">Advanced Application Review</p>
+                            <p className="text-[10px] font-bold text-gray-500">Please verify all data and documents before submission.</p>
+                         </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                         <ReviewItem title="Basic Information" icon={User} data={{
+                            'Applicant Type': formData.applicantType,
+                            'Organization': formData.organizationName,
+                            'Contact Person': formData.contactPersonName,
+                            'Mobile': formData.mobileNumber,
+                            'Email': formData.emailId
+                         }} onEdit={() => setCurrentStep(1)} />
+
+                         <ReviewItem title="Identity & Address" icon={ShieldCheck} data={{
+                            'Aadhaar': formData.aadhaarNumber,
+                            'PAN': formData.panNumber,
+                            'District': formData.district,
+                            'State': formData.state,
+                            'Pincode': formData.pincode
+                         }} onEdit={() => setCurrentStep(2)} />
+
+                         <ReviewItem title="Work Interest" icon={Briefcase} data={{
+                            'Work Area': formData.workAreaType,
+                            'Interests': formData.interestedWorkCategories?.join(', '),
+                            'Capacity': formData.monthlyCapacity,
+                            'Team Size': formData.teamSize
+                         }} onEdit={() => setCurrentStep(5)} />
+
+                         <ReviewItem title="Bank Information" icon={CreditCard} data={{
+                            'A/C Holder': formData.accountHolderName,
+                            'Bank Name': formData.bankName,
+                            'IFSC': formData.ifscCode,
+                            'A/C Number': 'XXXX XXXX ' + formData.accountNumber?.slice(-4)
+                         }} onEdit={() => setCurrentStep(6)} />
+                      </div>
+
+                      {/* Documents Preview in Review */}
+                      <div className="p-8 bg-slate-50 border-2 border-slate-100 rounded-[2.5rem]">
+                         <h4 className="text-[10px] font-black text-[#B32D2D] uppercase tracking-widest italic mb-6">Uploaded Documents Preview</h4>
+                         <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+                            {Object.entries(formData.documents).map(([key, val]) => (
+                               val && (
+                                 <div key={key} className="space-y-2">
+                                    <div className="aspect-square bg-white rounded-2xl overflow-hidden border-2 border-gray-100 shadow-sm cursor-zoom-in hover:border-[#B32D2D] transition-all" onClick={() => setPreviewImage(val)}>
+                                       <img src={val} className="w-full h-full object-cover" />
+                                    </div>
+                                    <p className="text-[7px] font-black text-center text-gray-400 uppercase">{key.replace(/([A-Z])/g, ' $1')}</p>
+                                 </div>
+                               )
+                            ))}
+                         </div>
+                      </div>
+
+                      <div className="p-8 bg-[#B32D2D]/5 border-2 border-[#B32D2D]/20 rounded-[2.5rem] flex items-start gap-4">
+                         <input type="checkbox" id="declare" className="w-6 h-6 rounded-lg accent-[#B32D2D] cursor-pointer mt-1" />
+                         <label htmlFor="declare" className="text-[10px] font-black text-gray-700 leading-relaxed italic">I confirm that all information provided is true and correct. I understand that duplicate or false applications may be rejected.</label>
+                      </div>
+                   </div>
                 )}
               </motion.div>
             </AnimatePresence>
 
-            <div className="flex flex-col md:flex-row gap-6 mt-16 pt-10 border-t-2 border-[#DEB887]/20">
+            {/* Navigation Buttons */}
+            <div className="flex flex-col md:flex-row gap-6 mt-12 pt-10 border-t-2 border-[#DEB887]/20">
                {currentStep > 1 && (
-                 <button onClick={prevStep} className="flex-1 py-5 border-4 border-[#B32D2D] text-[#B32D2D] font-black rounded-2xl hover:bg-red-50 transition-all uppercase tracking-widest text-xs">
-                   <ArrowLeft className="inline mr-2" size={18} /> BACK
-                 </button>
+                 <button onClick={prevStep} className="flex-1 py-4 border-4 border-[#B32D2D] text-[#B32D2D] font-black rounded-2xl hover:bg-red-50 uppercase tracking-widest text-xs"><ArrowLeft className="inline mr-2" size={16} /> BACK</button>
                )}
                {currentStep < 8 ? (
-                 <button onClick={nextStep} className="flex-[2] py-5 bg-[#B32D2D] text-white font-black rounded-2xl hover:bg-[#8e2424] shadow-2xl shadow-red-100 transition-all uppercase tracking-widest text-xs flex items-center justify-center gap-3 active:scale-95">
-                   NEXT STEP <ArrowRight size={20} />
-                 </button>
+                 <button onClick={nextStep} className="flex-[2] py-4 bg-[#B32D2D] text-white font-black rounded-2xl hover:bg-[#8e2424] shadow-xl uppercase tracking-widest text-xs flex items-center justify-center gap-2">NEXT STEP <ArrowRight size={18} /></button>
                ) : (
-                 <button onClick={handleSubmit} disabled={loading} className="flex-[2] py-5 bg-[#22c55e] text-white font-black rounded-2xl hover:bg-[#16a34a] shadow-2xl shadow-green-100 transition-all uppercase tracking-widest text-xs flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50">
-                   {loading ? <Loader2 className="animate-spin" /> : 'FINAL SUBMIT APPLICATION'}
-                 </button>
+                 <button onClick={handleSubmit} disabled={loading} className="flex-[2] py-4 bg-[#22c55e] text-white font-black rounded-2xl hover:bg-[#16a34a] shadow-xl uppercase tracking-widest text-xs flex items-center justify-center gap-2">{loading ? <Loader2 className="animate-spin" /> : 'FINAL SUBMIT APPLICATION'}</button>
                )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Image Preview Modal */}
+      {/* Full Image Preview */}
       {previewImage && (
-        <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-6">
-           <button onClick={() => setPreviewImage(null)} className="absolute top-10 right-10 text-white hover:text-[#B32D2D] transition-colors"><X size={48} /></button>
-           <img src={previewImage} className="max-w-full max-h-full rounded-[2rem] shadow-[0_0_100px_rgba(179,45,45,0.3)] border-4 border-white" alt="Preview" />
+        <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-6" onClick={() => setPreviewImage(null)}>
+           <img src={previewImage} className="max-w-full max-h-full rounded-3xl border-4 border-white shadow-2xl" />
         </div>
       )}
     </div>
   );
 }
 
-// Helper Components (Rabbit Style)
+// Utility Components
 
 function InputField({ label, name, value, onChange, error, type="text", required=false, ...props }) {
   return (
-    <div className="space-y-3">
-      <label className="flex items-center gap-2">
-         <div className="bg-[#B32D2D] text-white text-[9px] font-black px-3 py-1 rounded shadow-lg uppercase tracking-tighter italic">
-            {label} {required && '*'}
-         </div>
-      </label>
-      <input type={type} name={name} value={value} onChange={onChange} className={`w-full px-6 py-4 bg-white border-2 rounded-2xl font-bold text-sm text-gray-800 outline-none transition-all shadow-sm ${error ? 'border-red-500 bg-red-50' : 'border-gray-100 focus:border-[#B32D2D]'}`} {...props} />
-      {error && <p className="text-[10px] font-black text-red-500 uppercase italic px-2">{error}</p>}
+    <div className="space-y-2">
+      <div className="bg-[#B32D2D] text-white text-[8px] font-black px-3 py-1 rounded inline-block uppercase italic">{label} {required && '*'}</div>
+      <input type={type} name={name} value={value} onChange={onChange} className={`w-full px-5 py-4 bg-[#FDFBF7] border-2 rounded-2xl font-bold text-xs text-gray-800 outline-none transition-all ${error ? 'border-red-500' : 'border-gray-100 focus:border-[#B32D2D]'}`} {...props} />
     </div>
   );
 }
 
 function SelectField({ label, name, value, onChange, options, error, required=false }) {
   return (
-    <div className="space-y-3">
-      <label className="flex items-center gap-2">
-         <div className="bg-[#B32D2D] text-white text-[9px] font-black px-3 py-1 rounded shadow-lg uppercase tracking-tighter italic">
-            {label} {required && '*'}
-         </div>
-      </label>
-      <select name={name} value={value} onChange={onChange} className="w-full px-6 py-4 bg-white border-2 border-gray-100 rounded-2xl font-bold text-sm text-gray-800 outline-none focus:border-[#B32D2D] appearance-none shadow-sm cursor-pointer">
-        <option value="">Select / चुनें</option>
+    <div className="space-y-2">
+      <div className="bg-[#B32D2D] text-white text-[8px] font-black px-3 py-1 rounded inline-block uppercase italic">{label} {required && '*'}</div>
+      <select name={name} value={value} onChange={onChange} className="w-full px-5 py-4 bg-[#FDFBF7] border-2 border-gray-100 rounded-2xl font-bold text-xs text-gray-800 outline-none focus:border-[#B32D2D] shadow-sm appearance-none cursor-pointer">
+        <option value="">Select Option</option>
         {options.map(o => <option key={o} value={o}>{o}</option>)}
       </select>
-      {error && <p className="text-[10px] font-black text-red-500 uppercase italic px-2">{error}</p>}
     </div>
   );
 }
 
 function FileUploadField({ label, value, onChange, onClear, onPreview }) {
   return (
-    <div className="space-y-4">
-       <div className="text-[10px] font-black text-[#DEB887] uppercase tracking-widest text-center">{label}</div>
-       <div className={`relative h-44 rounded-[2.5rem] border-3 border-dashed transition-all flex flex-col items-center justify-center p-6 ${value ? 'border-[#22c55e] bg-green-50/20' : 'border-gray-100 bg-[#FDFBF7] hover:border-[#B32D2D]'}`}>
+    <div className="space-y-3">
+       <p className="text-[8px] font-black text-[#DEB887] uppercase text-center">{label}</p>
+       <div className={`relative h-32 rounded-3xl border-3 border-dashed transition-all flex flex-col items-center justify-center ${value ? 'border-green-500 bg-green-50/20' : 'border-gray-100 bg-white hover:border-[#B32D2D]'}`}>
           {value ? (
-            <div className="relative w-full h-full">
-               <img src={value} onClick={onPreview} className="w-full h-full object-cover rounded-3xl cursor-zoom-in" alt="doc" />
-               <button onClick={onClear} className="absolute -top-3 -right-3 w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center shadow-xl border-4 border-white"><X size={18} /></button>
-            </div>
+             <div className="w-full h-full p-2">
+                <img src={value} onClick={onPreview} className="w-full h-full object-cover rounded-2xl cursor-zoom-in" />
+                <button onClick={onClear} className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 text-white rounded-full border-2 border-white"><X size={14} /></button>
+             </div>
           ) : (
-            <>
-              <input type="file" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-              <div className="w-16 h-16 bg-white rounded-[1.5rem] shadow-xl flex items-center justify-center text-[#B32D2D] mb-4">
-                 <Camera size={32} />
-              </div>
-              <p className="text-[10px] font-black text-gray-400 uppercase italic">Click to Upload</p>
-            </>
+             <>
+               <input type="file" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+               <Camera size={24} className="text-[#B32D2D]/30" />
+               <p className="text-[8px] font-black text-gray-300 mt-2">UPLOAD</p>
+             </>
           )}
        </div>
     </div>
   );
 }
 
-function ReviewBox({ title, data, onEdit }) {
+function ReviewItem({ title, icon: Icon, data, onEdit }) {
   return (
-    <div className="p-8 bg-white border-2 border-gray-100 rounded-[3rem] shadow-sm relative group hover:border-[#B32D2D] transition-all">
-       <div className="flex justify-between items-center mb-6">
-          <h4 className="text-[10px] font-black text-[#B32D2D] uppercase tracking-widest italic">{title}</h4>
-          <button onClick={onEdit} className="p-2 text-gray-300 hover:text-[#B32D2D] opacity-0 group-hover:opacity-100 transition-all"><Edit3 size={18} /></button>
+    <div className="p-6 bg-white border-2 border-gray-50 rounded-[2.5rem] shadow-sm hover:border-[#B32D2D] transition-all group relative">
+       <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+             <Icon size={14} className="text-[#B32D2D]" />
+             <h4 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{title}</h4>
+          </div>
+          <button onClick={onEdit} className="p-2 text-gray-200 hover:text-[#B32D2D] opacity-0 group-hover:opacity-100 transition-all"><Edit3 size={14} /></button>
        </div>
-       <div className="space-y-3">
+       <div className="space-y-2">
           {Object.entries(data).map(([k, v]) => (
-            <div key={k} className="flex justify-between items-center">
-               <span className="text-[9px] font-black text-gray-400 uppercase">{k}</span>
-               <span className="text-xs font-black text-gray-800">{v || '---'}</span>
+            <div key={k} className="flex justify-between">
+               <span className="text-[8px] font-black text-gray-400 uppercase">{k}</span>
+               <span className="text-[10px] font-black text-gray-800 text-right">{v || '---'}</span>
             </div>
           ))}
        </div>
