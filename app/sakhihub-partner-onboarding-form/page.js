@@ -357,12 +357,22 @@ function SelectField({ label, name, value, onChange, options, error, required=fa
 
 function FileUploadField({ label, value, onChange, onClear, onPreview }) {
   return (
-    <div className="space-y-5">
+    <div className="space-y-3">
        <p className="text-[11px] font-black text-slate-400 uppercase text-center tracking-[0.25em] italic">{label}</p>
        <div className={`relative h-56 rounded-[3.5rem] border-[5px] border-dashed transition-all flex flex-col items-center justify-center shadow-inner ${value ? 'border-green-500 bg-green-50/10' : 'border-pink-100 bg-pink-50/15 hover:border-pink-500 hover:bg-pink-50/30'}`}>
-          {value ? <div className="w-full h-full p-4 relative"><img src={value} onClick={onPreview} className="w-full h-full object-cover rounded-[3rem] cursor-zoom-in" /><button onClick={onClear} className="absolute -top-4 -right-4 w-12 h-12 bg-red-500 text-white rounded-full border-[5px] border-white shadow-2xl flex items-center justify-center hover:scale-110 transition-transform"><X size={22} /></button></div> : <><input type="file" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" /><Camera size={48} className="text-pink-300" /><p className="text-[10px] font-black text-pink-200 mt-5 uppercase tracking-[0.3em] italic">Click to Upload</p></>}
+          {value ? <div className="w-full h-full p-4 relative"><img src={value} onClick={onPreview} className="w-full h-full object-cover rounded-[3rem] cursor-zoom-in" /><button onClick={onClear} className="absolute -top-4 -right-4 w-12 h-12 bg-red-500 text-white rounded-full border-[5px] border-white shadow-2xl flex items-center justify-center hover:scale-110 transition-transform"><X size={22} /></button></div> : <><input type="file" accept="image/jpeg,image/jpg,image/png,application/pdf" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" /><Camera size={48} className="text-pink-300" /><p className="text-[10px] font-black text-pink-200 mt-5 uppercase tracking-[0.3em] italic">Click to Upload</p></>}
+       </div>
+       {/* Size & Format Info */}
+       <div className="flex items-center justify-center gap-2 flex-wrap">
+         <span className="inline-flex items-center gap-1 bg-amber-50 border border-amber-200 text-amber-700 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
+           📏 Max 2MB
+         </span>
+         <span className="inline-flex items-center gap-1 bg-blue-50 border border-blue-200 text-blue-700 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
+           🖼️ JPG · PNG · PDF
+         </span>
        </div>
     </div>
+
   );
 }
 
