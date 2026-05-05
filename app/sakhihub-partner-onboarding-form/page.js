@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,6 +34,7 @@ export default function SakhiHubOnboardingForm() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [applicationId, setApplicationId] = useState('');
+  const [txnId, setTxnId] = useState('');
   const [previewImage, setPreviewImage] = useState(null);
   const [states, setStates] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -53,10 +54,20 @@ export default function SakhiHubOnboardingForm() {
       aadhaarFront: '', aadhaarBack: '', panCard: '', ngoFirmProof: '',
       gstCertificate: '', udyamCertificate: '', cancelledCheque: '',
       officePhoto: '', workProof: ''
-    }
+    },
+    txnId: '', paymentStatus: 'Pending'
   });
 
   const [errors, setErrors] = useState({});
+
+  // Inject Cashfree SDK
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => { if (document.body.contains(script)) document.body.removeChild(script); };
+  }, []);
 
   useEffect(() => {
     fetch('https://cdn-api.co-vin.in/api/v2/admin/location/states').then(res => res.json()).then(data => setStates(data.states || [])).catch(err => console.error(err));
@@ -110,22 +121,77 @@ export default function SakhiHubOnboardingForm() {
   const nextStep = () => { if (validateStep(currentStep)) { setCurrentStep(prev => Math.min(prev + 1, 8)); window.scrollTo({ top: 0, behavior: 'smooth' }); } };
   const prevStep = () => { setCurrentStep(prev => Math.max(prev - 1, 1)); window.scrollTo(0, 0); };
 
-  const handleSubmit = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/sakhihub/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
-      const data = await res.json();
-      if (res.ok) { 
-        setApplicationId(data.applicationId); 
-        setSubmitted(true); 
-      } else { 
-        alert(data.error || 'Submission failed. Please try again.'); 
-      }
-    } catch (err) { 
-      console.error('Submit error:', err);
-      alert('Network error. Please check your internet connection and try again.'); 
+  const handlePayAndSubmit = async () => {
+    // Validate declaration checkbox
+    const declare = document.getElementById('declare');
+    if (!declare || !declare.checked) {
+      alert('Please check the declaration checkbox before proceeding.');
+      return;
     }
-    finally { setLoading(false); }
+
+    if (!window.Cashfree) {
+      alert('Payment gateway is loading, please wait a moment and try again.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Step 1: Create Cashfree order for ₹1000
+      const orderRes = await fetch('/api/payment/cashfree', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: 1000,
+          customerName: formData.contactPersonName,
+          customerPhone: formData.mobileNumber,
+          customerEmail: formData.emailId || 'partner@sakhihub.com',
+          orderNote: 'SakhiHub Partner Onboarding Fee'
+        })
+      });
+
+      const orderData = await orderRes.json();
+      if (!orderData.success) throw new Error(orderData.error || 'Failed to create payment order');
+
+      // Step 2: Open Cashfree payment modal
+      const cashfree = window.Cashfree({ mode: 'production' });
+      cashfree.checkout({
+        paymentSessionId: orderData.paymentSessionId,
+        redirectTarget: '_modal'
+      }).then(async (result) => {
+        if (result.error) {
+          alert('Payment failed: ' + result.error.message);
+          setLoading(false);
+          return;
+        }
+
+        if (result.paymentDetails || result.redirect) {
+          // Step 3: Payment success — save application to MongoDB
+          const submittedData = { ...formData, txnId: orderData.orderId, paymentStatus: 'Success' };
+
+          const res = await fetch('/api/sakhihub/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(submittedData)
+          });
+          const data = await res.json();
+
+          if (res.ok) {
+            setApplicationId(data.applicationId);
+            setTxnId(orderData.orderId);
+            setSubmitted(true);
+          } else {
+            alert(data.error || 'Payment done but form submission failed. Contact support with Txn ID: ' + orderData.orderId);
+          }
+          setLoading(false);
+        }
+      });
+
+    } catch (err) {
+      console.error('Payment error:', err);
+      alert(err.message || 'Payment Error. Please try again.');
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -133,8 +199,16 @@ export default function SakhiHubOnboardingForm() {
       <div className="min-h-screen bg-[#FFF0F5] flex items-center justify-center p-6 font-sans">
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="max-w-md w-full bg-white border-4 border-[#4A148C]/20 rounded-[3rem] p-12 text-center shadow-2xl">
           <CheckCircle2 size={100} className="mx-auto mb-10 text-green-500" />
-          <h2 className={`text-5xl font-black mb-6 italic uppercase tracking-tighter`} style={{ color: THEME.pink }}>Success!</h2>
-          <p className="text-gray-600 font-bold mb-12 leading-relaxed uppercase text-sm tracking-widest italic">Application ID: <span className="text-purple-900 text-2xl block mt-4">{applicationId}</span></p>
+          <h2 className={`text-5xl font-black mb-6 italic uppercase tracking-tighter`} style={{ color: THEME.pink }}>Application Submitted!</h2>
+          <div className="bg-green-50 border-2 border-green-200 rounded-3xl p-6 mb-6">
+            <p className="text-[10px] font-black text-green-600 uppercase tracking-widest italic mb-2">Application ID</p>
+            <p className="text-purple-900 text-2xl font-black">{applicationId}</p>
+          </div>
+          <div className="bg-blue-50 border-2 border-blue-200 rounded-3xl p-6 mb-10">
+            <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest italic mb-2">Payment Transaction ID</p>
+            <p className="text-slate-800 text-sm font-black break-all">{txnId}</p>
+          </div>
+          <p className="text-gray-500 text-xs font-bold italic mb-8">Our team will review your application and contact you within 2-3 working days.</p>
           <button onClick={() => window.location.href = '/'} className="w-full py-6 text-white font-black rounded-3xl hover:scale-105 transition-all shadow-xl uppercase italic tracking-widest text-lg" style={{ background: THEME.gradient }}>Back to Home</button>
         </motion.div>
       </div>
@@ -323,7 +397,7 @@ export default function SakhiHubOnboardingForm() {
 
             <div className="flex flex-col sm:flex-row gap-4 md:gap-8 mt-10 md:mt-16 pt-8 md:pt-12 border-t-4 border-pink-50/50">
                {currentStep > 1 && <button onClick={prevStep} className="flex-1 py-4 md:py-6 border-4 border-pink-200 text-pink-600 font-black rounded-2xl hover:bg-pink-50 uppercase tracking-widest italic text-xs flex items-center justify-center gap-3 transition-all shadow-lg active:scale-95"><ArrowLeft size={20} /> Back</button>}
-               {currentStep < 8 ? <button onClick={nextStep} className="flex-[2] py-4 md:py-6 text-white font-black rounded-2xl transition-all shadow-xl uppercase tracking-widest italic text-xs flex items-center justify-center gap-3 active:scale-95" style={{ background: THEME.gradient }}>Next Step <ArrowRight size={20} /></button> : <button onClick={handleSubmit} disabled={loading} className="flex-[2] py-4 md:py-6 bg-[#22c55e] text-white font-black rounded-2xl shadow-xl uppercase tracking-widest italic text-xs flex items-center justify-center gap-3 active:scale-95">{loading ? <Loader2 className="animate-spin" /> : 'Submit Application'}</button>}
+               {currentStep < 8 ? <button onClick={nextStep} className="flex-[2] py-4 md:py-6 text-white font-black rounded-2xl transition-all shadow-xl uppercase tracking-widest italic text-xs flex items-center justify-center gap-3 active:scale-95" style={{ background: THEME.gradient }}>Next Step <ArrowRight size={20} /></button> : (<div className="flex-[2] space-y-3"><div className="flex items-center justify-center gap-2 bg-amber-50 border-2 border-amber-200 rounded-2xl px-4 py-3"><span className="text-amber-700 text-[11px] font-black uppercase tracking-widest italic">Secure Payment Rs.1,000 Registration Fee</span></div><button onClick={handlePayAndSubmit} disabled={loading} className="w-full py-5 bg-[#22c55e] text-white font-black rounded-2xl shadow-xl uppercase tracking-widest italic text-sm flex items-center justify-center gap-3 active:scale-95 hover:bg-green-600 transition-all">{loading ? <Loader2 className="animate-spin" /> : <>Pay Rs.1,000 &amp; Submit Application</>}</button></div>)}
             </div>
           </div>
         </div>
@@ -384,3 +458,5 @@ function ReviewItem({ title, icon: Icon, data, onEdit }) {
     </div>
   );
 }
+
+
