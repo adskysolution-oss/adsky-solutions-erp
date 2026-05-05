@@ -115,8 +115,16 @@ export default function SakhiHubOnboardingForm() {
     try {
       const res = await fetch('/api/sakhihub/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
       const data = await res.json();
-      if (res.ok) { setApplicationId(data.applicationId); setSubmitted(true); } else { alert(data.error); }
-    } catch (err) { alert('Submission Error'); }
+      if (res.ok) { 
+        setApplicationId(data.applicationId); 
+        setSubmitted(true); 
+      } else { 
+        alert(data.error || 'Submission failed. Please try again.'); 
+      }
+    } catch (err) { 
+      console.error('Submit error:', err);
+      alert('Network error. Please check your internet connection and try again.'); 
+    }
     finally { setLoading(false); }
   };
 

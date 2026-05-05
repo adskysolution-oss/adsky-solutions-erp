@@ -29,9 +29,22 @@ export async function POST(req) {
     const sequence = (count + 1).toString().padStart(4, '0');
     const applicationId = `SH-APP-${currentYear}-${sequence}`;
 
-    // 3. Save to MongoDB
+    // 3. Strip Base64 documents — they are too large for MongoDB (16MB limit).
+    //    Instead, store only a flag (e.g. "uploaded") so the record saves successfully.
+    //    The actual base64 data is sent to Google Sheets separately.
+    const safeDocuments = {};
+    if (data.documents) {
+      Object.keys(data.documents).forEach(key => {
+        const val = data.documents[key];
+        // If it's a base64 string, just mark it as uploaded (don't store raw base64 in MongoDB)
+        safeDocuments[key] = val && val.startsWith('data:') ? 'uploaded' : (val || '');
+      });
+    }
+
+    // 4. Save to MongoDB (without raw base64 images)
     const applicationData = {
       ...data,
+      documents: safeDocuments,
       applicationId,
       status: 'New',
       submissionIp: req.headers.get('x-forwarded-for') || '127.0.0.1'
@@ -39,9 +52,9 @@ export async function POST(req) {
 
     const application = await SakhiHubApplication.create(applicationData);
 
-    // 4. Sync to Google Sheets (Async)
+    // 5. Sync to Google Sheets with original data (including doc metadata)
     try {
-      await appendToSheet(applicationData);
+      await appendToSheet({ ...data, applicationId, status: 'New' });
     } catch (sheetError) {
       console.error('Failed to sync to Google Sheets:', sheetError);
       // We don't fail the response if sheet sync fails, but we log it.
@@ -54,7 +67,9 @@ export async function POST(req) {
     });
 
   } catch (error) {
-    console.error('Submission Error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('SakhiHub Submission Error:', error.message, error.stack);
+    return NextResponse.json({ 
+      error: error.message || 'Internal server error. Please try again.' 
+    }, { status: 500 });
   }
 }
