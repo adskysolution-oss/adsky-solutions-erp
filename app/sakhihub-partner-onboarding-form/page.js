@@ -278,7 +278,24 @@ export default function SakhiHubOnboardingForm() {
                         { k: 'cancelledCheque', l: 'Bank Proof' }, { k: 'officePhoto', l: 'Office Photo' }
                       ].map(doc => (
                         <FileUploadField key={doc.k} label={doc.l} value={formData.documents[doc.k]} onChange={(e) => {
-                           const file = e.target.files[0]; if (file) { const r = new FileReader(); r.onloadend = () => setFormData(p => ({ ...p, documents: { ...p.documents, [doc.k]: r.result } })); r.readAsDataURL(file); }
+                           const file = e.target.files[0];
+                           if (file) {
+                             const maxSize = 2 * 1024 * 1024; // 2MB
+                             if (file.size > maxSize) {
+                               alert(`❌ File too large!\n\n"${file.name}" is ${(file.size / 1024 / 1024).toFixed(1)}MB.\n\nMaximum allowed size is 2MB.\n\nPlease compress the image and try again.`);
+                               e.target.value = '';
+                               return;
+                             }
+                             const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+                             if (!allowedTypes.includes(file.type)) {
+                               alert(`❌ Invalid file type!\n\nOnly JPG, PNG, and PDF files are allowed.`);
+                               e.target.value = '';
+                               return;
+                             }
+                             const r = new FileReader();
+                             r.onloadend = () => setFormData(p => ({ ...p, documents: { ...p.documents, [doc.k]: r.result } }));
+                             r.readAsDataURL(file);
+                           }
                         }} onClear={() => setFormData(p => ({ ...p, documents: { ...p.documents, [doc.k]: '' } }))} onPreview={() => setPreviewImage(formData.documents[doc.k])} />
                       ))}
                    </div>
