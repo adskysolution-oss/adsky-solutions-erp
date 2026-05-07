@@ -24,9 +24,10 @@ import {
   UserCheck,
   Monitor,
   Flame,
-  Store
+  Store,
+  X
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const MENU_GROUPS = [
   {
@@ -56,24 +57,43 @@ const MENU_GROUPS = [
   }
 ];
 
-export default function DashboardSidebar() {
+export default function DashboardSidebar({ isOpen, setIsOpen }) {
   const pathname = usePathname();
 
   return (
-    <div className="w-80 glass-card fixed left-0 top-0 h-screen hidden md:flex flex-col z-50 shadow-[10px_0_40px_rgba(0,0,0,0.02)] border-r border-slate-200/50">
-      {/* Brand Header */}
-      <div className="p-6 pb-8 flex items-center justify-between relative overflow-hidden">
-         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-500/5 to-rose-500/5 opacity-50" />
-         <div className="flex items-center gap-3 relative z-10">
-            <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white shadow-xl">
-               <Activity size={20} />
-            </div>
-            <div>
-               <h1 className="text-xl font-black text-slate-900 tracking-tighter italic leading-none">AdSky</h1>
-               <p className="text-[9px] font-black uppercase text-indigo-600 tracking-widest mt-0.5">25X SYSTEM</p>
-            </div>
-         </div>
-      </div>
+    <>
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[110] md:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      <div className={`w-80 glass-card fixed left-0 top-0 h-screen flex flex-col z-[120] shadow-[10px_0_40px_rgba(0,0,0,0.02)] border-r border-slate-200/50 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+        {/* Brand Header */}
+        <div className="p-6 pb-8 flex items-center justify-between relative overflow-hidden">
+           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-500/5 to-rose-500/5 opacity-50" />
+           <div className="flex items-center gap-3 relative z-10">
+              <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white shadow-xl">
+                 <Activity size={20} />
+              </div>
+              <div>
+                 <h1 className="text-xl font-black text-slate-900 tracking-tighter italic leading-none">AdSky</h1>
+                 <p className="text-[9px] font-black uppercase text-indigo-600 tracking-widest mt-0.5">25X SYSTEM</p>
+              </div>
+           </div>
+
+           {/* Mobile Close Button */}
+           <button onClick={() => setIsOpen(false)} className="md:hidden relative z-10 p-2 text-slate-400 hover:text-slate-900">
+              <X size={20} />
+           </button>
+        </div>
 
       {/* Sidebar Nav */}
       <div className="flex-grow overflow-y-auto px-4 py-2 space-y-8 custom-scrollbar relative z-10">

@@ -6,24 +6,24 @@ import Topbar from '@/components/admin/Topbar';
 import { io } from 'socket.io-client';
 
 export default function AdminLayout({ children }) {
-  useEffect(() => {
-    // Socket.io disabled for Vercel production as it requires a persistent server.
-    // console.log('📡 Transmission Node Ready');
-  }, []);
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
+  useEffect(() => {
+    // Socket.io disabled for Vercel production
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0b1220] text-[#e5e7eb] flex overflow-hidden">
       {/* Premium Sidebar */}
-      <Sidebar />
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
       {/* Main Content Area */}
-      <main className="flex-grow flex flex-col lg:pl-72 relative transition-all duration-300">
+      <main className="flex-grow flex flex-col lg:pl-72 relative transition-all duration-300 w-full min-w-0">
         {/* Background Decorative Blobs */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#38bdf8]/5 rounded-full blur-[120px] pointer-events-none -z-10 animate-pulse"></div>
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#6366f1]/5 rounded-full blur-[140px] pointer-events-none -z-10"></div>
         
-        <Topbar />
+        <Topbar onMenuClick={() => setIsSidebarOpen(true)} />
         
         <div className="flex-grow p-6 md:p-10 relative z-10 overflow-y-auto custom-scrollbar">
           <div className="max-w-[1600px] mx-auto w-full animate-in fade-in slide-in-from-bottom-5 duration-1000">

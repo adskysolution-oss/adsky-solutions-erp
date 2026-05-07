@@ -1,13 +1,22 @@
 'use client';
 
 import React from 'react';
-import { Search, Bell, User, MessageSquare, Moon, Sun } from 'lucide-react';
+import { Search, Bell, User, MessageSquare, Menu } from 'lucide-react';
 
-export default function Topbar() {
+export default function Topbar({ onMenuClick }) {
   return (
-    <header className="h-20 bg-[#0b1220]/80 backdrop-blur-xl border-b border-[#1f2937] px-8 flex items-center justify-between sticky top-0 z-[90]">
+    <header className="h-20 bg-[#0b1220]/80 backdrop-blur-xl border-b border-[#1f2937] px-4 md:px-8 flex items-center justify-between sticky top-0 z-[90]">
+      <div className="flex items-center gap-4 lg:hidden">
+        <button 
+          onClick={onMenuClick}
+          className="p-2.5 rounded-xl bg-[#111827] border border-[#1f2937] text-[#9ca3af] hover:text-[#38bdf8]"
+        >
+          <Menu size={20} />
+        </button>
+      </div>
+
       {/* Search Bar */}
-      <div className="flex-grow max-w-xl">
+      <div className="flex-grow max-w-xl hidden md:block">
         <div className="relative group">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6b7280] group-focus-within:text-[#38bdf8] transition-colors" />
           <input 

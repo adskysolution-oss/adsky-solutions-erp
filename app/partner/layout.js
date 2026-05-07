@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import PartnerSidebar from '@/components/partner/PartnerSidebar';
 import { 
   Bell, 
@@ -9,20 +9,31 @@ import {
   User, 
   Globe,
   MoreHorizontal,
-  Activity
+  Activity,
+  Menu
 } from 'lucide-react';
 
 export default function PartnerLayout({ children }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden font-sans">
       {/* Sidebar Navigation */}
-      <PartnerSidebar />
+      <PartnerSidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
       {/* Main Content Node */}
       <div className="flex-grow flex flex-col min-w-0">
         {/* Top Header */}
-        <header className="h-20 bg-white border-b border-slate-100 px-10 flex items-center justify-between z-30 shadow-sm shadow-slate-200/5">
-           <div className="flex items-center gap-6 flex-grow max-w-xl">
+        <header className="h-20 bg-white border-b border-slate-100 px-6 md:px-10 flex items-center justify-between z-30 shadow-sm shadow-slate-200/5">
+           <div className="flex items-center gap-4">
+              <button 
+                onClick={() => setIsSidebarOpen(true)}
+                className="lg:hidden p-2.5 bg-slate-50 border border-slate-100 rounded-xl text-slate-500 hover:text-indigo-600 transition-all"
+              >
+                 <Menu size={20} />
+              </button>
+              
+              <div className="hidden md:flex items-center gap-6 flex-grow max-w-xl">
               <div className="relative w-full group">
                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors" size={18} />
                  <input 
