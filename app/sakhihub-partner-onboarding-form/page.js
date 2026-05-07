@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -58,6 +58,7 @@ export default function SakhiHubOnboardingForm() {
     txnId: '', paymentStatus: 'Pending'
   });
 
+  const [isDeclared, setIsDeclared] = useState(false);
   const [errors, setErrors] = useState({});
 
   // Inject Cashfree SDK
@@ -123,8 +124,7 @@ export default function SakhiHubOnboardingForm() {
 
   const handlePayAndSubmit = async () => {
     // Validate declaration checkbox
-    const declare = document.getElementById('declare');
-    if (!declare || !declare.checked) {
+    if (!isDeclared) {
       alert('Please check the declaration checkbox before proceeding.');
       return;
     }
@@ -385,9 +385,16 @@ export default function SakhiHubOnboardingForm() {
                       </div>
                       <div className="p-12 bg-pink-50/40 border-[6px] border-pink-100/50 rounded-[4rem] space-y-10">
                          <p className="text-xs font-black text-pink-600 uppercase tracking-[0.3em] italic underline underline-offset-8">Final Declaration</p>
-                         <div className="flex items-start gap-6 cursor-pointer group" onClick={() => document.getElementById('declare').click()}>
-                            <input type="checkbox" id="declare" className="w-10 h-10 rounded-2xl accent-pink-600 cursor-pointer mt-1 shadow-md border-2 border-pink-200" required />
-                            <label className="text-sm font-bold text-slate-700 leading-relaxed italic group-hover:text-pink-600 transition-colors">I confirm that all provided information is accurate. I agree to the partnership protocols and ethics of the SakhiHub initiative.</label>
+                         <div className="flex items-start gap-6 group">
+                            <input 
+                               type="checkbox" 
+                               id="declare" 
+                               checked={isDeclared}
+                               onChange={(e) => setIsDeclared(e.target.checked)}
+                               className="w-10 h-10 rounded-2xl accent-pink-600 cursor-pointer mt-1 shadow-md border-2 border-pink-200" 
+                               required 
+                            />
+                            <label htmlFor="declare" className="text-sm font-bold text-slate-700 leading-relaxed italic group-hover:text-pink-600 transition-colors cursor-pointer flex-1">I confirm that all provided information is accurate. I agree to the partnership protocols and ethics of the SakhiHub initiative.</label>
                          </div>
                       </div>
                    </div>
