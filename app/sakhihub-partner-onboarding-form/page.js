@@ -94,6 +94,23 @@ export default function SakhiHubOnboardingForm() {
     }
   }, [formData.pincode]);
 
+  useEffect(() => {
+    if (formData.ifscCode.length === 11) {
+      fetch(`https://ifsc.razorpay.com/${formData.ifscCode.toUpperCase()}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && typeof data === 'object') {
+            setFormData(prev => ({ 
+              ...prev, 
+              bankName: data.BANK || prev.bankName, 
+              bankBranch: data.BRANCH || prev.bankBranch 
+            }));
+          }
+        })
+        .catch(err => console.error("IFSC fetch error:", err));
+    }
+  }, [formData.ifscCode]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -317,11 +334,53 @@ export default function SakhiHubOnboardingForm() {
 
                 {currentStep === 5 && (
                   <div className="space-y-16">
-                    <p className="text-xs font-black text-pink-600 uppercase italic tracking-[0.25em] mb-8 underline decoration-purple-900 underline-offset-8">Interests & Capacity</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {['Women Awareness', 'Sanitary Pad Distribution', 'SHG Training', 'NGO Collaboration', 'Membership Drive', 'Rural Health Camps', 'Distribution / Franchise'].map(cat => (
-                        <button key={cat} onClick={() => handleMultiSelect('interestedWorkCategories', cat)} className={`px-10 py-7 rounded-3xl border-[5px] text-sm font-black text-left flex justify-between items-center transition-all ${formData.interestedWorkCategories?.includes(cat) ? 'border-pink-500 bg-pink-50 text-pink-700 shadow-xl' : 'border-slate-50 bg-white text-slate-400 hover:border-pink-100'}`}>{cat} {formData.interestedWorkCategories?.includes(cat) && <CheckCircle size={24} className="text-pink-600" />}</button>
-                      ))}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      {[
+                        { id: 'Women Awareness', label: 'Women Awareness', icon: Heart },
+                        { id: 'Sanitary Pad Distribution', label: 'Sanitary Pad Distribution', icon: Sparkles },
+                        { id: 'SHG Training', label: 'SHG Training', icon: Users },
+                        { id: 'NGO Collaboration', label: 'NGO Collaboration', icon: Building2 },
+                        { id: 'Membership Drive', label: 'Membership Drive', icon: User },
+                        { id: 'Rural Health Camps', label: 'Rural Health Camps', icon: MapPin },
+                        { id: 'Distribution / Franchise', label: 'Distribution / Franchise', icon: Briefcase }
+                      ].map(cat => {
+                        const isSelected = formData.interestedWorkCategories?.includes(cat.id);
+                        return (
+                          <button 
+                            key={cat.id} 
+                            onClick={() => handleMultiSelect('interestedWorkCategories', cat.id)} 
+                            className={`group relative px-8 py-8 rounded-[2.5rem] border-[4px] text-left transition-all duration-500 overflow-hidden ${
+                              isSelected 
+                                ? 'border-pink-500 bg-white shadow-[0_20px_40px_rgba(233,30,99,0.15)] scale-[1.02]' 
+                                : 'border-slate-100 bg-slate-50/30 text-slate-500 hover:border-pink-200 hover:bg-white hover:shadow-xl'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between relative z-10">
+                              <div className="flex items-center gap-5">
+                                <div className={`p-4 rounded-2xl transition-all duration-500 ${isSelected ? 'bg-pink-500 text-white shadow-lg rotate-3' : 'bg-white text-slate-300 group-hover:text-pink-400 group-hover:rotate-6 shadow-sm'}`}>
+                                  <cat.icon size={24} />
+                                </div>
+                                <span className={`text-sm font-black uppercase italic tracking-tight transition-colors ${isSelected ? 'text-purple-900' : 'text-slate-400 group-hover:text-slate-600'}`}>
+                                  {cat.label}
+                                </span>
+                              </div>
+                              {isSelected ? (
+                                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg animate-bounce-short">
+                                  <Check size={18} strokeWidth={4} />
+                                </div>
+                              ) : (
+                                <Plus size={20} className="text-slate-200 group-hover:text-pink-300 transition-all group-hover:scale-125" />
+                              )}
+                            </div>
+                            {isSelected && (
+                              <motion.div 
+                                layoutId="activeGlow"
+                                className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-purple-900/5 pointer-events-none"
+                              />
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                       <SelectField label="Monthly Awareness Capacity" name="monthlyCapacity" value={formData.monthlyCapacity} onChange={handleChange} options={['Below 500 women', '500 - 2,000 women', '2,000 - 10,000 women', '10,000+ women']} required />
