@@ -34,12 +34,13 @@ export default function PartnerLayout({ children }) {
               </button>
               
               <div className="hidden md:flex items-center gap-6 flex-grow max-w-xl">
-              <div className="relative w-full group">
-                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors" size={18} />
-                 <input 
-                   placeholder="Universal Node Search (Leads, EMPs, Transactions)..." 
-                   className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 pl-12 pr-6 text-xs font-bold outline-none focus:border-indigo-500/30 transition-all font-sans"
-                 />
+                <div className="relative w-full group">
+                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors" size={18} />
+                   <input 
+                     placeholder="Universal Node Search (Leads, EMPs, Transactions)..." 
+                     className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-3 pl-12 pr-6 text-xs font-bold outline-none focus:border-indigo-500/30 transition-all font-sans"
+                   />
+                </div>
               </div>
            </div>
 

@@ -14,18 +14,17 @@ import {
   LogOut,
   ShieldCheck,
   Globe,
-  Database,
-  Layers,
-  Sparkles,
-  Search,
-  Zap,
   IndianRupee,
   Activity,
   UserCheck,
   Monitor,
   Flame,
   Store,
-  X
+  X,
+  Layers,
+  Sparkles,
+  Zap,
+  Database
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -147,5 +146,6 @@ export default function DashboardSidebar({ isOpen, setIsOpen }) {
          </div>
       </div>
     </div>
+    </>
   );
 }
