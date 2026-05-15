@@ -102,5 +102,6 @@ export default function PartnerSidebar({ isOpen, setIsOpen }) {
          </div>
       </div>
     </div>
+    </>
   );
 }
