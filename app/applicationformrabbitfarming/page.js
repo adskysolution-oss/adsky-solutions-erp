@@ -465,8 +465,15 @@ export default function RabbitFarmingForm() {
                        <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
                           {['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'].map(doc => (
                             formData[doc] && (
-                              <div key={doc} onClick={() => setPreviewImage(formData[doc])} className="aspect-square border-2 border-gray-100 rounded-lg overflow-hidden cursor-pointer hover:border-[#B32D2D]">
-                                <img src={formData[doc]} className="w-full h-full object-cover" alt="doc" />
+                              <div key={doc} onClick={() => setPreviewImage(formData[doc])} className="aspect-square border-2 border-gray-100 rounded-lg overflow-hidden cursor-pointer hover:border-[#B32D2D] flex items-center justify-center bg-gray-50">
+                                {formData[doc].startsWith('data:application/pdf') ? (
+                                  <div className="flex flex-col items-center gap-1 text-[#B32D2D]">
+                                    <FileText size={24} />
+                                    <span className="text-[8px] font-bold">PDF</span>
+                                  </div>
+                                ) : (
+                                  <img src={formData[doc]} className="w-full h-full object-cover" alt="doc" />
+                                )}
                               </div>
                             )
                           ))}
@@ -497,7 +504,11 @@ export default function RabbitFarmingForm() {
       {previewImage && (
         <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4">
            <button onClick={() => setPreviewImage(null)} className="absolute top-6 right-6 text-white hover:text-red-500"><X size={32} /></button>
-           <img src={previewImage} className="max-w-full max-h-full rounded-xl shadow-2xl" alt="Preview" />
+           {previewImage.startsWith('data:application/pdf') ? (
+             <iframe src={previewImage} className="w-full max-w-4xl h-[80vh] rounded-xl bg-white" title="PDF Preview" />
+           ) : (
+             <img src={previewImage} className="max-w-full max-h-full rounded-xl shadow-2xl" alt="Preview" />
+           )}
         </div>
       )}
     </div>
@@ -569,7 +580,7 @@ function FileUploadField({ label, value, onChange, onPreview, onClear }) {
       }`}>
         {!value ? (
           <>
-            <input type="file" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+            <input type="file" accept="image/*,application/pdf" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-white text-[#B32D2D] border border-gray-100 shadow-sm rounded-2xl flex items-center justify-center">
                 <Upload size={28} />
@@ -583,8 +594,15 @@ function FileUploadField({ label, value, onChange, onPreview, onClear }) {
         ) : (
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div onClick={onPreview} className="w-14 h-14 rounded-xl overflow-hidden border-2 border-white shadow-md cursor-zoom-in">
-                 <img src={value} className="w-full h-full object-cover" alt="thumb" />
+              <div onClick={onPreview} className="w-14 h-14 rounded-xl overflow-hidden border-2 border-white shadow-md cursor-zoom-in flex items-center justify-center bg-gray-100">
+                 {value.startsWith('data:application/pdf') ? (
+                   <div className="flex flex-col items-center text-[#B32D2D]">
+                     <FileText size={20} />
+                     <span className="text-[8px] font-bold">PDF</span>
+                   </div>
+                 ) : (
+                   <img src={value} className="w-full h-full object-cover" alt="thumb" />
+                 )}
               </div>
               <div>
                 <p className="text-xs font-black uppercase text-green-700">Uploaded Successfully</p>
