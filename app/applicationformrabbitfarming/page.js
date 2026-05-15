@@ -270,16 +270,7 @@ export default function RabbitFarmingForm() {
           const txnId = orderData.orderId;
           const updatedFormData = { ...formData, txnId: txnId, paymentStatus: 'Success' };
           
-          // 1. Save to Google Sheets
-          const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzEC_C3n1Cz6kknKk6vJabBOSODvbAvZMHU0d5ZQOmWF3prY9LmB_4bNGCx03U-U9if/exec';
-          fetch(GOOGLE_WEB_APP_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedFormData)
-          });
-
-          // 2. Save to our MongoDB (for duplicate check)
+          // 1. Save to our MongoDB (This will also trigger Google Sheets sync in the backend)
           await fetch('/api/forms/rabbit-farming/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

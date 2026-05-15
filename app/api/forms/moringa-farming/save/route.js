@@ -7,14 +7,39 @@ export async function POST(req) {
     await connectToDatabase();
     const data = await req.json();
 
+    // 1. Strip Base64 documents for MongoDB (to avoid 16MB limit)
+    const mongoData = { ...data };
+    const docFields = ['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'];
+    
+    docFields.forEach(field => {
+      if (mongoData[field] && mongoData[field].startsWith('data:')) {
+        mongoData[field] = 'uploaded'; // Keep a flag instead of raw base64
+      }
+    });
+
     const registration = await MoringaFarmingRegistration.findOneAndUpdate(
       { aadhar: data.aadhar },
       { 
-        ...data,
+        ...mongoData,
         paymentStatus: 'Success'
       },
       { upsert: true, new: true }
     );
+
+    // 2. Sync to Google Sheets (Server-side to avoid CORS and payload issues)
+    // We send the ORIGINAL data (including Base64) to Google Sheets
+    try {
+      const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzEC_C3n1Cz6kknKk6vJabBOSODvbAvZMHU0d5ZQOmWF3prY9LmB_4bNGCx03U-U9if/exec';
+      
+      fetch(GOOGLE_WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }).catch(err => console.error('Google Sheets Sync Error:', err));
+
+    } catch (sheetError) {
+      console.error('Failed to trigger Google Sheets sync:', sheetError);
+    }
 
     return NextResponse.json({ success: true, registration });
 
