@@ -29,7 +29,7 @@ export async function POST(req) {
     // 2. Sync to Google Sheets (Server-side to avoid CORS and payload issues)
     // We send the ORIGINAL data (including Base64) to Google Sheets
     try {
-      const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzEC_C3n1Cz6kknKk6vJabBOSODvbAvZMHU0d5ZQOmWF3prY9LmB_4bNGCx03U-U9if/exec';
+      const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwU-nyt1OsJ8E_4k-odkJ8ZZJyd85Tdirf46RWZkdH4sL4tUf99ES5hx9LtHxz9PTdg/exec';
       
       fetch(GOOGLE_WEB_APP_URL, {
         method: 'POST',
