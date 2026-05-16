@@ -259,6 +259,14 @@ export default function RabbitFarmingForm() {
         redirectTarget: "_modal", 
       };
 
+      // Save pending form submission to localStorage BEFORE payment
+      // This allows payment/verify page to complete submission if user is redirected
+      localStorage.setItem('pending_form_submission', JSON.stringify({
+        formType: 'rabbit-farming',
+        orderId: orderData.orderId,
+        formData: formData
+      }));
+
       cashfree.checkout(checkoutOptions).then(async (result) => {
         // If there's a clear error (user cancelled etc.), stop here
         if (result.error) {
@@ -287,7 +295,7 @@ export default function RabbitFarmingForm() {
           await new Promise(resolve => setTimeout(resolve, 2000));
         }
 
-        if (paid) {
+      if (paid) {
           const updatedFormData = { ...formData, txnId: txnId, paymentStatus: 'Success' };
           
           // Save to MongoDB (also triggers Google Sheets sync in backend)
@@ -297,9 +305,10 @@ export default function RabbitFarmingForm() {
             body: JSON.stringify(updatedFormData)
           });
           
-          // Clear Draft
+          // Clear Draft AND pending submission
           localStorage.removeItem('rabbit_farming_draft');
           localStorage.removeItem('rabbit_farming_step');
+          localStorage.removeItem('pending_form_submission');
           setSubmitted(true);
         } else {
           alert('Payment could not be verified. If money was deducted, please contact support with Order ID: ' + txnId);

@@ -259,6 +259,13 @@ export default function MoringaFarmingForm() {
         redirectTarget: "_modal", 
       };
 
+      // Save pending form submission to localStorage BEFORE payment
+      localStorage.setItem('pending_form_submission', JSON.stringify({
+        formType: 'moringa-farming',
+        orderId: orderData.orderId,
+        formData: formData
+      }));
+
       cashfree.checkout(checkoutOptions).then(async (result) => {
         // If there's a clear error (user cancelled etc.), stop here
         if (result.error) {
@@ -297,9 +304,10 @@ export default function MoringaFarmingForm() {
             body: JSON.stringify(updatedFormData)
           });
           
-          // Clear Draft
+          // Clear Draft AND pending submission
           localStorage.removeItem('moringa_farming_draft');
           localStorage.removeItem('moringa_farming_step');
+          localStorage.removeItem('pending_form_submission');
           setSubmitted(true);
         } else {
           alert('Payment could not be verified. If money was deducted, please contact support with Order ID: ' + txnId);
