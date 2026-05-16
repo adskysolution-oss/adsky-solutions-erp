@@ -63,6 +63,7 @@ export default function MoringaFarmingForm() {
   const [submitted, setSubmitted] = useState(false);
   const [availableDistricts, setAvailableDistricts] = useState([]);
   const [previewImage, setPreviewImage] = useState(null);
+  const [cashfreeReady, setCashfreeReady] = useState(false);
   
   const [formData, setFormData] = useState({
     aadhar: '', name: '', parentName: '', mobile: '', email: '', gender: '', dob: '', socialCategory: '', specialCategory: 'Not Applicable', pan: '',
@@ -92,13 +93,18 @@ export default function MoringaFarmingForm() {
     localStorage.setItem('moringa_farming_step', currentStep.toString());
   }, [formData, currentStep]);
 
-  // Inject Cashfree SDK
+  // Inject Cashfree SDK with proper load tracking
   useEffect(() => {
+    if (window.Cashfree) { setCashfreeReady(true); return; }
+    const existing = document.querySelector('script[src*="cashfree"]');
+    if (existing) { existing.addEventListener('load', () => setCashfreeReady(true)); return; }
     const script = document.createElement('script');
     script.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
     script.async = true;
+    script.onload = () => setCashfreeReady(true);
+    script.onerror = () => console.error('Cashfree SDK failed to load');
     document.body.appendChild(script);
-    return () => { if (document.body.contains(script)) document.body.removeChild(script); };
+    return () => { try { if (document.body.contains(script)) document.body.removeChild(script); } catch(e){} };
   }, []);
 
   const handleFileChange = (e, field) => {
@@ -213,8 +219,17 @@ export default function MoringaFarmingForm() {
 
   const handleManualSubmit = async () => {
     if (!window.Cashfree) {
-      alert("Payment gateway is loading, please wait...");
-      return;
+      setLoading(true);
+      let waited = 0;
+      while (!window.Cashfree && waited < 10) {
+        await new Promise(r => setTimeout(r, 500));
+        waited++;
+      }
+      if (!window.Cashfree) {
+        alert("Payment gateway could not load. Please refresh the page and try again.");
+        setLoading(false);
+        return;
+      }
     }
 
     setLoading(true);

@@ -63,6 +63,7 @@ export default function RabbitFarmingForm() {
   const [submitted, setSubmitted] = useState(false);
   const [availableDistricts, setAvailableDistricts] = useState([]);
   const [previewImage, setPreviewImage] = useState(null);
+  const [cashfreeReady, setCashfreeReady] = useState(false);
   
   const [formData, setFormData] = useState({
     aadhar: '', name: '', parentName: '', mobile: '', email: '', gender: '', dob: '', socialCategory: '', specialCategory: 'Not Applicable', pan: '',
@@ -92,13 +93,25 @@ export default function RabbitFarmingForm() {
     localStorage.setItem('rabbit_farming_step', currentStep.toString());
   }, [formData, currentStep]);
 
-  // Inject Cashfree SDK
+  // Inject Cashfree SDK with proper load tracking
   useEffect(() => {
+    // If already loaded (e.g. hot reload), mark as ready
+    if (window.Cashfree) { setCashfreeReady(true); return; }
+    
+    // Check if script tag already exists
+    const existing = document.querySelector('script[src*="cashfree"]');
+    if (existing) {
+      existing.addEventListener('load', () => setCashfreeReady(true));
+      return;
+    }
+
     const script = document.createElement('script');
     script.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
     script.async = true;
+    script.onload = () => setCashfreeReady(true);
+    script.onerror = () => console.error('Cashfree SDK failed to load');
     document.body.appendChild(script);
-    return () => { if (document.body.contains(script)) document.body.removeChild(script); };
+    return () => { try { if (document.body.contains(script)) document.body.removeChild(script); } catch(e){} };
   }, []);
 
   const handleFileChange = (e, field) => {
@@ -212,9 +225,19 @@ export default function RabbitFarmingForm() {
   };
 
   const handleManualSubmit = async () => {
+    // If SDK not ready yet, wait up to 5 seconds
     if (!window.Cashfree) {
-      alert("Payment gateway is loading, please wait...");
-      return;
+      setLoading(true);
+      let waited = 0;
+      while (!window.Cashfree && waited < 10) {
+        await new Promise(r => setTimeout(r, 500));
+        waited++;
+      }
+      if (!window.Cashfree) {
+        alert("Payment gateway could not load. Please refresh the page and try again.");
+        setLoading(false);
+        return;
+      }
     }
 
     setLoading(true);
@@ -524,7 +547,7 @@ export default function RabbitFarmingForm() {
                 </button>
               ) : (
                 <button type="button" onClick={handleManualSubmit} disabled={loading} className="flex-[2] py-4 bg-[#22c55e] text-white font-black rounded-xl flex items-center justify-center gap-2 hover:bg-green-700 shadow-xl shadow-green-100 transition-all active:scale-[0.98]">
-                  {loading ? <Loader2 className="animate-spin" /> : 'CONFIRM & PAY ₹249'}
+                  {loading ? <><Loader2 className="animate-spin" /> Processing...</> : !cashfreeReady ? <><Loader2 className="animate-spin" size={16} /> Loading Payment...</> : 'CONFIRM & PAY ₹249'}
                 </button>
               )}
             </div>
