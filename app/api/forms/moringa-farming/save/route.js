@@ -29,7 +29,7 @@ export async function POST(req) {
     // 2. Sync to Google Sheets (Server-side to avoid CORS and payload issues)
     // Strip Base64 docs from sheet data too (Google Apps Script has payload limits)
     try {
-      const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwU-nyt1OsJ8E_4k-odkJ8ZZJyd85Tdirf46RWZkdH4sL4tUf99ES5hx9LtHxz9PTdg/exec';
+      const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw9vIHzYgIlY2xqy984cyIZubWTigFfqcpe_HPXrCzC5icEofPklz3d5zyGFcrNhL4Z/exec';
       
       const sheetData = { ...data };
       const docFields = ['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'];
