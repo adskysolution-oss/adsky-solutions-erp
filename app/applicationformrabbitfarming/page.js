@@ -283,12 +283,19 @@ export default function RabbitFarmingForm() {
       };
 
       // Save pending form submission to localStorage BEFORE payment
-      // This allows payment/verify page to complete submission if user is redirected
-      localStorage.setItem('pending_form_submission', JSON.stringify({
-        formType: 'rabbit-farming',
-        orderId: orderData.orderId,
-        formData: formData
-      }));
+      // IMPORTANT: Strip Base64 documents to avoid localStorage quota error (5MB limit)
+      const docFields = ['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'];
+      const safeFormData = { ...formData };
+      docFields.forEach(f => { if (safeFormData[f] && safeFormData[f].startsWith('data:')) safeFormData[f] = 'uploaded'; });
+      try {
+        localStorage.setItem('pending_form_submission', JSON.stringify({
+          formType: 'rabbit-farming',
+          orderId: orderData.orderId,
+          formData: safeFormData
+        }));
+      } catch (storageErr) {
+        console.warn('Could not save pending submission to localStorage:', storageErr);
+      }
 
       cashfree.checkout(checkoutOptions).then(async (result) => {
         // If there's a clear error (user cancelled etc.), stop here
