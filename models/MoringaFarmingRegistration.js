@@ -7,6 +7,6 @@ const MoringaFarmingRegistrationSchema = new mongoose.Schema({
   txnId: { type: String },
   paymentStatus: { type: String, default: 'Pending' },
   formData: { type: Object } // Store full data for backup
-}, { timestamps: true });
+}, { timestamps: true, strict: false });
 
 export default mongoose.models.MoringaFarmingRegistration || mongoose.model('MoringaFarmingRegistration', MoringaFarmingRegistrationSchema);
