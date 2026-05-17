@@ -39,7 +39,7 @@ export async function POST(req) {
         }
       });
 
-      await fetch(GOOGLE_WEB_APP_URL, {
+      fetch(GOOGLE_WEB_APP_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(sheetData)
