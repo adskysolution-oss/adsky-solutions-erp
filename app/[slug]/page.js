@@ -199,7 +199,7 @@ export default function PublicForm() {
                <CheckCircle2 size={48} className="text-white" />
             </div>
             <h2 className="text-4xl font-black text-slate-900 italic mb-4 tracking-tighter">Success!</h2>
-            <p className="text-slate-500 italic font-medium mb-8">Your response has been recorded securely. Our team will get back to you shortly.</p>
+            <p className="text-slate-500 italic font-medium mb-8 whitespace-pre-line leading-relaxed">{form.successMessage || "Your response has been recorded securely. Our team will get back to you shortly."}</p>
             <button onClick={() => window.location.reload()} className="px-10 py-4 bg-slate-900 text-white font-black rounded-2xl italic uppercase text-xs hover:scale-105 transition-all">Submit Another</button>
          </motion.div>
       </div>

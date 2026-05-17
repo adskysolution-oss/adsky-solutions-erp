@@ -38,6 +38,7 @@ export default function FormBuilderPage() {
       formName: 'Untitled Form',
       slug: 'untitled-form-' + Math.floor(1000 + Math.random() * 9000),
       description: 'Capture lead details efficiently',
+      successMessage: 'Your response has been recorded securely. Our team will get back to you shortly.',
       hasPayment: false,
       paymentAmount: 0,
       steps: [{
@@ -152,12 +153,16 @@ export default function FormBuilderPage() {
                         </div>
                         <p className="text-[8px] text-slate-600 italic px-2">Type your desired link name above. Only letters, numbers and dashes allowed.</p>
                      </div>
-                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2 italic">Description</label>
-                        <textarea rows={3} value={editingForm.description} onChange={e => setEditingForm({...editingForm, description: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-white font-medium italic outline-none focus:border-blue-500 transition-all text-sm" />
-                     </div>
-                   </div>
-                </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2 italic">Description</label>
+                         <textarea rows={3} value={editingForm.description} onChange={e => setEditingForm({...editingForm, description: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-white font-medium italic outline-none focus:border-blue-500 transition-all text-sm" />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2 italic text-emerald-500">Success Message (सफलता सन्देश)</label>
+                         <textarea rows={3} value={editingForm.successMessage || ''} onChange={e => setEditingForm({...editingForm, successMessage: e.target.value})} placeholder="e.g. सफलता पूर्वक आपका फॉर्म जमा हो गया है!" className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-emerald-400 font-medium italic outline-none focus:border-blue-500 transition-all text-sm" />
+                      </div>
+                    </div>
+                 </div>
 
                 <div className="space-y-6 pt-4 border-t border-[#1f2937]">
                     <h3 className="text-xs font-black uppercase tracking-widest text-blue-500 italic">Styling & Typography</h3>

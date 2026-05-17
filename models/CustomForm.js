@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const CustomFormSchema = new mongoose.Schema({
   formName: { type: String, required: true },
   description: String,
+  successMessage: { type: String, default: 'Your response has been recorded securely. Our team will get back to you shortly.' },
   slug: { type: String, required: true, unique: true },
   hasPayment: { type: Boolean, default: false },
   paymentAmount: { type: Number, default: 0 },
