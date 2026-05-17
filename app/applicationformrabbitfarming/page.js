@@ -89,7 +89,11 @@ export default function RabbitFarmingForm() {
             const verifyData = await verifyRes.json();
             if (verifyData?.order?.order_status === 'PAID') {
               setLoading(true);
-              const updatedFormData = { ...pending.formData, txnId: pending.orderId, paymentStatus: 'Success' };
+              const updatedFormData = {
+                aadhar: pending.formData.aadhar,
+                txnId: pending.orderId,
+                paymentStatus: 'Success'
+              };
               
               const saveRes = await fetch('/api/forms/rabbit-farming/save', {
                 method: 'POST',
