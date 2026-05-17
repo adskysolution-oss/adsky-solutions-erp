@@ -31,6 +31,8 @@ function PaymentVerifyContent() {
           formUrl = '/applicationformrabbitfarming';
         } else if (pending.formType === 'moringa-farming') {
           formUrl = '/applicationformmoringafarming';
+        } else if (pending.formType === 'custom' && pending.slug) {
+          formUrl = `/${pending.slug}`;
         }
         setReturnFormUrl(formUrl);
         localStorage.setItem('last_form_url', formUrl);
@@ -64,20 +66,32 @@ function PaymentVerifyContent() {
                 if (pending.orderId === orderId && pending.formData && pending.formType) {
                   setFormSubmitStatus('submitting');
                   
-                   const updatedFormData = {
-                    aadhar: pending.formData.aadhar,
-                    txnId: orderId,
-                    paymentStatus: 'Success'
-                  };
+                  let apiRoute = '';
+                  let postBody = {};
 
-                  const apiRoute = pending.formType === 'rabbit-farming'
-                    ? '/api/forms/rabbit-farming/save'
-                    : '/api/forms/moringa-farming/save';
+                  if (pending.formType === 'custom') {
+                    apiRoute = '/api/forms/submit';
+                    postBody = {
+                      slug: pending.slug,
+                      txnId: orderId,
+                      paymentStatus: 'Success',
+                      ...pending.formData
+                    };
+                  } else {
+                    apiRoute = pending.formType === 'rabbit-farming'
+                      ? '/api/forms/rabbit-farming/save'
+                      : '/api/forms/moringa-farming/save';
+                    postBody = {
+                      aadhar: pending.formData.aadhar,
+                      txnId: orderId,
+                      paymentStatus: 'Success'
+                    };
+                  }
 
                   const saveRes = await fetch(apiRoute, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updatedFormData)
+                    body: JSON.stringify(postBody)
                   });
 
                   if (saveRes.ok) {
@@ -87,6 +101,9 @@ function PaymentVerifyContent() {
                     localStorage.removeItem('rabbit_farming_step');
                     localStorage.removeItem('moringa_farming_draft');
                     localStorage.removeItem('moringa_farming_step');
+                    if (pending.slug) {
+                      localStorage.removeItem(`custom_form_draft_${pending.slug}`);
+                    }
                     setFormSubmitStatus('done');
                   } else {
                     setFormSubmitStatus('failed');

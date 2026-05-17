@@ -61,15 +61,107 @@ export default function PublicForm() {
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/forms/submit`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug, ...formData })
-      });
-      if (res.ok) {
-        setSubmitted(true);
+      if (form.hasPayment && form.paymentAmount > 0) {
+        // Load Cashfree SDK dynamically
+        if (!window.Cashfree) {
+          const script = document.createElement('script');
+          script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
+          script.async = true;
+          document.body.appendChild(script);
+          await new Promise((resolve) => {
+            script.onload = resolve;
+          });
+        }
+
+        if (!window.Cashfree) {
+          throw new Error("Unable to load Cashfree Payment SDK. Please refresh and try again.");
+        }
+
+        // Initialize Cashfree
+        const cashfree = window.Cashfree({
+          mode: 'sandbox' // Sandbox by default, Cashfree API handles the real mode
+        });
+
+        // Scan fields to get customer details
+        let phone = '';
+        let name = '';
+        let email = '';
+        
+        form.steps.forEach((step, stepIdx) => {
+          step.fields.forEach((field, fieldIdx) => {
+            const val = formData[`${stepIdx}-${fieldIdx}`];
+            if (val) {
+              const labelLower = field.label.toLowerCase();
+              if ((labelLower.includes('phone') || labelLower.includes('mobile') || labelLower.includes('म़ोबाइल') || labelLower.includes('फ़ोन')) && !phone) {
+                phone = val.toString().replace(/\D/g, '');
+              }
+              if ((labelLower.includes('name') || labelLower.includes('नाम')) && !name) {
+                name = val.toString();
+              }
+              if ((labelLower.includes('email') || labelLower.includes('ईमेल')) && !email) {
+                email = val.toString();
+              }
+            }
+          });
+        });
+
+        if (!phone || phone.length < 10) {
+          const userPhone = prompt("कृपया भुगतान जारी रखने के लिए अपना 10 अंकों का मोबाइल नंबर दर्ज करें (Please enter 10 digit mobile number to proceed with payment):");
+          if (!userPhone || userPhone.replace(/\D/g, '').length !== 10) {
+            alert("वैध मोबाइल नंबर आवश्यक है। (Valid mobile number is required)");
+            setSubmitting(false);
+            return;
+          }
+          phone = userPhone.replace(/\D/g, '');
+        }
+
+        // 1. Create order session
+        const orderRes = await fetch('/api/payment/cashfree', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: form.paymentAmount,
+            customerName: name || 'Customer',
+            customerPhone: phone,
+            customerEmail: email || 'customer@adskysolution.com',
+            orderNote: `${form.formName} Application Fee`
+          })
+        });
+
+        const orderData = await orderRes.json();
+        if (!orderData.success || !orderData.paymentSessionId) {
+          throw new Error(orderData.error || "Failed to initiate payment session.");
+        }
+
+        // Save dynamic form draft in localStorage
+        localStorage.setItem(`custom_form_draft_${slug}`, JSON.stringify(formData));
+
+        // 2. Save dynamic pending submission in localStorage
+        localStorage.setItem('pending_form_submission', JSON.stringify({
+          formType: 'custom',
+          slug: slug,
+          orderId: orderData.orderId,
+          formData: formData
+        }));
+
+        // 3. Trigger Cashfree modal checkout
+        await cashfree.checkout({
+          paymentSessionId: orderData.paymentSessionId,
+          redirectTarget: '_self'
+        });
+
       } else {
-        throw new Error("Submission failed");
+        // Submit directly without payment
+        const res = await fetch(`/api/forms/submit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug, ...formData })
+        });
+        if (res.ok) {
+          setSubmitted(true);
+        } else {
+          throw new Error("Submission failed");
+        }
       }
     } catch (err) {
       alert("Error submitting form: " + err.message);
@@ -139,8 +231,27 @@ export default function PublicForm() {
                   <span className="px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest italic">Step {currentStep + 1} of {form.steps.length}</span>
                   <div className="h-px grow bg-white/10" />
                 </div>
-                <h1 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter leading-none mb-4">{form.formName}</h1>
-                <p className="text-slate-400 italic font-medium">{form.description}</p>
+                <h1 className={`text-4xl md:text-6xl text-white tracking-tighter leading-none mb-4 ${
+                  form.styling?.fontStyle === 'serif' 
+                    ? 'font-serif' 
+                    : form.styling?.fontStyle === 'mono'
+                      ? 'font-mono'
+                      : 'font-sans'
+                } ${
+                  form.styling?.isBoldHeading === false
+                    ? 'font-normal'
+                    : 'font-black'
+                } ${
+                  form.styling?.fontStyle === 'italic' || form.styling?.fontStyle === undefined
+                    ? 'italic'
+                    : ''
+                }`}>
+                  {form.formName}
+                </h1>
+                <div 
+                  className="text-slate-400 font-medium whitespace-pre-line text-sm md:text-base leading-relaxed" 
+                  dangerouslySetInnerHTML={{ __html: form.description }}
+                />
              </div>
 
              <div className="rounded-[3rem] bg-white/5 border border-white/10 p-8 md:p-16 backdrop-blur-xl shadow-4xl">
@@ -294,7 +405,7 @@ export default function PublicForm() {
                      disabled={submitting}
                      className="grow flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-blue-600 text-white font-black hover:bg-blue-500 hover:shadow-2xl hover:shadow-blue-500/20 transition-all italic uppercase tracking-widest text-xs"
                    >
-                     {submitting ? <Loader2 className="animate-spin" /> : currentStep === form.steps.length - 1 ? <><Send size={18} /> Submit Build</> : <><ChevronRight size={18} /> Continue</>}
+                     {submitting ? <Loader2 className="animate-spin" /> : currentStep === form.steps.length - 1 ? <><Send size={18} /> {form.hasPayment && form.paymentAmount > 0 ? `CONFIRM & PAY ₹${form.paymentAmount}` : 'Submit Build'}</> : <><ChevronRight size={18} /> Continue</>}
                    </button>
                 </div>
              </div>

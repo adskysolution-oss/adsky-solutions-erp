@@ -37,10 +37,16 @@ export default function FormBuilderPage() {
     const newForm = {
       formName: 'Untitled Form',
       description: 'Capture lead details efficiently',
+      hasPayment: false,
+      paymentAmount: 0,
       steps: [{
         title: 'Basic Information',
         fields: [{ label: 'Full Name', type: 'text', required: true }]
       }],
+      styling: {
+        fontStyle: 'sans',
+        isBoldHeading: true
+      },
       isActive: true
     };
     setEditingForm(newForm);
@@ -146,6 +152,73 @@ export default function FormBuilderPage() {
                         <textarea rows={3} value={editingForm.description} onChange={e => setEditingForm({...editingForm, description: e.target.value})} className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-white font-medium italic outline-none focus:border-blue-500 transition-all text-sm" />
                      </div>
                    </div>
+                </div>
+
+                <div className="space-y-6 pt-4 border-t border-[#1f2937]">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-blue-500 italic">Styling & Typography</h3>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2 italic">Heading Font</label>
+                         <select 
+                            value={editingForm.styling?.fontStyle || 'sans'} 
+                            onChange={e => setEditingForm({
+                              ...editingForm, 
+                              styling: { ...(editingForm.styling || {}), fontStyle: e.target.value }
+                            })} 
+                            className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-white font-bold italic outline-none focus:border-blue-500 transition-all text-xs"
+                         >
+                            <option value="sans">Sans-Serif (Modern)</option>
+                            <option value="serif">Serif (Elegant)</option>
+                            <option value="mono">Monospace (Tech)</option>
+                         </select>
+                      </div>
+                      <div className="flex items-center gap-3">
+                         <input 
+                            type="checkbox" 
+                            id="isBoldHeading"
+                            checked={editingForm.styling?.isBoldHeading !== false}
+                            onChange={e => setEditingForm({
+                              ...editingForm, 
+                              styling: { ...(editingForm.styling || {}), isBoldHeading: e.target.checked }
+                            })} 
+                            className="w-4 h-4 rounded bg-[#0b1220] border-[#1f2937] checked:bg-blue-500 transition-all"
+                         />
+                         <label htmlFor="isBoldHeading" className="text-[10px] font-black uppercase text-slate-400 cursor-pointer italic">Bold Heading</label>
+                      </div>
+                    </div>
+                </div>
+
+                <div className="space-y-6 pt-4 border-t border-[#1f2937]">
+                    <h3 className="text-xs font-black uppercase tracking-widest text-blue-500 italic">Payment Settings</h3>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3">
+                         <input 
+                            type="checkbox" 
+                            id="hasPayment"
+                            checked={editingForm.hasPayment || false}
+                            onChange={e => setEditingForm({
+                              ...editingForm, 
+                              hasPayment: e.target.checked
+                            })} 
+                            className="w-4 h-4 rounded bg-[#0b1220] border-[#1f2937] checked:bg-blue-500 transition-all"
+                         />
+                         <label htmlFor="hasPayment" className="text-[10px] font-black uppercase text-slate-400 cursor-pointer italic">Enable Payment</label>
+                      </div>
+                      {editingForm.hasPayment && (
+                        <div className="space-y-2">
+                           <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2 italic">Payment Amount (₹)</label>
+                           <input 
+                              type="number" 
+                              value={editingForm.paymentAmount || 0} 
+                              onChange={e => setEditingForm({
+                                ...editingForm, 
+                                paymentAmount: Math.max(0, parseFloat(e.target.value) || 0)
+                              })} 
+                              className="w-full bg-[#0b1220] border border-[#1f2937] rounded-2xl py-4 px-6 text-emerald-500 font-black italic outline-none focus:border-blue-500 transition-all" 
+                           />
+                        </div>
+                      )}
+                    </div>
                 </div>
 
                 <div className="space-y-4">

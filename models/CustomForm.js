@@ -4,6 +4,8 @@ const CustomFormSchema = new mongoose.Schema({
   formName: { type: String, required: true },
   description: String,
   slug: { type: String, required: true, unique: true },
+  hasPayment: { type: Boolean, default: false },
+  paymentAmount: { type: Number, default: 0 },
   steps: [{
     title: { type: String, required: true },
     fields: [{
@@ -25,7 +27,8 @@ const CustomFormSchema = new mongoose.Schema({
     headerImage: String,
     accentColor: { type: String, default: '#3b82f6' },
     backgroundColor: { type: String, default: '#020617' },
-    fontStyle: { type: String, default: 'italic' }
+    fontStyle: { type: String, default: 'sans' },
+    isBoldHeading: { type: Boolean, default: true }
   },
   isActive: { type: Boolean, default: true }
 }, { timestamps: true });
