@@ -93,7 +93,7 @@ export default function MoringaFarmingForm() {
       const docFields = ['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'];
       const draftData = { ...formData };
       docFields.forEach(f => {
-        if (draftData[f] && draftData[f].startsWith('data:')) draftData[f] = '';
+        if (draftData[f] && (draftData[f].startsWith('data:') || draftData[f].startsWith('blob:'))) draftData[f] = '';
       });
       localStorage.setItem('moringa_farming_draft', JSON.stringify(draftData));
       localStorage.setItem('moringa_farming_step', currentStep.toString());
@@ -119,15 +119,9 @@ export default function MoringaFarmingForm() {
   const handleFileChange = (e, field) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert("File too large. Max 5MB allowed.");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({ ...prev, [field]: reader.result }));
-      };
-      reader.readAsDataURL(file);
+      // Use URL.createObjectURL to instantly display the preview without crashing the browser with base64 conversion.
+      const objectUrl = URL.createObjectURL(file);
+      setFormData(prev => ({ ...prev, [field]: objectUrl }));
     }
   };
 
@@ -287,7 +281,7 @@ export default function MoringaFarmingForm() {
       // IMPORTANT: Strip Base64 documents to avoid localStorage quota error (5MB limit)
       const docFields = ['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'];
       const safeFormData = { ...formData };
-      docFields.forEach(f => { if (safeFormData[f] && safeFormData[f].startsWith('data:')) safeFormData[f] = 'uploaded'; });
+      docFields.forEach(f => { if (safeFormData[f] && (safeFormData[f].startsWith('data:') || safeFormData[f].startsWith('blob:'))) safeFormData[f] = 'uploaded'; });
       try {
         localStorage.setItem('pending_form_submission', JSON.stringify({
           formType: 'moringa-farming',

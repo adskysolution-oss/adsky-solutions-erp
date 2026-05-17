@@ -12,8 +12,8 @@ export async function POST(req) {
     const docFields = ['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'];
     
     docFields.forEach(field => {
-      if (mongoData[field] && mongoData[field].startsWith('data:')) {
-        mongoData[field] = 'uploaded'; // Keep a flag instead of raw base64
+      if (mongoData[field] && (mongoData[field].startsWith('data:') || mongoData[field].startsWith('blob:'))) {
+        mongoData[field] = 'uploaded'; // Keep a flag instead of raw base64 or blob URL
       }
     });
 
@@ -34,7 +34,7 @@ export async function POST(req) {
       const sheetData = { ...data };
       const docFields = ['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'];
       docFields.forEach(field => {
-        if (sheetData[field] && sheetData[field].startsWith('data:')) {
+        if (sheetData[field] && (sheetData[field].startsWith('data:') || sheetData[field].startsWith('blob:'))) {
           sheetData[field] = 'Document Uploaded ✓';
         }
       });
