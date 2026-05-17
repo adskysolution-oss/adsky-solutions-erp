@@ -320,7 +320,7 @@ export default function MoringaFarmingForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: 249,
+          amount: 1,
           customerName: formData.name,
           customerPhone: formData.mobile,
           customerEmail: formData.email || 'customer@adskysolution.com',
@@ -613,7 +613,7 @@ export default function MoringaFarmingForm() {
                 </button>
               ) : (
                 <button type="button" onClick={handleManualSubmit} disabled={loading || !cashfreeReady} className="flex-[2] py-4 bg-[#22c55e] text-white font-black rounded-xl flex items-center justify-center gap-2 hover:bg-green-700 shadow-xl shadow-green-100 transition-all active:scale-[0.98]">
-                  {loading ? <><Loader2 className="animate-spin" /> Processing...</> : !cashfreeReady ? <><Loader2 className="animate-spin" size={16} /> Loading Payment...</> : 'CONFIRM & PAY ₹249'}
+                  {loading ? <><Loader2 className="animate-spin" /> Processing...</> : !cashfreeReady ? <><Loader2 className="animate-spin" size={16} /> Loading Payment...</> : 'CONFIRM & PAY ₹1'}
                 </button>
               )}
             </div>
