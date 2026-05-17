@@ -124,7 +124,8 @@ export default function PublicForm() {
             customerName: name || 'Customer',
             customerPhone: phone,
             customerEmail: email || 'customer@adskysolution.com',
-            orderNote: `${form.formName} Application Fee`
+            orderNote: `${form.formName} Application Fee`,
+            returnUrl: `${window.location.origin}/payment/verify?order_id={order_id}&form_slug=${slug}`
           })
         });
 

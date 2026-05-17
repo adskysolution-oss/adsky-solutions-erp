@@ -495,7 +495,8 @@ export default function MoringaFarmingForm() {
           customerName: formData.name,
           customerPhone: formData.mobile,
           customerEmail: formData.email || 'customer@adskysolution.com',
-          orderNote: 'Moringa Farming Processing Fee'
+          orderNote: 'Moringa Farming Processing Fee',
+          returnUrl: `${window.location.origin}/payment/verify?order_id={order_id}&form_slug=applicationformmoringafarming`
         })
       });
 

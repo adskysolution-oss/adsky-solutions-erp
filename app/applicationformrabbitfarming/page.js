@@ -503,7 +503,8 @@ export default function RabbitFarmingForm() {
           customerName: formData.name,
           customerPhone: formData.mobile,
           customerEmail: formData.email || 'customer@adskysolution.com',
-          orderNote: 'Rabbit Farming Processing Fee'
+          orderNote: 'Rabbit Farming Processing Fee',
+          returnUrl: `${window.location.origin}/payment/verify?order_id={order_id}&form_slug=applicationformrabbitfarming`
         })
       });
 

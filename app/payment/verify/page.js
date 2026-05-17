@@ -23,26 +23,36 @@ function PaymentVerifyContent() {
 
     // Determine return URL
     const pendingRaw = localStorage.getItem('pending_form_submission');
-    if (pendingRaw) {
+    const formSlugParam = searchParams.get('form_slug');
+    
+    let resolvedFormUrl = '/';
+    if (formSlugParam) {
+      if (formSlugParam === 'applicationformrabbitfarming') {
+        resolvedFormUrl = '/applicationformrabbitfarming';
+      } else if (formSlugParam === 'applicationformmoringafarming') {
+        resolvedFormUrl = '/applicationformmoringafarming';
+      } else {
+        resolvedFormUrl = `/${formSlugParam}`;
+      }
+    } else if (pendingRaw) {
       try {
         const pending = JSON.parse(pendingRaw);
-        let formUrl = '/';
         if (pending.formType === 'rabbit-farming') {
-          formUrl = '/applicationformrabbitfarming';
+          resolvedFormUrl = '/applicationformrabbitfarming';
         } else if (pending.formType === 'moringa-farming') {
-          formUrl = '/applicationformmoringafarming';
+          resolvedFormUrl = '/applicationformmoringafarming';
         } else if (pending.formType === 'custom' && pending.slug) {
-          formUrl = `/${pending.slug}`;
+          resolvedFormUrl = `/${pending.slug}`;
         }
-        setReturnFormUrl(formUrl);
-        localStorage.setItem('last_form_url', formUrl);
       } catch (e) {}
     } else {
       const lastUrl = localStorage.getItem('last_form_url');
       if (lastUrl) {
-        setReturnFormUrl(lastUrl);
+        resolvedFormUrl = lastUrl;
       }
     }
+    setReturnFormUrl(resolvedFormUrl);
+    localStorage.setItem('last_form_url', resolvedFormUrl);
 
     const verifyAndSubmit = async () => {
       try {
@@ -54,8 +64,6 @@ function PaymentVerifyContent() {
           setOrderDetails(data.order);
 
           if (data.order.order_status === 'PAID') {
-            setStatus('success');
-
             // 2. Check if there's a pending form submission in localStorage
             const pendingRaw = localStorage.getItem('pending_form_submission');
             if (pendingRaw) {
@@ -105,13 +113,23 @@ function PaymentVerifyContent() {
                       localStorage.removeItem(`custom_form_draft_${pending.slug}`);
                     }
                     setFormSubmitStatus('done');
+                    setStatus('success');
                   } else {
+                    console.error('Failed to save response to database:', await saveRes.text());
                     setFormSubmitStatus('failed');
+                    setStatus('failed');
                   }
+                } else {
+                  // Mismatch or already processed
+                  setStatus('success');
                 }
               } catch (parseErr) {
                 console.error('Error parsing pending submission:', parseErr);
+                setStatus('success');
               }
+            } else {
+              // No pending data in localStorage, but order is PAID
+              setStatus('success');
             }
           } else {
             setStatus('failed');
