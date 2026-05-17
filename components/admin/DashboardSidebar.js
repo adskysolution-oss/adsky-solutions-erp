@@ -45,6 +45,8 @@ const MENU_GROUPS = [
       { name: 'User Control', icon: Users, path: '/admin/users' },
       { name: 'Partners Hub', icon: Briefcase, path: '/admin/partners' },
       { name: 'Mission Queue', icon: Zap, path: '/admin/leads' },
+      { name: 'Rabbit Forms', icon: FileText, path: '/admin/forms/rabbit-farming' },
+      { name: 'Moringa Forms', icon: FileText, path: '/admin/forms/moringa-farming' },
     ]
   },
   {
