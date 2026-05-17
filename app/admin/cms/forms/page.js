@@ -36,6 +36,7 @@ export default function FormBuilderPage() {
   const handleCreateNewForm = () => {
     const newForm = {
       formName: 'Untitled Form',
+      slug: 'untitled-form-' + Math.floor(1000 + Math.random() * 9000),
       description: 'Capture lead details efficiently',
       hasPayment: false,
       paymentAmount: 0,
@@ -85,9 +86,13 @@ export default function FormBuilderPage() {
       if (data.success) {
         setEditingForm(null);
         fetchForms();
+        alert("Form structure saved successfully!");
+      } else {
+        alert("Error saving form: " + (data.error || "Unknown validation error occurred. Make sure all fields have valid labels and slug is unique."));
       }
     } catch (err) {
       console.error(err);
+      alert("Network Error: " + err.message);
     } finally {
       setSaving(false);
     }
