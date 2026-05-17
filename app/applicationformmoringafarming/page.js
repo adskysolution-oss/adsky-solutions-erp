@@ -64,6 +64,7 @@ export default function MoringaFarmingForm() {
   const [availableDistricts, setAvailableDistricts] = useState([]);
   const [previewImage, setPreviewImage] = useState(null);
   const [cashfreeReady, setCashfreeReady] = useState(false);
+  const [uploadingFields, setUploadingFields] = useState({});
   
   const [formData, setFormData] = useState({
     aadhar: '', name: '', parentName: '', mobile: '', email: '', gender: '', dob: '', socialCategory: '', specialCategory: 'Not Applicable', pan: '',
@@ -149,12 +150,38 @@ export default function MoringaFarmingForm() {
     return () => { try { if (document.body.contains(script)) document.body.removeChild(script); } catch(e){} };
   }, []);
 
-  const handleFileChange = (e, field) => {
+  const handleFileChange = async (e, field) => {
     const file = e.target.files[0];
     if (file) {
-      // Use URL.createObjectURL to instantly display the preview without crashing the browser with base64 conversion.
+      // 1. Use URL.createObjectURL to instantly display the preview locally
       const objectUrl = URL.createObjectURL(file);
       setFormData(prev => ({ ...prev, [field]: objectUrl }));
+
+      // 2. Upload to Cloudinary in the background
+      setUploadingFields(prev => ({ ...prev, [field]: true }));
+      try {
+        const uploadData = new FormData();
+        uploadData.append('file', file);
+
+        const res = await fetch('/api/admin/upload', {
+          method: 'POST',
+          body: uploadData
+        });
+        const resData = await res.json();
+        if (resData.url) {
+          // Replace local blob URL with actual Cloudinary URL
+          setFormData(prev => ({ ...prev, [field]: resData.url }));
+        } else {
+          alert('Upload failed: ' + (resData.error || 'Unknown error'));
+          setFormData(prev => ({ ...prev, [field]: '' }));
+        }
+      } catch (err) {
+        console.error('Upload error:', err);
+        alert('File upload failed. Please try again.');
+        setFormData(prev => ({ ...prev, [field]: '' }));
+      } finally {
+        setUploadingFields(prev => ({ ...prev, [field]: false }));
+      }
     }
   };
 
@@ -517,19 +544,23 @@ export default function MoringaFarmingForm() {
                     <FileUploadField label="Aadhaar Card (Back)" name="doc_aadhar_back" value={formData.doc_aadhar_back} onChange={(e) => handleFileChange(e, 'doc_aadhar_back')} onPreview={() => setPreviewImage(formData.doc_aadhar_back)} onClear={() => setFormData(p => ({...p, doc_aadhar_back: ''}))} />
                     <FileUploadField label="PAN Card" name="doc_pan" value={formData.doc_pan} onChange={(e) => handleFileChange(e, 'doc_pan')} onPreview={() => setPreviewImage(formData.doc_pan)} onClear={() => setFormData(p => ({...p, doc_pan: ''}))} />
                     <FileUploadField label="Passport Size Photo" name="doc_photo" value={formData.doc_photo} onChange={(e) => handleFileChange(e, 'doc_photo')} onPreview={() => setPreviewImage(formData.doc_photo)} onClear={() => setFormData(p => ({...p, doc_photo: ''}))} />
-                    <FileUploadField label="Bank Passbook / Statement" name="doc_bank" value={formData.doc_bank} onChange={(e) => handleFileChange(e, 'doc_bank')} onPreview={() => setPreviewImage(formData.doc_bank)} onClear={() => setFormData(p => ({...p, doc_bank: ''}))} />
-                    <FileUploadField label="Address Proof" name="doc_address" value={formData.doc_address} onChange={(e) => handleFileChange(e, 'doc_address')} onPreview={() => setPreviewImage(formData.doc_address)} onClear={() => setFormData(p => ({...p, doc_address: ''}))} />
-                    <FileUploadField label="Khasra / Khatauni" name="doc_land" value={formData.doc_land} onChange={(e) => handleFileChange(e, 'doc_land')} onPreview={() => setPreviewImage(formData.doc_land)} onClear={() => setFormData(p => ({...p, doc_land: ''}))} />
-                    <FileUploadField label="Rent Agreement" name="doc_rent_agreement" value={formData.doc_rent_agreement} onChange={(e) => handleFileChange(e, 'doc_rent_agreement')} onPreview={() => setPreviewImage(formData.doc_rent_agreement)} onClear={() => setFormData(p => ({...p, doc_rent_agreement: ''}))} />
-                    <FileUploadField label="Project Report (DPR)" name="doc_dpr" value={formData.doc_dpr} onChange={(e) => handleFileChange(e, 'doc_dpr')} onPreview={() => setPreviewImage(formData.doc_dpr)} onClear={() => setFormData(p => ({...p, doc_dpr: ''}))} />
-                    <FileUploadField label="Income Proof" name="doc_income" value={formData.doc_income} onChange={(e) => handleFileChange(e, 'doc_income')} onPreview={() => setPreviewImage(formData.doc_income)} onClear={() => setFormData(p => ({...p, doc_income: ''}))} />
-                    <FileUploadField label="Existing Loan Details" name="doc_loan" value={formData.doc_loan} onChange={(e) => handleFileChange(e, 'doc_loan')} onPreview={() => setPreviewImage(formData.doc_loan)} onClear={() => setFormData(p => ({...p, doc_loan: ''}))} />
-                    <FileUploadField label="Training Certificate" name="doc_training" value={formData.doc_training} onChange={(e) => handleFileChange(e, 'doc_training')} onPreview={() => setPreviewImage(formData.doc_training)} onClear={() => setFormData(p => ({...p, doc_training: ''}))} />
-                    <FileUploadField label="Caste Certificate" name="doc_caste" value={formData.doc_caste} onChange={(e) => handleFileChange(e, 'doc_caste')} onPreview={() => setPreviewImage(formData.doc_caste)} onClear={() => setFormData(p => ({...p, doc_caste: ''}))} />
-                    <FileUploadField label="Highest Education Certificate" name="doc_education" value={formData.doc_education} onChange={(e) => handleFileChange(e, 'doc_education')} onPreview={() => setPreviewImage(formData.doc_education)} onClear={() => setFormData(p => ({...p, doc_education: ''}))} />
-                    <FileUploadField label="Rural Area Certificate" name="doc_rural_cert" value={formData.doc_rural_cert} onChange={(e) => handleFileChange(e, 'doc_rural_cert')} onPreview={() => setPreviewImage(formData.doc_rural_cert)} onClear={() => setFormData(p => ({...p, doc_rural_cert: ''}))} />
-                    <FileUploadField label="EDP Training Certificate" name="doc_edp" value={formData.doc_edp} onChange={(e) => handleFileChange(e, 'doc_edp')} onPreview={() => setPreviewImage(formData.doc_edp)} onClear={() => setFormData(p => ({...p, doc_edp: ''}))} />
-                    <FileUploadField label="Affidavit" name="doc_affidavit" value={formData.doc_affidavit} onChange={(e) => handleFileChange(e, 'doc_affidavit')} onPreview={() => setPreviewImage(formData.doc_affidavit)} onClear={() => setFormData(p => ({...p, doc_affidavit: ''}))} />
+                    <FileUploadField label="Aadhaar Card (Front)" name="doc_aadhar_front" value={formData.doc_aadhar_front} onChange={(e) => handleFileChange(e, 'doc_aadhar_front')} onPreview={() => setPreviewImage(formData.doc_aadhar_front)} onClear={() => setFormData(p => ({...p, doc_aadhar_front: ''}))} isUploading={uploadingFields['doc_aadhar_front']} />
+                    <FileUploadField label="Aadhaar Card (Back)" name="doc_aadhar_back" value={formData.doc_aadhar_back} onChange={(e) => handleFileChange(e, 'doc_aadhar_back')} onPreview={() => setPreviewImage(formData.doc_aadhar_back)} onClear={() => setFormData(p => ({...p, doc_aadhar_back: ''}))} isUploading={uploadingFields['doc_aadhar_back']} />
+                    <FileUploadField label="PAN Card" name="doc_pan" value={formData.doc_pan} onChange={(e) => handleFileChange(e, 'doc_pan')} onPreview={() => setPreviewImage(formData.doc_pan)} onClear={() => setFormData(p => ({...p, doc_pan: ''}))} isUploading={uploadingFields['doc_pan']} />
+                    <FileUploadField label="Passport Size Photo" name="doc_photo" value={formData.doc_photo} onChange={(e) => handleFileChange(e, 'doc_photo')} onPreview={() => setPreviewImage(formData.doc_photo)} onClear={() => setFormData(p => ({...p, doc_photo: ''}))} isUploading={uploadingFields['doc_photo']} />
+                    <FileUploadField label="Bank Passbook / Statement" name="doc_bank" value={formData.doc_bank} onChange={(e) => handleFileChange(e, 'doc_bank')} onPreview={() => setPreviewImage(formData.doc_bank)} onClear={() => setFormData(p => ({...p, doc_bank: ''}))} isUploading={uploadingFields['doc_bank']} />
+                    <FileUploadField label="Address Proof" name="doc_address" value={formData.doc_address} onChange={(e) => handleFileChange(e, 'doc_address')} onPreview={() => setPreviewImage(formData.doc_address)} onClear={() => setFormData(p => ({...p, doc_address: ''}))} isUploading={uploadingFields['doc_address']} />
+                    <FileUploadField label="Khasra / Khatauni" name="doc_land" value={formData.doc_land} onChange={(e) => handleFileChange(e, 'doc_land')} onPreview={() => setPreviewImage(formData.doc_land)} onClear={() => setFormData(p => ({...p, doc_land: ''}))} isUploading={uploadingFields['doc_land']} />
+                    <FileUploadField label="Rent Agreement" name="doc_rent_agreement" value={formData.doc_rent_agreement} onChange={(e) => handleFileChange(e, 'doc_rent_agreement')} onPreview={() => setPreviewImage(formData.doc_rent_agreement)} onClear={() => setFormData(p => ({...p, doc_rent_agreement: ''}))} isUploading={uploadingFields['doc_rent_agreement']} />
+                    <FileUploadField label="Project Report (DPR)" name="doc_dpr" value={formData.doc_dpr} onChange={(e) => handleFileChange(e, 'doc_dpr')} onPreview={() => setPreviewImage(formData.doc_dpr)} onClear={() => setFormData(p => ({...p, doc_dpr: ''}))} isUploading={uploadingFields['doc_dpr']} />
+                    <FileUploadField label="Income Proof" name="doc_income" value={formData.doc_income} onChange={(e) => handleFileChange(e, 'doc_income')} onPreview={() => setPreviewImage(formData.doc_income)} onClear={() => setFormData(p => ({...p, doc_income: ''}))} isUploading={uploadingFields['doc_income']} />
+                    <FileUploadField label="Existing Loan Details" name="doc_loan" value={formData.doc_loan} onChange={(e) => handleFileChange(e, 'doc_loan')} onPreview={() => setPreviewImage(formData.doc_loan)} onClear={() => setFormData(p => ({...p, doc_loan: ''}))} isUploading={uploadingFields['doc_loan']} />
+                    <FileUploadField label="Training Certificate" name="doc_training" value={formData.doc_training} onChange={(e) => handleFileChange(e, 'doc_training')} onPreview={() => setPreviewImage(formData.doc_training)} onClear={() => setFormData(p => ({...p, doc_training: ''}))} isUploading={uploadingFields['doc_training']} />
+                    <FileUploadField label="Caste Certificate" name="doc_caste" value={formData.doc_caste} onChange={(e) => handleFileChange(e, 'doc_caste')} onPreview={() => setPreviewImage(formData.doc_caste)} onClear={() => setFormData(p => ({...p, doc_caste: ''}))} isUploading={uploadingFields['doc_caste']} />
+                    <FileUploadField label="Highest Education Certificate" name="doc_education" value={formData.doc_education} onChange={(e) => handleFileChange(e, 'doc_education')} onPreview={() => setPreviewImage(formData.doc_education)} onClear={() => setFormData(p => ({...p, doc_education: ''}))} isUploading={uploadingFields['doc_education']} />
+                    <FileUploadField label="Rural Area Certificate" name="doc_rural_cert" value={formData.doc_rural_cert} onChange={(e) => handleFileChange(e, 'doc_rural_cert')} onPreview={() => setPreviewImage(formData.doc_rural_cert)} onClear={() => setFormData(p => ({...p, doc_rural_cert: ''}))} isUploading={uploadingFields['doc_rural_cert']} />
+                    <FileUploadField label="EDP Training Certificate" name="doc_edp" value={formData.doc_edp} onChange={(e) => handleFileChange(e, 'doc_edp')} onPreview={() => setPreviewImage(formData.doc_edp)} onClear={() => setFormData(p => ({...p, doc_edp: ''}))} isUploading={uploadingFields['doc_edp']} />
+                    <FileUploadField label="Affidavit" name="doc_affidavit" value={formData.doc_affidavit} onChange={(e) => handleFileChange(e, 'doc_affidavit')} onPreview={() => setPreviewImage(formData.doc_affidavit)} onClear={() => setFormData(p => ({...p, doc_affidavit: ''}))} isUploading={uploadingFields['doc_affidavit']} />
                   </div>
                 </motion.div>
               )}
@@ -577,12 +608,12 @@ export default function MoringaFarmingForm() {
             <div className="flex flex-col md:flex-row gap-4 pt-6">
               {currentStep > 1 && <button type="button" onClick={prevStep} className="flex-1 py-4 border-2 border-[#B32D2D] text-[#B32D2D] font-black rounded-xl hover:bg-red-50">BACK</button>}
               {currentStep < 7 ? (
-                <button type="button" onClick={nextStep} className="flex-[2] py-4 bg-[#B32D2D] text-white font-black rounded-xl flex items-center justify-center gap-2 hover:bg-red-800 shadow-lg shadow-red-100 transition-all">
-                  {currentStep === 6 ? 'REVIEW APPLICATION' : 'NEXT STEP'} <ArrowRight size={20} />
+                <button type="button" onClick={nextStep} disabled={Object.values(uploadingFields).some(Boolean)} className={`flex-[2] py-4 font-black rounded-xl flex items-center justify-center gap-2 transition-all ${Object.values(uploadingFields).some(Boolean) ? 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none' : 'bg-[#B32D2D] text-white hover:bg-red-800 shadow-lg shadow-red-100'}`}>
+                  {Object.values(uploadingFields).some(Boolean) ? <><Loader2 className="animate-spin text-[#B32D2D]" size={16} /> Uploading Documents...</> : currentStep === 6 ? 'REVIEW APPLICATION' : 'NEXT STEP'} <ArrowRight size={20} />
                 </button>
               ) : (
-                <button type="button" onClick={handleManualSubmit} disabled={loading} className="flex-[2] py-4 bg-[#22c55e] text-white font-black rounded-xl flex items-center justify-center gap-2 hover:bg-green-700 shadow-xl shadow-green-100 transition-all active:scale-[0.98]">
-                  {loading ? <Loader2 className="animate-spin" /> : 'CONFIRM & PAY ₹249'}
+                <button type="button" onClick={handleManualSubmit} disabled={loading || !cashfreeReady} className="flex-[2] py-4 bg-[#22c55e] text-white font-black rounded-xl flex items-center justify-center gap-2 hover:bg-green-700 shadow-xl shadow-green-100 transition-all active:scale-[0.98]">
+                  {loading ? <><Loader2 className="animate-spin" /> Processing...</> : !cashfreeReady ? <><Loader2 className="animate-spin" size={16} /> Loading Payment...</> : 'CONFIRM & PAY ₹249'}
                 </button>
               )}
             </div>
@@ -653,7 +684,7 @@ function SelectField({ label, name, value, onChange, options, required = false }
   );
 }
 
-function FileUploadField({ label, value, onChange, onPreview, onClear }) {
+function FileUploadField({ label, value, onChange, onPreview, onClear, isUploading }) {
   return (
     <div className="space-y-3 group cursor-pointer relative">
       <div className="flex items-center gap-2">
@@ -668,7 +699,17 @@ function FileUploadField({ label, value, onChange, onPreview, onClear }) {
         ? 'border-green-500 bg-green-50/30' 
         : 'border-gray-200 bg-[#fafafa] hover:border-[#B32D2D]/30 hover:bg-white'
       }`}>
-        {!value ? (
+        {isUploading ? (
+          <div className="flex items-center gap-4 py-2">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-indigo-50 text-indigo-600">
+              <Loader2 className="animate-spin" size={24} />
+            </div>
+            <div>
+              <p className="text-xs font-black uppercase text-indigo-600">Uploading to cloud...</p>
+              <p className="text-[9px] font-bold text-gray-400 mt-1 uppercase italic tracking-tighter">Please do not close this window</p>
+            </div>
+          </div>
+        ) : !value ? (
           <>
             <input type="file" accept="image/*,application/pdf" onChange={onChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
             <div className="flex items-center gap-4">
@@ -685,7 +726,7 @@ function FileUploadField({ label, value, onChange, onPreview, onClear }) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div onClick={onPreview} className="w-14 h-14 rounded-xl overflow-hidden border-2 border-white shadow-md cursor-zoom-in flex items-center justify-center bg-gray-100">
-                 {value.startsWith('data:application/pdf') ? (
+                 {value.includes('application/pdf') || value.includes('.pdf') ? (
                    <div className="flex flex-col items-center text-[#B32D2D]">
                      <FileText size={20} />
                      <span className="text-[8px] font-bold">PDF</span>
