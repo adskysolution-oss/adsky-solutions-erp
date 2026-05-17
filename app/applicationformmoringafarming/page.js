@@ -75,8 +75,41 @@ export default function MoringaFarmingForm() {
     txnId: '', paymentStatus: 'Pending'
   });
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount & Check for pending payment submission
   useEffect(() => {
+    const checkPendingSubmission = async () => {
+      const pendingStr = localStorage.getItem('pending_form_submission');
+      if (pendingStr) {
+        try {
+          const pending = JSON.parse(pendingStr);
+          if (pending.formType === 'moringa-farming' && pending.orderId) {
+            // Verify payment status
+            const verifyRes = await fetch(`/api/payment/cashfree?order_id=${pending.orderId}`);
+            const verifyData = await verifyRes.json();
+            if (verifyData?.order?.order_status === 'PAID') {
+              setLoading(true);
+              const updatedFormData = { ...pending.formData, txnId: pending.orderId, paymentStatus: 'Success' };
+              await fetch('/api/forms/moringa-farming/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedFormData)
+              });
+              localStorage.removeItem('moringa_farming_draft');
+              localStorage.removeItem('moringa_farming_step');
+              localStorage.removeItem('pending_form_submission');
+              setSubmitted(true);
+              setLoading(false);
+            } else if (verifyData?.order?.order_status === 'FAILED') {
+              localStorage.removeItem('pending_form_submission');
+            }
+          }
+        } catch (e) {
+          console.error("Error recovering pending submission", e);
+        }
+      }
+    };
+    checkPendingSubmission();
+
     const savedData = localStorage.getItem('moringa_farming_draft');
     if (savedData) {
       try {
@@ -305,9 +338,9 @@ export default function MoringaFarmingForm() {
         // QR payments do NOT return result.paymentDetails, so we always verify.
         const txnId = orderData.orderId;
         
-        // Poll backend to verify payment (retry up to 5 times with 2s gap)
+        // Poll backend to verify payment (retry up to 15 times with 2s gap = 30 seconds)
         let paid = false;
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 15; i++) {
           try {
             const verifyRes = await fetch(`/api/payment/cashfree?order_id=${txnId}`);
             const verifyData = await verifyRes.json();
@@ -644,7 +677,7 @@ function FileUploadField({ label, value, onChange, onPreview, onClear }) {
               </div>
               <div>
                 <p className="text-xs font-black uppercase text-gray-800">Click to Upload</p>
-                <p className="text-[9px] font-bold text-gray-400 mt-1 uppercase italic tracking-tighter">PDF, JPG, PNG (Max 5MB)</p>
+                <p className="text-[9px] font-bold text-gray-400 mt-1 uppercase italic tracking-tighter">PDF, JPG, PNG Allowed</p>
               </div>
             </div>
           </>
