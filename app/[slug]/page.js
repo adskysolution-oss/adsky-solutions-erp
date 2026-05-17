@@ -79,7 +79,7 @@ export default function PublicForm() {
 
         // Initialize Cashfree
         const cashfree = window.Cashfree({
-          mode: 'sandbox' // Sandbox by default, Cashfree API handles the real mode
+          mode: process.env.NEXT_PUBLIC_CASHFREE_ENV || 'production'
         });
 
         // Scan fields to get customer details
