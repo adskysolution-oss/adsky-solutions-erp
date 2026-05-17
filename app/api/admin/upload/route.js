@@ -12,6 +12,10 @@ export async function POST(req) {
     const formData = await req.formData();
     const file = formData.get('file');
     
+    if (!process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_CLOUD_NAME) {
+      return NextResponse.json({ error: 'Cloudinary not configured' }, { status: 400 });
+    }
+
     if (!file) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }

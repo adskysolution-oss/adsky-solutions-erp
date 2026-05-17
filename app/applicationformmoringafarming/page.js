@@ -204,6 +204,16 @@ export default function MoringaFarmingForm() {
           });
         }
 
+        if (window.isCloudinaryDisabled) {
+          if (compressedBase64) {
+            setFormData(prev => ({ ...prev, [field]: compressedBase64 }));
+          } else {
+            setFormData(prev => ({ ...prev, [field]: '' }));
+          }
+          setUploadingFields(prev => ({ ...prev, [field]: false }));
+          return;
+        }
+
         const uploadData = new FormData();
         uploadData.append('file', file);
 
@@ -217,6 +227,7 @@ export default function MoringaFarmingForm() {
           setFormData(prev => ({ ...prev, [field]: resData.url }));
         } else {
           // Cloudinary is not configured or failed - Fallback to compressed base64
+          window.isCloudinaryDisabled = true;
           if (compressedBase64) {
             setFormData(prev => ({ ...prev, [field]: compressedBase64 }));
           } else {
@@ -226,6 +237,7 @@ export default function MoringaFarmingForm() {
         }
       } catch (err) {
         console.error('Upload error:', err);
+        window.isCloudinaryDisabled = true;
         // Fallback to base64 on network error
         const base64 = await new Promise((resolve) => {
           const reader = new FileReader();
