@@ -14,10 +14,25 @@ function PaymentVerifyContent() {
   const [orderDetails, setOrderDetails] = useState(null);
   const [formSubmitStatus, setFormSubmitStatus] = useState('');
 
+  const [returnFormUrl, setReturnFormUrl] = useState('/');
+
   useEffect(() => {
     if (!orderId) {
       setStatus('error');
       return;
+    }
+
+    // Determine return URL
+    const pendingRaw = localStorage.getItem('pending_form_submission');
+    if (pendingRaw) {
+      try {
+        const pending = JSON.parse(pendingRaw);
+        if (pending.formType === 'rabbit-farming') {
+          setReturnFormUrl('/applicationformrabbitfarming');
+        } else if (pending.formType === 'moringa-farming') {
+          setReturnFormUrl('/applicationformmoringafarming');
+        }
+      } catch (e) {}
     }
 
     const verifyAndSubmit = async () => {
@@ -152,10 +167,10 @@ function PaymentVerifyContent() {
             <p className="text-slate-300 mb-8">We could not verify your payment. Please try again or contact support.</p>
             
             <button 
-              onClick={() => router.push('/pricing')}
+              onClick={() => router.push(returnFormUrl)}
               className="mt-4 px-8 py-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition-all"
             >
-              Try Again
+              Return to Form / फॉर्म पर वापस जाएं
             </button>
           </div>
         )}

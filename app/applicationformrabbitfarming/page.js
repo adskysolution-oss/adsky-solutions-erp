@@ -436,63 +436,17 @@ export default function RabbitFarmingForm() {
           orderId: orderData.orderId,
           formData: safeFormData
         }));
-      } catch (storageErr) {
-        console.warn('Could not save pending submission to localStorage:', storageErr);
+
+        cashfree.checkout(checkoutOptions).then(async (result) => {
+          const txnId = orderData.orderId;
+          // Redirect immediately to the verification page
+          window.location.href = `/payment/verify?order_id=${txnId}`;
+        });
+
+      } catch (err) {
+        alert(err.message || 'Payment Error. Please try again.');
+        setLoading(false);
       }
-
-      cashfree.checkout(checkoutOptions).then(async (result) => {
-        // If there's a clear error (user cancelled etc.), stop here
-        if (result.error) {
-          alert(result.error.message || 'Payment failed. Please try again.');
-          setLoading(false);
-          return;
-        }
-
-        // For ALL payment methods (UPI, QR, Card, Netbanking),
-        // verify actual payment status from backend.
-        // QR payments do NOT return result.paymentDetails, so we always verify.
-        const txnId = orderData.orderId;
-        
-        // Poll backend to verify payment (retry up to 15 times with 2s gap = 30 seconds)
-        let paid = false;
-        for (let i = 0; i < 15; i++) {
-          try {
-            const verifyRes = await fetch(`/api/payment/cashfree?order_id=${txnId}`);
-            const verifyData = await verifyRes.json();
-            if (verifyData?.order?.order_status === 'PAID') {
-              paid = true;
-              break;
-            }
-          } catch (e) { console.error('Verify attempt', i, e); }
-          // Wait 2 seconds before next check
-          await new Promise(resolve => setTimeout(resolve, 2000));
-        }
-
-      if (paid) {
-          const updatedFormData = { ...formData, txnId: txnId, paymentStatus: 'Success' };
-          
-          // Save to MongoDB (also triggers Google Sheets sync in backend)
-          await fetch('/api/forms/rabbit-farming/save', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedFormData)
-          });
-          
-          // Clear Draft AND pending submission
-          localStorage.removeItem('rabbit_farming_draft');
-          localStorage.removeItem('rabbit_farming_step');
-          localStorage.removeItem('pending_form_submission');
-          setSubmitted(true);
-        } else {
-          alert('Payment could not be verified. If money was deducted, please contact support with Order ID: ' + txnId);
-          setLoading(false);
-        }
-      });
-
-    } catch (err) {
-      alert(err.message || 'Payment Error. Please try again.');
-      setLoading(false);
-    }
   };
 
   if (submitted) {
