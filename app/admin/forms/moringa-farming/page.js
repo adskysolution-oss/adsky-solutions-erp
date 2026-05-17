@@ -429,9 +429,15 @@ export default function MoringaFarmingAdminPage() {
                 </button>
               </div>
 
-              {/* Modal Body / Image Viewer */}
-              <div className="flex-1 overflow-auto flex items-center justify-center bg-[#111827] rounded-2xl border border-[#1f2937] p-4 min-h-[300px]">
-                {previewDoc.url.startsWith('data:') || previewDoc.url.startsWith('http') ? (
+              {/* Modal Body / Image & PDF Viewer */}
+              <div className="flex-1 overflow-auto flex items-center justify-center bg-[#111827] rounded-2xl border border-[#1f2937] p-4 min-h-[300px] w-full">
+                {previewDoc.url.startsWith('data:application/pdf') || previewDoc.url.includes('.pdf') ? (
+                  <iframe 
+                    src={previewDoc.url} 
+                    className="w-full h-[60vh] rounded-xl border-0 bg-white"
+                    title={previewDoc.name}
+                  />
+                ) : previewDoc.url.startsWith('data:') || previewDoc.url.startsWith('http') ? (
                   <img 
                     src={previewDoc.url} 
                     alt={previewDoc.name} 
