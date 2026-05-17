@@ -89,8 +89,17 @@ export default function MoringaFarmingForm() {
 
   // Save to localStorage on change
   useEffect(() => {
-    localStorage.setItem('moringa_farming_draft', JSON.stringify(formData));
-    localStorage.setItem('moringa_farming_step', currentStep.toString());
+    try {
+      const docFields = ['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'];
+      const draftData = { ...formData };
+      docFields.forEach(f => {
+        if (draftData[f] && draftData[f].startsWith('data:')) draftData[f] = '';
+      });
+      localStorage.setItem('moringa_farming_draft', JSON.stringify(draftData));
+      localStorage.setItem('moringa_farming_step', currentStep.toString());
+    } catch (e) {
+      console.warn("Could not save draft", e);
+    }
   }, [formData, currentStep]);
 
   // Inject Cashfree SDK with proper load tracking
@@ -480,7 +489,7 @@ export default function MoringaFarmingForm() {
                     <FileUploadField label="Aadhaar Card (Front)" name="doc_aadhar_front" value={formData.doc_aadhar_front} onChange={(e) => handleFileChange(e, 'doc_aadhar_front')} onPreview={() => setPreviewImage(formData.doc_aadhar_front)} onClear={() => setFormData(p => ({...p, doc_aadhar_front: ''}))} />
                     <FileUploadField label="Aadhaar Card (Back)" name="doc_aadhar_back" value={formData.doc_aadhar_back} onChange={(e) => handleFileChange(e, 'doc_aadhar_back')} onPreview={() => setPreviewImage(formData.doc_aadhar_back)} onClear={() => setFormData(p => ({...p, doc_aadhar_back: ''}))} />
                     <FileUploadField label="PAN Card" name="doc_pan" value={formData.doc_pan} onChange={(e) => handleFileChange(e, 'doc_pan')} onPreview={() => setPreviewImage(formData.doc_pan)} onClear={() => setFormData(p => ({...p, doc_pan: ''}))} />
-                    <FileUploadField label="Passport Photo" name="doc_photo" value={formData.doc_photo} onChange={(e) => handleFileChange(e, 'doc_photo')} onPreview={() => setPreviewImage(formData.doc_photo)} onClear={() => setFormData(p => ({...p, doc_photo: ''}))} />
+                    <FileUploadField label="Passport Size Photo" name="doc_photo" value={formData.doc_photo} onChange={(e) => handleFileChange(e, 'doc_photo')} onPreview={() => setPreviewImage(formData.doc_photo)} onClear={() => setFormData(p => ({...p, doc_photo: ''}))} />
                     <FileUploadField label="Bank Passbook / Statement" name="doc_bank" value={formData.doc_bank} onChange={(e) => handleFileChange(e, 'doc_bank')} onPreview={() => setPreviewImage(formData.doc_bank)} onClear={() => setFormData(p => ({...p, doc_bank: ''}))} />
                     <FileUploadField label="Address Proof" name="doc_address" value={formData.doc_address} onChange={(e) => handleFileChange(e, 'doc_address')} onPreview={() => setPreviewImage(formData.doc_address)} onClear={() => setFormData(p => ({...p, doc_address: ''}))} />
                     <FileUploadField label="Khasra / Khatauni" name="doc_land" value={formData.doc_land} onChange={(e) => handleFileChange(e, 'doc_land')} onPreview={() => setPreviewImage(formData.doc_land)} onClear={() => setFormData(p => ({...p, doc_land: ''}))} />
