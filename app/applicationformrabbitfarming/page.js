@@ -281,10 +281,26 @@ export default function RabbitFarmingForm() {
       fetch(`https://api.postalpincode.in/pincode/${formData.pincode}`)
         .then(res => res.json())
         .then(data => {
-          if (data[0].Status === "Success") {
+          if (data && data[0] && data[0].Status === "Success" && data[0].PostOffice) {
             const postOffice = data[0].PostOffice[0];
             const foundState = Object.keys(INDIA_GEO_DATA).find(s => s.toLowerCase().includes(postOffice.State.toLowerCase()) || postOffice.State.toLowerCase().includes(s.toLowerCase()));
-            setFormData(prev => ({ ...prev, state: foundState || postOffice.State, district: postOffice.District, block: postOffice.Block }));
+            if (foundState) {
+              const districts = INDIA_GEO_DATA[foundState] || [];
+              const foundDistrict = districts.find(d => d.toLowerCase() === postOffice.District.toLowerCase() || d.toLowerCase().includes(postOffice.District.toLowerCase()) || postOffice.District.toLowerCase().includes(d.toLowerCase()));
+              setFormData(prev => ({
+                ...prev,
+                state: foundState,
+                district: foundDistrict || postOffice.District,
+                block: postOffice.Block
+              }));
+            } else {
+              setFormData(prev => ({
+                ...prev,
+                state: postOffice.State,
+                district: postOffice.District,
+                block: postOffice.Block
+              }));
+            }
           }
         }).catch(err => console.error(err));
     }
@@ -312,17 +328,89 @@ export default function RabbitFarmingForm() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Restrict specific fields to only numeric characters
+    if (name === 'aadhar' || name === 'mobile' || name === 'pincode') {
+      const cleanValue = value.replace(/\D/g, ''); // Remove non-digits
+      setFormData(prev => ({ ...prev, [name]: cleanValue }));
+      return;
+    }
+    
+    if (name === 'pan') {
+      // Auto-convert PAN card to uppercase
+      setFormData(prev => ({ ...prev, [name]: value.toUpperCase() }));
+      return;
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const validateStep = (stepId) => {
     const step = STEPS.find(s => s.id === stepId);
     if (!step) return true;
+    
+    // 1. Emptiness Check
     for (const field of step.fields) {
       if (!formData[field] || formData[field].toString().trim() === '') {
+        alert("कृपया सभी आवश्यक फ़ील्ड भरें जिन पर * लगा है। (Please fill all required fields marked with *)");
         return false;
       }
     }
+
+    // 2. Custom Format Validations
+    if (stepId === 1) {
+      // Aadhar validation: exactly 12 digits
+      const aadharRegex = /^\d{12}$/;
+      if (!aadharRegex.test(formData.aadhar)) {
+        alert("आधार नंबर 12 अंकों का होना चाहिए। (Aadhar Number must be exactly 12 digits)");
+        return false;
+      }
+      
+      // Mobile validation: exactly 10 digits
+      const mobileRegex = /^[6-9]\d{9}$/;
+      if (!mobileRegex.test(formData.mobile)) {
+        alert("मोबाइल नंबर 10 अंकों का होना चाहिए और वैध होना चाहिए। (Mobile Number must be exactly 10 digits starting with 6-9)");
+        return false;
+      }
+      
+      // DOB validation: minimum 23, maximum 48 years old
+      if (formData.dob) {
+        const birthDate = new Date(formData.dob);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        
+        if (age < 23 || age > 48) {
+          alert("आवेदन के लिए आयु सीमा 23 से 48 वर्ष के बीच होनी चाहिए। (Age must be between 23 and 48 years to apply)");
+          return false;
+        }
+      } else {
+        alert("कृपया जन्म तिथि दर्ज करें। (Please enter Date of Birth)");
+        return false;
+      }
+
+      // PAN validation (if entered)
+      if (formData.pan) {
+        const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i;
+        if (!panRegex.test(formData.pan)) {
+          alert("पैन कार्ड नंबर सही प्रारूप (Format) में होना चाहिए (जैसे: ABCDE1234F)। (PAN Card Number must be in correct format)");
+          return false;
+        }
+      }
+    }
+
+    if (stepId === 3) {
+      // Pincode validation: exactly 6 digits
+      const pincodeRegex = /^\d{6}$/;
+      if (!pincodeRegex.test(formData.pincode)) {
+        alert("पिनकोड 6 अंकों का होना चाहिए। (Pincode must be exactly 6 digits)");
+        return false;
+      }
+    }
+
     return true;
   };
 
@@ -353,7 +441,6 @@ export default function RabbitFarmingForm() {
 
   const nextStep = () => {
     if (!validateStep(currentStep)) {
-      alert("Please fill all required fields marked with *");
       return;
     }
 
@@ -468,6 +555,11 @@ export default function RabbitFarmingForm() {
     }
   };
 
+  // Calculate dynamic age limits (23 to 48 years)
+  const todayDate = new Date();
+  const minDob = new Date(todayDate.getFullYear() - 48, todayDate.getMonth(), todayDate.getDate()).toISOString().split('T')[0];
+  const maxDob = new Date(todayDate.getFullYear() - 23, todayDate.getMonth(), todayDate.getDate()).toISOString().split('T')[0];
+
   if (submitted) {
     return (
       <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center p-6">
@@ -548,7 +640,7 @@ export default function RabbitFarmingForm() {
                   <InputField label="Email ID / ईमेल" name="email" value={formData.email} onChange={handleChange} type="email" placeholder="example@gmail.com" />
                   <SelectField label="Social Category" name="socialCategory" value={formData.socialCategory} onChange={handleChange} options={['General', 'SC', 'ST', 'OBC', 'Minority']} />
                   <SelectField label="Gender" name="gender" value={formData.gender} onChange={handleChange} options={['Male', 'Female', 'Other']} />
-                  <InputField label="Date of Birth" name="dob" value={formData.dob} onChange={handleChange} type="date" />
+                  <InputField label="Date of Birth" name="dob" value={formData.dob} onChange={handleChange} type="date" min={minDob} max={maxDob} />
                   <InputField label="PAN Card Number" name="pan" value={formData.pan} onChange={handleChange} maxLength={10} />
                 </motion.div>
               )}
