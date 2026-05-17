@@ -90,22 +90,31 @@ export default function RabbitFarmingForm() {
             if (verifyData?.order?.order_status === 'PAID') {
               setLoading(true);
               const updatedFormData = { ...pending.formData, txnId: pending.orderId, paymentStatus: 'Success' };
-              await fetch('/api/forms/rabbit-farming/save', {
+              
+              const saveRes = await fetch('/api/forms/rabbit-farming/save', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(updatedFormData)
               });
-              localStorage.removeItem('rabbit_farming_draft');
-              localStorage.removeItem('rabbit_farming_step');
-              localStorage.removeItem('pending_form_submission');
-              setSubmitted(true);
-              setLoading(false);
+              
+              if (saveRes.ok) {
+                localStorage.removeItem('rabbit_farming_draft');
+                localStorage.removeItem('rabbit_farming_step');
+                localStorage.removeItem('pending_form_submission');
+                setSubmitted(true);
+              } else {
+                const saveErr = await saveRes.json();
+                console.error("Failed to save pending form:", saveErr);
+                alert("Payment was successful, but we failed to save your application. Please contact support with Order ID: " + pending.orderId);
+              }
             } else if (verifyData?.order?.order_status === 'FAILED') {
               localStorage.removeItem('pending_form_submission');
             }
           }
         } catch (e) {
           console.error("Error recovering pending submission", e);
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -420,7 +429,7 @@ export default function RabbitFarmingForm() {
       // IMPORTANT: Strip Base64 documents to avoid localStorage quota error (5MB limit)
       const docFields = ['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'];
       const safeFormData = { ...formData };
-      docFields.forEach(f => { if (safeFormData[f] && (safeFormData[f].startsWith('data:') || safeFormData[f].startsWith('blob:'))) safeFormData[f] = 'uploaded'; });
+      docFields.forEach(f => { if (safeFormData[f] && safeFormData[f].startsWith('blob:')) safeFormData[f] = ''; });
       try {
         localStorage.setItem('pending_form_submission', JSON.stringify({
           formType: 'rabbit-farming',
