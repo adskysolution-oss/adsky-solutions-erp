@@ -57,8 +57,8 @@ function PaymentVerifyContent() {
                 if (pending.orderId === orderId && pending.formData && pending.formType) {
                   setFormSubmitStatus('submitting');
                   
-                  const updatedFormData = {
-                    ...pending.formData,
+                   const updatedFormData = {
+                    aadhar: pending.formData.aadhar,
                     txnId: orderId,
                     paymentStatus: 'Success'
                   };

@@ -417,11 +417,22 @@ export default function MoringaFarmingForm() {
         redirectTarget: "_modal", 
       };
 
-      // Save pending form submission to localStorage BEFORE payment
-      // IMPORTANT: Strip Base64 documents to avoid localStorage quota error (5MB limit)
+      // 1. Save complete registration with documents to MongoDB BEFORE payment (as 'Pending')
+      await fetch('/api/forms/moringa-farming/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          paymentStatus: 'Pending',
+          txnId: orderData.orderId
+        })
+      });
+
+      // 2. Save a clean, lightweight draft to localStorage (Stripped of all documents to avoid Quota Limit)
       const docFields = ['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'];
       const safeFormData = { ...formData };
-      docFields.forEach(f => { if (safeFormData[f] && safeFormData[f].startsWith('blob:')) safeFormData[f] = ''; });
+      docFields.forEach(f => { safeFormData[f] = ''; });
+      
       try {
         localStorage.setItem('pending_form_submission', JSON.stringify({
           formType: 'moringa-farming',

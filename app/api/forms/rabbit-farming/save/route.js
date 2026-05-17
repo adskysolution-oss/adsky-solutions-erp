@@ -21,32 +21,35 @@ export async function POST(req) {
       { aadhar: data.aadhar },
       { 
         ...mongoData,
-        paymentStatus: 'Success'
+        paymentStatus: data.paymentStatus || 'Success'
       },
       { upsert: true, new: true }
     );
 
-    // 2. Sync to Google Sheets (Server-side to avoid CORS and payload issues)
-    // Strip Base64 docs from sheet data too (Google Apps Script has payload limits)
-    try {
-      const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw9vIHzYgIlY2xqy984cyIZubWTigFfqcpe_HPXrCzC5icEofPklz3d5zyGFcrNhL4Z/exec';
-      
-      const sheetData = { ...data };
-      const docFields = ['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'];
-      docFields.forEach(field => {
-        if (sheetData[field] && (sheetData[field].startsWith('data:') || sheetData[field].startsWith('blob:'))) {
-          sheetData[field] = 'Document Uploaded ✓';
-        }
-      });
+    // 2. Sync to Google Sheets ONLY if payment is successful
+    if (registration.paymentStatus === 'Success') {
+      try {
+        const GOOGLE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw9vIHzYgIlY2xqy984cyIZubWTigFfqcpe_HPXrCzC5icEofPklz3d5zyGFcrNhL4Z/exec';
+        
+        // Use full updated data from database for Google Sheet sync
+        const sheetData = registration.toObject();
+        const docFields = ['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'];
+        
+        docFields.forEach(field => {
+          if (sheetData[field] && (sheetData[field].startsWith('data:') || sheetData[field].startsWith('blob:'))) {
+            sheetData[field] = 'Document Uploaded ✓';
+          }
+        });
 
-      fetch(GOOGLE_WEB_APP_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(sheetData)
-      }).catch(err => console.error('Google Sheets Sync Error:', err));
+        fetch(GOOGLE_WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(sheetData)
+        }).catch(err => console.error('Google Sheets Sync Error:', err));
 
-    } catch (sheetError) {
-      console.error('Failed to trigger Google Sheets sync:', sheetError);
+      } catch (sheetError) {
+        console.error('Failed to trigger Google Sheets sync:', sheetError);
+      }
     }
 
     return NextResponse.json({ success: true, registration });
