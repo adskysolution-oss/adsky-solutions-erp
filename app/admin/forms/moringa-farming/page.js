@@ -58,6 +58,50 @@ export default function MoringaFarmingAdminPage() {
     if (file) {
       setUploadingField(field);
       try {
+        // Compress locally first as a fallback
+        let compressedBase64 = null;
+        if (file.type.startsWith('image/')) {
+          compressedBase64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+              const img = new Image();
+              img.src = event.target.result;
+              img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const MAX_DIM = 800;
+                if (width > height) {
+                  if (width > MAX_DIM) {
+                    height *= MAX_DIM / width;
+                    width = MAX_DIM;
+                  }
+                } else {
+                  if (height > MAX_DIM) {
+                    width *= MAX_DIM / height;
+                    height = MAX_DIM;
+                  }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', 0.6));
+              };
+              img.onerror = () => resolve(null);
+            };
+            reader.onerror = () => resolve(null);
+          });
+        } else {
+          compressedBase64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => resolve(event.target.result);
+            reader.onerror = () => resolve(null);
+          });
+        }
+
         const formData = new FormData();
         formData.append('file', file);
 
@@ -70,7 +114,12 @@ export default function MoringaFarmingAdminPage() {
           setEditData(prev => ({ ...prev, [field]: resData.url }));
           alert('New file uploaded successfully! Click Save to apply changes.');
         } else {
-          alert('Upload failed: ' + (resData.error || 'Unknown error'));
+          if (compressedBase64) {
+            setEditData(prev => ({ ...prev, [field]: compressedBase64 }));
+            alert('File compressed and loaded successfully! Click Save to apply changes.');
+          } else {
+            alert('Upload failed: ' + (resData.error || 'Unknown error'));
+          }
         }
       } catch (err) {
         console.error(err);
@@ -269,7 +318,7 @@ export default function MoringaFarmingAdminPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                           {['doc_aadhar_front', 'doc_aadhar_back', 'doc_pan', 'doc_photo', 'doc_bank', 'doc_address', 'doc_land', 'doc_rent_agreement', 'doc_dpr', 'doc_income', 'doc_loan', 'doc_training', 'doc_caste', 'doc_education', 'doc_rural_cert', 'doc_edp', 'doc_affidavit'].map(docKey => {
                             const docValue = editId === form._id ? editData[docKey] : form[docKey];
-                            const isUploaded = docValue && docValue.startsWith('http');
+                            const isUploaded = docValue && (docValue.startsWith('http') || docValue.startsWith('data:'));
                             
                             return (
                               <div key={docKey} className="p-4 bg-[#111827] border border-[#1f2937] rounded-2xl flex flex-col justify-between gap-4">

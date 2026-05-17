@@ -157,9 +157,53 @@ export default function MoringaFarmingForm() {
       const objectUrl = URL.createObjectURL(file);
       setFormData(prev => ({ ...prev, [field]: objectUrl }));
 
-      // 2. Upload to Cloudinary in the background
+      // 2. Upload in background
       setUploadingFields(prev => ({ ...prev, [field]: true }));
       try {
+        // Compress locally first as a fallback
+        let compressedBase64 = null;
+        if (file.type.startsWith('image/')) {
+          compressedBase64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+              const img = new Image();
+              img.src = event.target.result;
+              img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const MAX_DIM = 800;
+                if (width > height) {
+                  if (width > MAX_DIM) {
+                    height *= MAX_DIM / width;
+                    width = MAX_DIM;
+                  }
+                } else {
+                  if (height > MAX_DIM) {
+                    width *= MAX_DIM / height;
+                    height = MAX_DIM;
+                  }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', 0.6));
+              };
+              img.onerror = () => resolve(null);
+            };
+            reader.onerror = () => resolve(null);
+          });
+        } else {
+          compressedBase64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => resolve(event.target.result);
+            reader.onerror = () => resolve(null);
+          });
+        }
+
         const uploadData = new FormData();
         uploadData.append('file', file);
 
@@ -172,13 +216,28 @@ export default function MoringaFarmingForm() {
           // Replace local blob URL with actual Cloudinary URL
           setFormData(prev => ({ ...prev, [field]: resData.url }));
         } else {
-          alert('Upload failed: ' + (resData.error || 'Unknown error'));
-          setFormData(prev => ({ ...prev, [field]: '' }));
+          // Cloudinary is not configured or failed - Fallback to compressed base64
+          if (compressedBase64) {
+            setFormData(prev => ({ ...prev, [field]: compressedBase64 }));
+          } else {
+            alert('Upload failed.');
+            setFormData(prev => ({ ...prev, [field]: '' }));
+          }
         }
       } catch (err) {
         console.error('Upload error:', err);
-        alert('File upload failed. Please try again.');
-        setFormData(prev => ({ ...prev, [field]: '' }));
+        // Fallback to base64 on network error
+        const base64 = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = (event) => resolve(event.target.result);
+          reader.onerror = () => resolve(null);
+        });
+        if (base64) {
+          setFormData(prev => ({ ...prev, [field]: base64 }));
+        } else {
+          setFormData(prev => ({ ...prev, [field]: '' }));
+        }
       } finally {
         setUploadingFields(prev => ({ ...prev, [field]: false }));
       }
