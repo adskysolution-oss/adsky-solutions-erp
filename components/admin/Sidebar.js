@@ -29,6 +29,8 @@ const MENU_ITEMS = [
   { name: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
   { name: 'CMS Builder', icon: Globe, path: '/admin/cms' },
   { name: 'Form Pro', icon: FileText, path: '/admin/cms/forms' },
+  { name: 'Rabbit Forms', icon: FileText, path: '/admin/forms/rabbit-farming' },
+  { name: 'Moringa Forms', icon: FileText, path: '/admin/forms/moringa-farming' },
   { name: 'Careers Hub', icon: Briefcase, path: '/admin/careers' },
   { name: 'Blog CMS', icon: FileText, path: '/admin/blogs' },
   { name: 'Vendors Matrix', icon: Store, path: '/admin/vendors' },
