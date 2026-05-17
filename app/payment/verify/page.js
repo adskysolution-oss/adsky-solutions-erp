@@ -2,8 +2,6 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -28,12 +26,20 @@ function PaymentVerifyContent() {
     if (pendingRaw) {
       try {
         const pending = JSON.parse(pendingRaw);
+        let formUrl = '/';
         if (pending.formType === 'rabbit-farming') {
-          setReturnFormUrl('/applicationformrabbitfarming');
+          formUrl = '/applicationformrabbitfarming';
         } else if (pending.formType === 'moringa-farming') {
-          setReturnFormUrl('/applicationformmoringafarming');
+          formUrl = '/applicationformmoringafarming';
         }
+        setReturnFormUrl(formUrl);
+        localStorage.setItem('last_form_url', formUrl);
       } catch (e) {}
+    } else {
+      const lastUrl = localStorage.getItem('last_form_url');
+      if (lastUrl) {
+        setReturnFormUrl(lastUrl);
+      }
     }
 
     const verifyAndSubmit = async () => {
@@ -106,8 +112,8 @@ function PaymentVerifyContent() {
   }, [orderId]);
 
   return (
-    <main className="min-h-screen bg-[#020617] text-white flex flex-col pt-32 px-6">
-      <div className="max-w-2xl mx-auto w-full text-center">
+    <main className="min-h-screen bg-[#020617] text-white flex flex-col items-center justify-center p-6">
+      <div className="max-w-2xl mx-auto w-full text-center flex flex-col items-center justify-center">
         {status === 'loading' && (
           <div className="py-20 flex flex-col items-center">
             <Loader2 className="animate-spin mb-6 text-blue-500" size={60} />
@@ -141,7 +147,10 @@ function PaymentVerifyContent() {
               </div>
 
               <button 
-                onClick={() => router.push('/')} 
+                onClick={() => {
+                  router.push(returnFormUrl);
+                  localStorage.removeItem('last_form_url');
+                }} 
                 className="w-full py-4 bg-[#B32D2D] text-white font-black rounded-xl hover:bg-[#8e2424] transition-all shadow-lg hover:shadow-xl active:scale-[0.98] uppercase tracking-wider text-sm"
               >
                 OK / ठीक है
@@ -172,11 +181,9 @@ function PaymentVerifyContent() {
 export default function PaymentVerifyPage() {
   return (
     <div className="min-h-screen bg-[#020617]">
-      <Navbar />
       <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#020617]"><Loader2 className="animate-spin text-blue-500" size={48} /></div>}>
         <PaymentVerifyContent />
       </Suspense>
-      <Footer />
     </div>
   );
 }
