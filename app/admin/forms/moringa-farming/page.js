@@ -19,6 +19,7 @@ export default function MoringaFarmingAdminPage() {
   const [editData, setEditData] = useState({});
   const [saving, setSaving] = useState(false);
   const [uploadingField, setUploadingField] = useState(null);
+  const [previewDoc, setPreviewDoc] = useState(null);
 
   useEffect(() => {
     fetchForms();
@@ -333,9 +334,14 @@ export default function MoringaFarmingAdminPage() {
                                         <CheckCircle2 className="text-emerald-500 shrink-0" size={18} />
                                         <span className="text-xs font-bold text-emerald-400 truncate">Uploaded</span>
                                       </div>
-                                      <a href={docValue} target="_blank" rel="noopener noreferrer" className="p-1.5 bg-[#1f2937] hover:bg-[#38bdf8]/20 hover:text-[#38bdf8] text-slate-300 rounded-lg transition-all shrink-0" title="Open Document">
-                                        <ExternalLink size={14} />
-                                      </a>
+                                      <button 
+                                        type="button"
+                                        onClick={() => setPreviewDoc({ name: docKey.replace('doc_', '').replace(/_/g, ' '), url: docValue })}
+                                        className="p-1.5 bg-[#1f2937] hover:bg-[#38bdf8]/20 hover:text-[#38bdf8] text-slate-300 rounded-lg transition-all shrink-0"
+                                        title="View Document"
+                                      >
+                                        <Eye size={14} />
+                                      </button>
                                     </div>
                                   ) : (
                                     <div className="flex-grow flex items-center gap-2 bg-[#1f2937] p-2.5 rounded-xl border border-dashed border-[#2d3748]">
@@ -391,6 +397,77 @@ export default function MoringaFarmingAdminPage() {
           )}
         </div>
       )}
+
+      {/* Document Preview Modal */}
+      <AnimatePresence>
+        {previewDoc && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+            onClick={() => setPreviewDoc(null)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="relative max-w-4xl w-full bg-[#0b0f19] border border-[#1f2937] rounded-3xl p-6 shadow-2xl flex flex-col max-h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-[#1f2937] mb-4">
+                <h3 className="text-lg font-black uppercase text-white tracking-wider flex items-center gap-2">
+                  <FileText size={20} className="text-[#38bdf8]" />
+                  {previewDoc.name}
+                </h3>
+                <button 
+                  onClick={() => setPreviewDoc(null)}
+                  className="p-2 hover:bg-[#1f2937] rounded-full text-slate-400 hover:text-white transition-all"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Modal Body / Image Viewer */}
+              <div className="flex-1 overflow-auto flex items-center justify-center bg-[#111827] rounded-2xl border border-[#1f2937] p-4 min-h-[300px]">
+                {previewDoc.url.startsWith('data:') || previewDoc.url.startsWith('http') ? (
+                  <img 
+                    src={previewDoc.url} 
+                    alt={previewDoc.name} 
+                    className="max-h-[60vh] max-w-full object-contain rounded-xl shadow-lg border border-white/5"
+                  />
+                ) : (
+                  <div className="text-center text-slate-500 font-bold">
+                    <AlertCircle className="mx-auto mb-2 text-rose-500" size={32} />
+                    Invalid or corrupted document data.
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-[#1f2937]">
+                {previewDoc.url.startsWith('http') && (
+                  <a 
+                    href={previewDoc.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center gap-2 px-5 py-2.5 bg-[#1f2937] hover:bg-[#2d3748] text-white font-bold rounded-xl text-xs transition-all"
+                  >
+                    <ExternalLink size={14} /> Open in New Tab
+                  </a>
+                )}
+                <button 
+                  onClick={() => setPreviewDoc(null)}
+                  className="px-5 py-2.5 bg-[#38bdf8] hover:bg-[#0284c7] text-black font-black uppercase tracking-wider rounded-xl text-xs transition-all"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
