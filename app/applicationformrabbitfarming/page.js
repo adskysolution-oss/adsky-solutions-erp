@@ -447,6 +447,10 @@ export default function RabbitFarmingForm() {
         alert(err.message || 'Payment Error. Please try again.');
         setLoading(false);
       }
+    } catch (err) {
+      alert(err.message || 'Payment Error. Please try again.');
+      setLoading(false);
+    }
   };
 
   if (submitted) {
