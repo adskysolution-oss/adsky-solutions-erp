@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 function PaymentVerifyContent() {
   const searchParams = useSearchParams();
