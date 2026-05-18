@@ -534,8 +534,10 @@ export default function MoringaFarmingForm() {
 
         cashfree.checkout(checkoutOptions).then(async (result) => {
           const txnId = orderData.orderId;
-          // Redirect immediately to the verification page
-          window.location.href = `/payment/verify?order_id=${txnId}`;
+          // Wait 2 seconds so Cashfree can update payment status on their server
+          // before we hit the verify page (avoids false "Payment Failed")
+          await new Promise(r => setTimeout(r, 2000));
+          window.location.href = `/payment/verify?order_id=${txnId}&form_slug=applicationformmoringafarming`;
         });
 
       } catch (err) {
