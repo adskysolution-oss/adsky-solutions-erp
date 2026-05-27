@@ -8,7 +8,7 @@ const WebsiteConfigSchema = new mongoose.Schema({
   
   // Contact info
   contactEmail: { type: String, default: "info@adskysolution.com" },
-  contactPhone: { type: String, default: "8076611842" },
+  contactPhone: { type: String, default: "011-69269290, 8076611842" },
   address: { type: String, default: "AD Sky Solution, 126 Satyam Enclave Sahibabad, Ghaziabad UP" },
   
   // Social Media Links

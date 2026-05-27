@@ -94,7 +94,7 @@ export default function PrivacyPage() {
                 <p><strong>AD Sky Solution</strong></p>
                 <p>126 Satyam Enclave Sahibabad, Ghaziabad, Uttar Pradesh 201003</p>
                 <p>Email: info@adskysolution.com</p>
-                <p>Phone: +91 8076611842</p>
+                <p>Phone: 011-69269290, +91 8076611842</p>
               </div>
             </section>
           </div>

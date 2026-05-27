@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import React from 'react';
 import { MapPin, Phone, Mail, Send, Target, ArrowRight } from 'lucide-react';
 import Navbar from '@/components/Navbar';
@@ -35,7 +35,7 @@ export default function ContactPage() {
                 <ContactItem 
                   icon={Phone} 
                   title="Enterprise Support" 
-                  desc="8076611842" 
+                  desc="011-69269290 / 8076611842" 
                   color="indigo"
                 />
                 <ContactItem 
