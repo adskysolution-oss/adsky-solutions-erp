@@ -13,7 +13,7 @@ export default function Footer() {
     logoRoot: '/logo(2).jpeg',
     contact: {
       address: 'AD Sky Solution, 126 Satyam Enclave Sahibabad, \n Ghaziabad UTTAR PRADESH 201003',
-      phone: '011-69269290, 8076611842',
+      phone: '011-69269290',
       email: 'info@adskysolution.com'
     }
   };
@@ -107,7 +107,7 @@ export default function Footer() {
             </div>
             <div>
               <h5 className="font-bold mb-1 text-green-400/90">Call Us</h5>
-              <p className="text-slate-300 text-sm leading-relaxed font-bold">{config?.contact?.phone || '011-69269290, 8076611842'}</p>
+              <p className="text-slate-300 text-sm leading-relaxed font-bold">{config?.contact?.phone || '011-69269290'}</p>
             </div>
           </div>
           <div className="flex items-start gap-4 group">

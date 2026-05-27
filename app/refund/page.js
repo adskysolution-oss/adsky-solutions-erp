@@ -71,7 +71,7 @@ export default function RefundPage() {
               <div className="bg-white/5 p-6 rounded-2xl border border-white/10 italic">
                 <p><strong>AD Sky Solution - Billing Dept</strong></p>
                 <p>Email: info@adskysolution.com</p>
-                <p>Phone: 011-69269290, +91 8076611842</p>
+                <p>Phone: 011-69269290</p>
                 <p>Address: 126 Satyam Enclave Sahibabad, Ghaziabad, Uttar Pradesh 201003</p>
               </div>
             </section>
