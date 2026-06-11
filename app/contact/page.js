@@ -35,7 +35,7 @@ export default function ContactPage() {
                 <ContactItem 
                   icon={Phone} 
                   title="Enterprise Support" 
-                  desc="011-69269290" 
+                  desc="8076611842" 
                   color="indigo"
                 />
                 <ContactItem 
