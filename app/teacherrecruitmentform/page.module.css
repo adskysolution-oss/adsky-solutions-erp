@@ -11,7 +11,7 @@
 
 /* ───── HERO HEADER ───── */
 .header {
-  background: linear-gradient(135deg, #1565C0 0%, #1976D2 50%, #1E88E5 100%);
+  background: linear-gradient(135deg, #0B1F4E 0%, #0D2F77 50%, #0A3580 100%);
   margin: 0 -20px 40px;
   padding: 56px 40px 48px;
   text-align: center;
@@ -101,11 +101,11 @@
 
 /* ───── IMPORTANT DATES ───── */
 .importantDates {
-  background: linear-gradient(135deg, #1976D2 0%, #1E88E5 100%);
+  background: linear-gradient(135deg, #0D2F77 0%, #0F3990 100%);
   border-radius: 20px;
   padding: 28px 32px;
   margin-bottom: 32px;
-  box-shadow: 0 10px 40px rgba(30, 136, 229, 0.25);
+  box-shadow: 0 10px 40px rgba(13, 47, 119, 0.4);
   position: relative;
   overflow: hidden;
 }
