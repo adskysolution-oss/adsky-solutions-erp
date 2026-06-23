@@ -1,12 +1,30 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import TeacherRecruitment from "@/models/TeacherRecruitment";
-import { Cashfree, CFEnvironment } from "cashfree-pg";
 
-// Initialize Cashfree SDK
-Cashfree.XClientId = process.env.CASHFREE_CLIENT_ID?.trim() || process.env.CASHFREE_APP_ID?.trim() || "";
-Cashfree.XClientSecret = process.env.CASHFREE_CLIENT_SECRET?.trim() || process.env.CASHFREE_SECRET_KEY?.trim() || "";
-Cashfree.XEnvironment = process.env.CASHFREE_ENV === "production" ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX;
+// Cashfree REST API - Production
+const CASHFREE_BASE_URL = "https://api.cashfree.com/pg";
+const CASHFREE_CLIENT_ID = process.env.CASHFREE_CLIENT_ID;
+const CASHFREE_CLIENT_SECRET = process.env.CASHFREE_CLIENT_SECRET;
+
+async function getCashfreeOrderPayments(orderId) {
+  const response = await fetch(`${CASHFREE_BASE_URL}/orders/${orderId}/payments`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-version": "2023-08-01",
+      "x-client-id": CASHFREE_CLIENT_ID,
+      "x-client-secret": CASHFREE_CLIENT_SECRET,
+    },
+  });
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`Cashfree verify error ${response.status}: ${errText}`);
+  }
+
+  return response.json();
+}
 
 export async function POST(req) {
   try {
@@ -23,26 +41,13 @@ export async function POST(req) {
       return NextResponse.json({ error: "Order not found in DB" }, { status: 404 });
     }
 
-    // Already verified
+    // Already verified - return immediately
     if (record.payment_status === "Paid") {
       return NextResponse.json({ status: "Paid", application_id: record.application_id });
     }
 
-    const hasCashfreeKeys = process.env.CASHFREE_CLIENT_ID || process.env.CASHFREE_APP_ID;
-
-    // Mock verification for local/dev testing
-    if (!hasCashfreeKeys) {
-      record.payment_status = "Paid";
-      const count = await TeacherRecruitment.countDocuments({ payment_status: "Paid" });
-      record.application_id = `TCH2026${String(1000 + count + 1).padStart(4, "0")}`;
-      record.cashfree_payment_id = "mock_payment_" + Date.now();
-      await record.save();
-      return NextResponse.json({ status: "Paid", application_id: record.application_id });
-    }
-
-    // Verify with Cashfree API
-    const response = await Cashfree.PGOrderFetchPayments("2023-08-01", order_id);
-    const payments = response.data;
+    // Verify with Cashfree Production REST API
+    const payments = await getCashfreeOrderPayments(order_id);
 
     const successfulPayment = Array.isArray(payments)
       ? payments.find((p) => p.payment_status === "SUCCESS")
@@ -65,6 +70,6 @@ export async function POST(req) {
     }
   } catch (error) {
     console.error("Payment Verification Error:", error);
-    return NextResponse.json({ error: "Verification failed" }, { status: 500 });
+    return NextResponse.json({ error: "Verification failed: " + error.message }, { status: 500 });
   }
 }
