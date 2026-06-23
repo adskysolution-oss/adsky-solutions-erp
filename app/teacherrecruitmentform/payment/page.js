@@ -26,7 +26,7 @@ export default function PaymentPage({ searchParams }) {
     
     script.onload = () => {
       const cashfree = window.Cashfree({
-        mode: "sandbox", // Use "production" for real transactions
+        mode: "production", // Production mode for real transactions
       });
 
       let checkoutOptions = {
