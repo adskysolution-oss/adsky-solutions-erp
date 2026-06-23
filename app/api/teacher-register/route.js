@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import TeacherRecruitment from "@/models/TeacherRecruitment";
 
-// Cashfree REST API - no SDK needed, works perfectly on Vercel
-const CASHFREE_BASE_URL = "https://sandbox.cashfree.com/pg";
-const CASHFREE_CLIENT_ID = process.env.CASHFREE_CLIENT_ID || "TEST10477006857ea2687a4ba7ff664960077401";
-const CASHFREE_CLIENT_SECRET = process.env.CASHFREE_CLIENT_SECRET || "cfsk_ma_test_0be9ce069c9b4e6b9a8f4c2e5d9a9b4e_9a8f4c2e";
+// Cashfree REST API - Production mode (keys must be set in Vercel Environment Variables)
+const CASHFREE_BASE_URL = "https://api.cashfree.com/pg";
+const CASHFREE_CLIENT_ID = process.env.CASHFREE_CLIENT_ID;
+const CASHFREE_CLIENT_SECRET = process.env.CASHFREE_CLIENT_SECRET;
 
 async function createCashfreeOrder(orderRequest) {
   const response = await fetch(`${CASHFREE_BASE_URL}/orders`, {
