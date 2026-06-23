@@ -3,11 +3,6 @@ import connectDB from "@/lib/mongodb";
 import TeacherRecruitment from "@/models/TeacherRecruitment";
 import { Cashfree, CFEnvironment } from "cashfree-pg";
 
-// Initialize Cashfree SDK
-Cashfree.XClientId = process.env.CASHFREE_CLIENT_ID?.trim() || process.env.CASHFREE_APP_ID?.trim() || "";
-Cashfree.XClientSecret = process.env.CASHFREE_CLIENT_SECRET?.trim() || process.env.CASHFREE_SECRET_KEY?.trim() || "";
-Cashfree.XEnvironment = process.env.CASHFREE_ENV === "production" ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX;
-
 export async function POST(req) {
   try {
     await connectDB();
@@ -19,7 +14,7 @@ export async function POST(req) {
     if (photo && typeof photo !== "string") {
       const bytes = await photo.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const base64String = buffer.toString('base64');
+      const base64String = buffer.toString("base64");
       photoUrl = `data:${photo.type};base64,${base64String}`;
     } else {
       return NextResponse.json({ error: "Document upload is required." }, { status: 400 });
@@ -50,24 +45,16 @@ export async function POST(req) {
       payment_status: "Pending",
     };
 
-    // Save to MongoDB as Pending first
+    // Save to MongoDB first (Pending)
     const newRecord = await TeacherRecruitment.create(applicationData);
     const orderId = `TCH_${newRecord._id.toString().slice(-8)}_${Date.now()}`;
 
-    const hasCashfreeKeys = process.env.CASHFREE_CLIENT_ID || process.env.CASHFREE_APP_ID;
+    // Initialize Cashfree inside handler (Vercel serverless best practice)
+    Cashfree.XClientId = process.env.CASHFREE_CLIENT_ID || "TEST10477006857ea2687a4ba7ff664960077401";
+    Cashfree.XClientSecret = process.env.CASHFREE_CLIENT_SECRET || "cfsk_ma_test_0be9ce069c9b4e6b9a8f4c2e5d9a9b4e_9a8f4c2e";
+    Cashfree.XEnvironment = CFEnvironment.SANDBOX;
 
-    if (!hasCashfreeKeys) {
-      // Mock for local dev testing
-      newRecord.cashfree_order_id = orderId;
-      await newRecord.save();
-      return NextResponse.json({
-        success: true,
-        order_id: orderId,
-        payment_session_id: "session_mock_12345",
-      });
-    }
-
-    // Create real Cashfree order
+    // Create Cashfree payment order
     const orderRequest = {
       order_amount: 100.0,
       order_currency: "INR",
