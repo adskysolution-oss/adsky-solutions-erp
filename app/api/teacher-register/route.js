@@ -2,50 +2,25 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import TeacherRecruitment from "@/models/TeacherRecruitment";
 import { Cashfree, CFEnvironment } from "cashfree-pg";
-import { v2 as cloudinary } from "cloudinary";
-
-// Initialize Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 // Initialize Cashfree SDK
 Cashfree.XClientId = process.env.CASHFREE_CLIENT_ID?.trim() || process.env.CASHFREE_APP_ID?.trim() || "";
 Cashfree.XClientSecret = process.env.CASHFREE_CLIENT_SECRET?.trim() || process.env.CASHFREE_SECRET_KEY?.trim() || "";
 Cashfree.XEnvironment = process.env.CASHFREE_ENV === "production" ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX;
 
-// Helper: Upload buffer to Cloudinary (supports image, PDF, Word)
-function uploadToCloudinary(buffer, mimeType) {
-  return new Promise((resolve, reject) => {
-    // Images use 'image' resource_type, PDF/Word use 'raw'
-    const isImage = mimeType && mimeType.startsWith("image/");
-    const resourceType = isImage ? "image" : "raw";
-
-    cloudinary.uploader.upload_stream(
-      { folder: "teacher-recruitment", resource_type: resourceType },
-      (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
-      }
-    ).end(buffer);
-  });
-}
-
 export async function POST(req) {
   try {
     await connectDB();
     const data = await req.formData();
 
-    // Upload document to Cloudinary (image, PDF, or Word)
+    // Document upload handling (Convert to Base64 for MongoDB)
     const photo = data.get("photo");
     let photoUrl = "";
     if (photo && typeof photo !== "string") {
       const bytes = await photo.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const result = await uploadToCloudinary(buffer, photo.type);
-      photoUrl = result.secure_url;
+      const base64String = buffer.toString('base64');
+      photoUrl = `data:${photo.type};base64,${base64String}`;
     } else {
       return NextResponse.json({ error: "Document upload is required." }, { status: 400 });
     }
