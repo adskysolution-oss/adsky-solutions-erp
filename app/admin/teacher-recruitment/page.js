@@ -266,24 +266,73 @@ export default function TeacherAdminPage() {
         )}
       </div>
 
-      {/* Photo Modal */}
+      {/* Document/Photo Modal */}
       {selectedPhoto && (
         <div 
           className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4"
           onClick={() => setSelectedPhoto(null)}
         >
-          <div className="relative max-w-md w-full bg-[#1f2937] p-2 rounded-2xl border border-[#374151] shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="relative max-w-2xl w-full bg-[#1f2937] p-4 rounded-2xl border border-[#374151] shadow-2xl" onClick={e => e.stopPropagation()}>
             <button 
               className="absolute -top-4 -right-4 bg-red-500 text-white rounded-full p-2 shadow-lg hover:bg-red-600 transition-colors"
               onClick={() => setSelectedPhoto(null)}
             >
               <XCircle size={20} />
             </button>
-            <img 
-              src={selectedPhoto} 
-              alt="Applicant" 
-              className="w-full h-auto max-h-[70vh] object-contain rounded-xl"
-            />
+
+            {/* Image files */}
+            {selectedPhoto.startsWith("data:image/") && (
+              <img 
+                src={selectedPhoto} 
+                alt="Applicant Document" 
+                className="w-full h-auto max-h-[70vh] object-contain rounded-xl"
+              />
+            )}
+
+            {/* PDF files */}
+            {selectedPhoto.startsWith("data:application/pdf") && (
+              <div className="text-center py-8">
+                <div className="text-6xl mb-4">📄</div>
+                <p className="text-white font-semibold mb-4">PDF Document Uploaded</p>
+                <a
+                  href={selectedPhoto}
+                  download="applicant_document.pdf"
+                  className="inline-block bg-[#38bdf8] text-black font-bold px-6 py-3 rounded-xl hover:bg-[#0ea5e9] transition-all"
+                >
+                  ⬇ Download PDF
+                </a>
+              </div>
+            )}
+
+            {/* Word files */}
+            {(selectedPhoto.startsWith("data:application/msword") || selectedPhoto.startsWith("data:application/vnd.openxmlformats")) && (
+              <div className="text-center py-8">
+                <div className="text-6xl mb-4">📝</div>
+                <p className="text-white font-semibold mb-4">Word Document Uploaded</p>
+                <a
+                  href={selectedPhoto}
+                  download="applicant_document.docx"
+                  className="inline-block bg-[#38bdf8] text-black font-bold px-6 py-3 rounded-xl hover:bg-[#0ea5e9] transition-all"
+                >
+                  ⬇ Download Document
+                </a>
+              </div>
+            )}
+
+            {/* Fallback for unknown type */}
+            {!selectedPhoto.startsWith("data:image/") && !selectedPhoto.startsWith("data:application/pdf") && !selectedPhoto.startsWith("data:application/msword") && !selectedPhoto.startsWith("data:application/vnd.openxmlformats") && (
+              <div className="text-center py-8">
+                <div className="text-6xl mb-4">📎</div>
+                <p className="text-white font-semibold mb-4">Document Uploaded</p>
+                <a
+                  href={selectedPhoto}
+                  download="applicant_document"
+                  className="inline-block bg-[#38bdf8] text-black font-bold px-6 py-3 rounded-xl hover:bg-[#0ea5e9] transition-all"
+                >
+                  ⬇ Download File
+                </a>
+              </div>
+            )}
           </div>
         </div>
       )}
