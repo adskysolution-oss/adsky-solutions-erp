@@ -144,7 +144,7 @@ export default function Home() {
           </div>
           <div className={styles.badgeFee}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
-            Online Test Fee ₹100
+            Online Test Fee ₹5 (Test)
           </div>
         </div>
       </header>
@@ -361,7 +361,7 @@ export default function Home() {
             
             <label className={styles.checkboxItem}>
               <input type="checkbox" checked={declarations.d3} onChange={(e) => setDeclarations({...declarations, d3: e.target.checked})} />
-              <span className={styles.checkboxLabel}>I understand that the ₹100 examination fee is non-refundable.</span>
+              <span className={styles.checkboxLabel}>I understand that the ₹5 examination fee is non-refundable.</span>
             </label>
             
             <label className={styles.checkboxItem}>
@@ -375,7 +375,7 @@ export default function Home() {
             className={styles.submitBtn} 
             disabled={!isFormValid() || isSubmitting}
           >
-            {isSubmitting ? "Processing..." : "Pay ₹100 & Submit Application"}
+            {isSubmitting ? "Processing..." : "Pay ₹5 & Submit Application"}
           </button>
         </div>
       </form>

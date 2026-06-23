@@ -64,7 +64,7 @@ export async function POST(req) {
       organization_name: data.get("organizationName") || null,
       photo_url: photoUrl,
       declaration_accepted: true,
-      amount: 100.0,
+      amount: 5.0,
       payment_status: "Pending",
     };
 
@@ -74,7 +74,7 @@ export async function POST(req) {
 
     // Create Cashfree order via REST API directly
     const orderRequest = {
-      order_amount: 100.0,
+      order_amount: 5.0,
       order_currency: "INR",
       order_id: orderId,
       customer_details: {
