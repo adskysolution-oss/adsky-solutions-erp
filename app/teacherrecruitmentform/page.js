@@ -134,39 +134,39 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>🎓 PRT, TGT & PGT Teacher Recruitment 2026</h1>
+        <h1 className={styles.title}>PRT, TGT & PGT Teacher Recruitment 2026</h1>
         <p className={styles.subtitle}>Online Test Registration Form</p>
         
         <div className={styles.badges}>
           <div className={styles.badgeWarning}>
-            ⚠️ This is NOT a Government Job
+            This is NOT a Government Job
           </div>
           <div className={styles.badgeFee}>
-            💳 Online Test Fee ₹5 (Test)
+            Online Test Fee ₹5 (Test)
           </div>
         </div>
       </header>
 
       <div className={styles.importantDates}>
-        <h3>📋 Important Recruitment Details</h3>
-        <p style={{ marginBottom: "16px", color: "rgba(255,255,255,0.7)", fontSize: "0.88rem", lineHeight: "1.6" }}>
+        <h3>Important Recruitment Details</h3>
+        <p style={{ marginBottom: "16px", color: "rgba(255,255,255,0.75)", fontSize: "0.88rem", lineHeight: "1.6" }}>
           Government School Project – Outsource Basis &nbsp;|&nbsp; Recruitment through Private Outsourcing Agency
         </p>
         <div className={styles.dateGrid}>
           <div className={styles.dateItem}>
-            <span className={styles.dateLabel}>📅 Last Date to Apply</span>
+            <span className={styles.dateLabel}>Last Date to Apply</span>
             <span className={styles.dateValue}>30 June 2026</span>
           </div>
           <div className={styles.dateItem}>
-            <span className={styles.dateLabel}>📝 Online Exam Date</span>
+            <span className={styles.dateLabel}>Online Exam Date</span>
             <span className={styles.dateValue}>05 July 2026</span>
           </div>
           <div className={styles.dateItem}>
-            <span className={styles.dateLabel}>⏰ Exam Time</span>
+            <span className={styles.dateLabel}>Exam Time</span>
             <span className={styles.dateValue}>02:00 PM</span>
           </div>
           <div className={styles.dateItem}>
-            <span className={styles.dateLabel}>📱 Requirement</span>
+            <span className={styles.dateLabel}>Requirement</span>
             <span className={styles.dateValue}>Android + Internet</span>
           </div>
         </div>
