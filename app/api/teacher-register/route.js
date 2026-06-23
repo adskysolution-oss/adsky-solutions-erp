@@ -1,32 +1,49 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import TeacherRecruitment from "@/models/TeacherRecruitment";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 import { Cashfree, CFEnvironment } from "cashfree-pg";
+import { v2 as cloudinary } from "cloudinary";
 
-// Initialize Cashfree SDK (same pattern as rest of project)
+// Initialize Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Initialize Cashfree SDK
 Cashfree.XClientId = process.env.CASHFREE_CLIENT_ID?.trim() || process.env.CASHFREE_APP_ID?.trim() || "";
 Cashfree.XClientSecret = process.env.CASHFREE_CLIENT_SECRET?.trim() || process.env.CASHFREE_SECRET_KEY?.trim() || "";
 Cashfree.XEnvironment = process.env.CASHFREE_ENV === "production" ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX;
+
+// Helper: Upload buffer to Cloudinary
+function uploadToCloudinary(buffer) {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.upload_stream(
+      { folder: "teacher-recruitment", resource_type: "image" },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      }
+    ).end(buffer);
+  });
+}
 
 export async function POST(req) {
   try {
     await connectDB();
     const data = await req.formData();
 
-    // Save uploaded file
+    // Upload photo to Cloudinary
     const photo = data.get("photo");
     let photoUrl = "";
     if (photo && typeof photo !== "string") {
       const bytes = await photo.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const filename = `teacher_${Date.now()}_${photo.name.replace(/\s+/g, "_")}`;
-      const uploadDir = path.join(process.cwd(), "public", "uploads", "teachers");
-      await mkdir(uploadDir, { recursive: true });
-      const filepath = path.join(uploadDir, filename);
-      await writeFile(filepath, buffer);
-      photoUrl = `/uploads/teachers/${filename}`;
+      const result = await uploadToCloudinary(buffer);
+      photoUrl = result.secure_url;
+    } else {
+      return NextResponse.json({ error: "Photo is required." }, { status: 400 });
     }
 
     // Prepare application data
@@ -54,15 +71,14 @@ export async function POST(req) {
       payment_status: "Pending",
     };
 
-    // Save to DB as Pending first
+    // Save to MongoDB as Pending first
     const newRecord = await TeacherRecruitment.create(applicationData);
     const orderId = `TCH_${newRecord._id.toString().slice(-8)}_${Date.now()}`;
 
-    // Check if Cashfree keys are present
     const hasCashfreeKeys = process.env.CASHFREE_CLIENT_ID || process.env.CASHFREE_APP_ID;
 
     if (!hasCashfreeKeys) {
-      // Mock payment for local/dev testing
+      // Mock for local dev testing
       newRecord.cashfree_order_id = orderId;
       await newRecord.save();
       return NextResponse.json({
@@ -100,6 +116,6 @@ export async function POST(req) {
     });
   } catch (error) {
     console.error("Teacher Registration Error:", error);
-    return NextResponse.json({ error: "Failed to process application." }, { status: 500 });
+    return NextResponse.json({ error: "Failed to process application. " + error.message }, { status: 500 });
   }
 }
