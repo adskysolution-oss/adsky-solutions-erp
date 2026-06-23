@@ -45,6 +45,7 @@ const MENU_ITEMS = [
   { name: 'Notifications', icon: Bell, path: '/admin/notifications' },
   { name: 'Branding', icon: Settings, path: '/admin/settings' },
   { name: 'SakhiHub', icon: Heart, path: '/admin/sakhihub' },
+  { name: 'Teacher Recruitment', icon: FileText, path: '/admin/teacher-recruitment' },
 ];
 
 export default function Sidebar({ isOpen, setIsOpen }) {
