@@ -142,7 +142,7 @@ export default function Home() {
             This is NOT a Government Job
           </div>
           <div className={styles.badgeFee}>
-            Online Test Fee ₹5 (Test)
+            Online Test Fee ₹100
           </div>
         </div>
       </header>
@@ -358,7 +358,7 @@ export default function Home() {
             
             <label className={styles.checkboxItem}>
               <input type="checkbox" checked={declarations.d3} onChange={(e) => setDeclarations({...declarations, d3: e.target.checked})} />
-              <span className={styles.checkboxLabel}>I understand that the ₹5 examination fee is non-refundable.</span>
+              <span className={styles.checkboxLabel}>I understand that the ₹100 examination fee is non-refundable.</span>
             </label>
             
             <label className={styles.checkboxItem}>
@@ -372,7 +372,7 @@ export default function Home() {
             className={styles.submitBtn} 
             disabled={!isFormValid() || isSubmitting}
           >
-            {isSubmitting ? "Processing..." : "Pay ₹5 & Submit Application"}
+            {isSubmitting ? "Processing..." : "Pay ₹100 & Submit Application"}
           </button>
         </div>
       </form>
