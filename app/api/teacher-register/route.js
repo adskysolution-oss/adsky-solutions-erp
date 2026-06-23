@@ -1,21 +1,44 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import TeacherRecruitment from "@/models/TeacherRecruitment";
-import { Cashfree, CFEnvironment } from "cashfree-pg";
+
+// Cashfree REST API - no SDK needed, works perfectly on Vercel
+const CASHFREE_BASE_URL = "https://sandbox.cashfree.com/pg";
+const CASHFREE_CLIENT_ID = process.env.CASHFREE_CLIENT_ID || "TEST10477006857ea2687a4ba7ff664960077401";
+const CASHFREE_CLIENT_SECRET = process.env.CASHFREE_CLIENT_SECRET || "cfsk_ma_test_0be9ce069c9b4e6b9a8f4c2e5d9a9b4e_9a8f4c2e";
+
+async function createCashfreeOrder(orderRequest) {
+  const response = await fetch(`${CASHFREE_BASE_URL}/orders`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-version": "2023-08-01",
+      "x-client-id": CASHFREE_CLIENT_ID,
+      "x-client-secret": CASHFREE_CLIENT_SECRET,
+    },
+    body: JSON.stringify(orderRequest),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Cashfree API error ${response.status}: ${errorText}`);
+  }
+
+  return response.json();
+}
 
 export async function POST(req) {
   try {
     await connectDB();
     const data = await req.formData();
 
-    // Document upload handling (Convert to Base64 for MongoDB)
+    // Document upload - convert to Base64 for MongoDB storage
     const photo = data.get("photo");
     let photoUrl = "";
     if (photo && typeof photo !== "string") {
       const bytes = await photo.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const base64String = buffer.toString("base64");
-      photoUrl = `data:${photo.type};base64,${base64String}`;
+      photoUrl = `data:${photo.type};base64,${buffer.toString("base64")}`;
     } else {
       return NextResponse.json({ error: "Document upload is required." }, { status: 400 });
     }
@@ -45,16 +68,11 @@ export async function POST(req) {
       payment_status: "Pending",
     };
 
-    // Save to MongoDB first (Pending)
+    // Save to MongoDB (Pending status)
     const newRecord = await TeacherRecruitment.create(applicationData);
     const orderId = `TCH_${newRecord._id.toString().slice(-8)}_${Date.now()}`;
 
-    // Initialize Cashfree inside handler (Vercel serverless best practice)
-    Cashfree.XClientId = process.env.CASHFREE_CLIENT_ID || "TEST10477006857ea2687a4ba7ff664960077401";
-    Cashfree.XClientSecret = process.env.CASHFREE_CLIENT_SECRET || "cfsk_ma_test_0be9ce069c9b4e6b9a8f4c2e5d9a9b4e_9a8f4c2e";
-    Cashfree.XEnvironment = CFEnvironment.SANDBOX;
-
-    // Create Cashfree payment order
+    // Create Cashfree order via REST API directly
     const orderRequest = {
       order_amount: 100.0,
       order_currency: "INR",
@@ -70,7 +88,7 @@ export async function POST(req) {
       },
     };
 
-    const response = await Cashfree.PGCreateOrder("2023-08-01", orderRequest);
+    const cashfreeOrder = await createCashfreeOrder(orderRequest);
 
     newRecord.cashfree_order_id = orderId;
     await newRecord.save();
@@ -78,10 +96,13 @@ export async function POST(req) {
     return NextResponse.json({
       success: true,
       order_id: orderId,
-      payment_session_id: response.data.payment_session_id,
+      payment_session_id: cashfreeOrder.payment_session_id,
     });
   } catch (error) {
     console.error("Teacher Registration Error:", error);
-    return NextResponse.json({ error: "Failed to process application. " + error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to process application. " + error.message },
+      { status: 500 }
+    );
   }
 }
