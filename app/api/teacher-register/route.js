@@ -16,11 +16,15 @@ Cashfree.XClientId = process.env.CASHFREE_CLIENT_ID?.trim() || process.env.CASHF
 Cashfree.XClientSecret = process.env.CASHFREE_CLIENT_SECRET?.trim() || process.env.CASHFREE_SECRET_KEY?.trim() || "";
 Cashfree.XEnvironment = process.env.CASHFREE_ENV === "production" ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX;
 
-// Helper: Upload buffer to Cloudinary
-function uploadToCloudinary(buffer) {
+// Helper: Upload buffer to Cloudinary (supports image, PDF, Word)
+function uploadToCloudinary(buffer, mimeType) {
   return new Promise((resolve, reject) => {
+    // Images use 'image' resource_type, PDF/Word use 'raw'
+    const isImage = mimeType && mimeType.startsWith("image/");
+    const resourceType = isImage ? "image" : "raw";
+
     cloudinary.uploader.upload_stream(
-      { folder: "teacher-recruitment", resource_type: "image" },
+      { folder: "teacher-recruitment", resource_type: resourceType },
       (error, result) => {
         if (error) reject(error);
         else resolve(result);
@@ -34,16 +38,16 @@ export async function POST(req) {
     await connectDB();
     const data = await req.formData();
 
-    // Upload photo to Cloudinary
+    // Upload document to Cloudinary (image, PDF, or Word)
     const photo = data.get("photo");
     let photoUrl = "";
     if (photo && typeof photo !== "string") {
       const bytes = await photo.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      const result = await uploadToCloudinary(buffer);
+      const result = await uploadToCloudinary(buffer, photo.type);
       photoUrl = result.secure_url;
     } else {
-      return NextResponse.json({ error: "Photo is required." }, { status: 400 });
+      return NextResponse.json({ error: "Document upload is required." }, { status: 400 });
     }
 
     // Prepare application data

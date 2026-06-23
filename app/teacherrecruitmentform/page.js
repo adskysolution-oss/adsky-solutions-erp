@@ -46,16 +46,33 @@ export default function Home() {
     setFormData({ ...formData, [name]: value });
   };
 
+  const ALLOWED_TYPES = [
+    "image/jpeg",
+    "image/png",
+    "image/jpg",
+    "image/webp",
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ];
+
+  const getFileIcon = (file) => {
+    if (!file) return null;
+    if (file.type.startsWith("image/")) return "🖼️";
+    if (file.type === "application/pdf") return "📄";
+    return "📝";
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     setPhotoError("");
     if (file) {
-      if (!["image/jpeg", "image/png"].includes(file.type)) {
-        setPhotoError("Only JPG/PNG images are allowed.");
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        setPhotoError("Only Image (JPG/PNG), PDF, or Word (.doc/.docx) files are allowed.");
         return;
       }
-      if (file.size > 2 * 1024 * 1024) {
-        setPhotoError("Image size must be less than 2 MB.");
+      if (file.size > 10 * 1024 * 1024) {
+        setPhotoError("File size must be less than 10 MB.");
         return;
       }
       setPhoto(file);
@@ -286,28 +303,42 @@ export default function Home() {
             </div>
           </div>
 
-          <h3 className={styles.sectionTitle}>5. Photo Upload</h3>
+          <h3 className={styles.sectionTitle}>5. Document Upload</h3>
           <div className={styles.formGrid}>
             <div className={styles.formGroup} style={{ gridColumn: "1 / -1" }}>
-              <label>Passport Size Photograph Upload <span className={styles.requiredAsterisk}>*</span></label>
+              <label>Upload Document (Photo / Certificate / Degree) <span className={styles.requiredAsterisk}>*</span></label>
               <div 
                 className={styles.fileUploadBox} 
                 onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const file = e.dataTransfer.files?.[0];
+                  if (file) handleFileChange({ target: { files: [file] } });
+                }}
               >
                 <input 
                   type="file" 
-                  accept="image/jpeg, image/png" 
+                  accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" 
                   ref={fileInputRef} 
                   style={{ display: "none" }} 
                   onChange={handleFileChange}
                 />
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary-blue, #0A3D91)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "12px" }}>
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>
-                </svg>
                 {photoName ? (
-                  <p style={{ color: "#10B981", fontWeight: 500 }}>{photoName}</p>
+                  <>
+                    <div style={{ fontSize: "2.5rem", marginBottom: "8px" }}>{getFileIcon(photo)}</div>
+                    <p style={{ color: "#10B981", fontWeight: 600, fontSize: "1rem" }}>{photoName}</p>
+                    <p style={{ color: "#64748B", fontSize: "0.8rem", marginTop: "4px" }}>Click to change file</p>
+                  </>
                 ) : (
-                  <p>Click to upload JPG/PNG (Max 2 MB)</p>
+                  <>
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--primary-blue, #0A3D91)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: "12px" }}>
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>
+                    </svg>
+                    <p style={{ fontWeight: 600, color: "#1E293B", marginBottom: "6px" }}>Click to Upload or Drag & Drop</p>
+                    <p style={{ color: "#64748B", fontSize: "0.85rem" }}>Supported: JPG, PNG, PDF, DOC, DOCX</p>
+                    <p style={{ color: "#94A3B8", fontSize: "0.8rem", marginTop: "4px" }}>Maximum size: 10 MB</p>
+                  </>
                 )}
               </div>
               {photoError && <p className={styles.errorText}>{photoError}</p>}
