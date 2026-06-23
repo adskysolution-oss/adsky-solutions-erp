@@ -134,43 +134,40 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>PRT, TGT & PGT Teacher Recruitment 2026</h1>
+        <h1 className={styles.title}>🎓 PRT, TGT & PGT Teacher Recruitment 2026</h1>
         <p className={styles.subtitle}>Online Test Registration Form</p>
         
         <div className={styles.badges}>
           <div className={styles.badgeWarning}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-            This is NOT a Government Job
+            ⚠️ This is NOT a Government Job
           </div>
           <div className={styles.badgeFee}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
-            Online Test Fee ₹5 (Test)
+            💳 Online Test Fee ₹5 (Test)
           </div>
         </div>
       </header>
 
       <div className={styles.importantDates}>
-        <h3>Important Recruitment Details</h3>
-        <p style={{ marginBottom: "16px", color: "var(--text-muted, #64748B)", fontSize: "0.9rem" }}>
-          Project: Government School Project – Outsource Basis<br/>
-          Disclaimer: Recruitment will be conducted through a Private Outsourcing Agency for Government School Projects.
+        <h3>📋 Important Recruitment Details</h3>
+        <p style={{ marginBottom: "16px", color: "rgba(255,255,255,0.7)", fontSize: "0.88rem", lineHeight: "1.6" }}>
+          Government School Project – Outsource Basis &nbsp;|&nbsp; Recruitment through Private Outsourcing Agency
         </p>
         <div className={styles.dateGrid}>
           <div className={styles.dateItem}>
-            <span className={styles.dateLabel}>Last Date to Apply</span>
+            <span className={styles.dateLabel}>📅 Last Date to Apply</span>
             <span className={styles.dateValue}>30 June 2026</span>
           </div>
           <div className={styles.dateItem}>
-            <span className={styles.dateLabel}>Online Exam Date</span>
+            <span className={styles.dateLabel}>📝 Online Exam Date</span>
             <span className={styles.dateValue}>05 July 2026</span>
           </div>
           <div className={styles.dateItem}>
-            <span className={styles.dateLabel}>Exam Time</span>
+            <span className={styles.dateLabel}>⏰ Exam Time</span>
             <span className={styles.dateValue}>02:00 PM</span>
           </div>
           <div className={styles.dateItem}>
-            <span className={styles.dateLabel}>Requirement</span>
-            <span className={styles.dateValue}>Android Mobile + Internet</span>
+            <span className={styles.dateLabel}>📱 Requirement</span>
+            <span className={styles.dateValue}>Android + Internet</span>
           </div>
         </div>
       </div>
